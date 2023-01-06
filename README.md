@@ -30,7 +30,10 @@ Links that helped
 # Global glossary
 
 > RFC = Requests for comments. set of informations, documents and norms that standardize, describe, specify regarding network in general.
-  
+is a type of publication from the Internet Engineering Task Force (IETF) and the Internet Society(ISOC), the principal technical development and standards-setting bodies for the Internet.
+ 
+ 
+ 
 > OSI : Open Systems Interconnection model (OSI model) is a conceptual model that characterizes and standardizes the communication functions of a telecommunication or computing system without regard to its underlying internal structure and technology. Its goal is the interoperability of diverse communication systems with standard protocols.  The model partitions a communication system into abstraction layers. Original version of the model defines 7 layers :
   - physical
   - Data link
@@ -45,6 +48,8 @@ Links that helped
 > TCP/IP :  Transmission Control Protocol (TCP) vs User Datagram Protocol (UDP) vs Sequenced Packet Exchange (SPX).
 HTTP communication usually takes place over TCP/IP connections. The default port is TCP 80, but other ports can be used. This does not preclude HTTP from being implemented on top of any other protocol on the Internet, or on other networks. but any reliable transport can be used with http protocol.
 
-> http servers : Apache Tomcat, NginX, express JS
+> http servers : Apache Tomcat, NginX, express JS. First version of HTTP is HTTP/1.1. (latst version is the HTTP/2)
 
-> CGI 
+> CGI
+
+> Socket : A socket is the mechanism that most popular operating systems provide to give programs access to the network. It allows messages to be sent and received between applications (unrelated processes) on different networked machines. The sockets mechanism has been created to be independent of any specific type of network. **IP (Internet Protocol)**, however, is by far the most dominant network and the most popular use of sockets.
