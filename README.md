@@ -4,7 +4,9 @@
 
 This project is about writing our own HTTP server and test it with an actual browser.
 
-**Tools to implement for each container**
+**Project requirements**
+
+
 
 
 **Requirements**
@@ -21,8 +23,11 @@ Links that helped
 -----------
 | Subject | Link |
 |:--------------|:----------------|
-| |  |
+| HTTP server from scratch |  https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa|
 
 
+# Global glossary
+
+> RFC = Requests for comments
   
 
