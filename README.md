@@ -13,7 +13,10 @@ This project is about writing our own HTTP server and test it with an actual bro
   
   
 
-# To start :
+# Steps to follow :
+
+1. Implement TCP :
+2. 
 
 # #####
 
