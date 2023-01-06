@@ -56,3 +56,5 @@ HTTP communication usually takes place over TCP/IP connections. The default port
 > CGI
 
 > Socket : A socket is the mechanism that most popular operating systems provide to give programs access to the network. It allows messages to be sent and received between applications (unrelated processes) on different networked machines. The sockets mechanism has been created to be independent of any specific type of network. **IP (Internet Protocol)**, however, is by far the most dominant network and the most popular use of sockets.
+
+> Network byte ordering : convention defines the bit-order of network addresses as they pass through the network. 
