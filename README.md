@@ -23,7 +23,8 @@ Links that helped
 -----------
 | Subject | Link |
 |:--------------|:----------------|
-| HTTP server from scratch |  https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa|
+
+| HTTP server from scratch |  https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa / https://bhch.github.io/posts/2017/11/writing-an-http-server-from-scratch/
 
 
 # Global glossary
