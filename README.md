@@ -58,8 +58,8 @@ HTTP communication usually takes place over TCP/IP connections. The default port
 
 > CGI
 
-> Socket : A socket is the mechanism that most popular operating systems provide to give programs access to the network. It allows messages to be sent and received between applications (unrelated processes) on different networked machines. The sockets mechanism has been created to be independent of any specific type of network. **IP (Internet Protocol)**, however, is by far the most dominant network and the most popular use of sockets.
+> Socket : is the mechanism that most popular operating systems provide to give programs access to the network. It allows messages to be sent and received between applications (unrelated processes) on different networked machines. The sockets mechanism has been created to be independent of any specific type of network. **IP (Internet Protocol), however, is by far the most dominant network and the most popular use of sockets.**
 
-> Network byte ordering : convention defines the bit-order of network addresses as they pass through the network.
+> **Network byte ordering** : convention defines the bit-order of network addresses as they pass through the network.
 
-> Address family : The address family configuration options allow you to specify how a particular routing protocol behaves with regards to multiple Layer 3 protocols. An address family can be IPv4, IPv6. An address family configuration simply tells the routing protocol how to deal with routes that are learned via a routing protocol.
+> **Address family** : The address family configuration options allow you to specify how a particular routing protocol behaves with regards to multiple Layer 3 protocols. An address family can be IPv4, IPv6. An address family configuration simply tells the routing protocol how to deal with routes that are learned via a routing protocol.
