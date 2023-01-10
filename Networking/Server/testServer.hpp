@@ -15,7 +15,7 @@ namespace Socketing
 		private:
 			Socketing::ListeningSocket* socket;
 			int	new_socket;
-			std::string buffer;
+			char buffer[30000] = {0};
 			void accepter();
 			void handler();
 			void responder();

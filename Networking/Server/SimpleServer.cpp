@@ -6,7 +6,7 @@ Socketing::SimpleServer::SimpleServer(int domain, int service, int protocol, int
 	
 }
 
-ListeningSocket Socketing::SimpleServer::*get_server_socket()
+Socketing::ListeningSocket *Socketing::SimpleServer::get_server_socket()
 {
 	return socket;
 }
