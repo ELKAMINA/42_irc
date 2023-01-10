@@ -28,7 +28,7 @@ an interface = for instance : if connections are made with Wi-fi and  Ethernet, 
 	test_connection(connection);
 }
 
-Socketing::SimpleSocket::test_connection(int item_to_test)
+void Socketing::SimpleSocket::test_connection(int item_to_test)
 {
 	if(item_to_test < 0 )
 	{
