@@ -3,7 +3,7 @@
 Socketing::SimpleSocket::SimpleSocket(int domain, int service, int protocol, int port, u_long interface)
 {
 /* assigning a transport address to the socket (a port number in IP networking) =  binding an address.
-an interface = for instance : Wi-fi / Ethernet.
+an interface = for instance : if connections are made with Wi-fi and  Ethernet, the interfaces are Wi-fi and Ethernet
 */
 	/* address family or domain */
 	address.sin_family =  domain;
@@ -13,11 +13,11 @@ an interface = for instance : Wi-fi / Ethernet.
 
 	address.sin_addr.s_addr = htonl(interface); /*the interface on which the socket will run (it's the IP Adress) */
 
-	sock = socket(domain, service, protocol); // socket system call
+	sock = socket(domain, service, protocol); // socket system call/ creating a socket 
 	test_connection(sock);
 
 	/* Establishing network connection */
-	connection = connect_to_network(sock, address);
+	// connection = connect_to_network(sock, address);
 	/*
 	- domain : communication domain in which the socket should be created.
 
@@ -37,7 +37,6 @@ Socketing::SimpleSocket::test_connection(int item_to_test)
 	}
 }
 
-
 sockaddr_in Socketing::SimpleSocket::get_address()
 {
 	return this->address;
@@ -52,3 +51,9 @@ int Socketing::SimpleSocket::get_connection()
 {
 	return this->connection;
 }
+
+void Socketing::SimpleSocket::set_connection(int newC)
+{
+	this->connection = newC;
+}
+
