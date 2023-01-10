@@ -1,7 +1,6 @@
-#include "BindingSocket.hpp"
+#include "ASocketinglibc-sockets.hpp"
 
-Socketing::BindingSocket::BindingSocket(int domain, int service, int protocol, int port, u_long interface) : SimpleSocket(domain, service, protocol, port, interface);
-
+Socketing::BindingSocket::BindingSocket(int domain, int service, int protocol, int port, u_long interface) : SimpleSocket(domain, service, protocol, port, interface)
 {
 /* assigning a transport address to the socket (a port number in IP networking) =  binding an address.
 an interface = for instance : if connections are made with Wi-fi and  Ethernet, the interfaces are Wi-fi and Ethernet
@@ -11,20 +10,10 @@ an interface = for instance : if connections are made with Wi-fi and  Ethernet, 
 	test_connection(get_connection());
 }
 
-
-
-
-
-
-
-
-
-
-
-int Socketing::BindingSocket::connect_to_network(int sock, struct sockaddr_in address)
+int Socketing::BindingSocket::connect_to_network(int sock, struct sockaddr_in add)
 {
 
-	return bind(sock, (struct sockaddr *)&address, sizeof(address));
+	return bind(sock, (struct sockaddr *)&add, sizeof(add));
 
 	/* For BIND function : 
 

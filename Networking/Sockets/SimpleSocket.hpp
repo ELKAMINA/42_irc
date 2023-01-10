@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <iostream>
+#include "ASocketinglibc-sockets.hpp"
 
 /* This is an abstract class with a pure connect_to_network function */
 namespace Socketing
@@ -42,7 +43,7 @@ namespace Socketing
 			SimpleSocket(int domain, int service, int protocol, int port, u_long interface);
 
 			/* Virtual function to connect a network */
-			virtual int connect_to_network(int sock, sockaddr_in address) = 0;
+			virtual int connect_to_network(int sock, sockaddr_in add) = 0;
 
 			/* Function for testing */
 			void test_connection(int);

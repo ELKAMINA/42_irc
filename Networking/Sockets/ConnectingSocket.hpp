@@ -4,11 +4,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <iostream>
-#include "./SimpleSocket"
+#include "ASocketinglibc-sockets.hpp"
 
 namespace Socketing
 {
-	class BindingSocket : public SimpleSocket
+	class ConnectingSocket : public SimpleSocket
 	{
 		private:
 			struct sockaddr_in 	address;
@@ -17,10 +17,10 @@ namespace Socketing
 
 		public:
 			/* Constructor */
-			BindingSocket(int domain, int service, int protocol, int port, u_long interface);
+			ConnectingSocket(int domain, int service, int protocol, int port, u_long interface);
 
 			/* Function to connect a network */
-			int	connect_to_network(int sock, struct sockaddr_in address address);
+			int	connect_to_network(int sock, struct sockaddr_in add);
 
 			/* Function for testing */
 			void test_connection(int);
