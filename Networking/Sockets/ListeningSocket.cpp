@@ -10,6 +10,7 @@ Socketing::ListeningSocket::ListeningSocket(int domain, int service, int protoco
 
 void Socketing::ListeningSocket::start_listening()
 {
-	listening = listen(get_connection(), backlog);	
+	// std::cout << backlog << std::endl;
+	listening = listen(get_sock(), backlog);
 }
 
