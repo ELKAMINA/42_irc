@@ -94,3 +94,6 @@ See also : Host byte order (same same)
 Quick answer : Ports below 1024 are considered to be privileged in Linux,
   **Rep : https://stackoverflow.com/questions/31899673/bind-returning-permission-denied-c**
 
+2. Failed to connect: Socket operation on non-socket
+
+**Rep**https://www.sendblaster.com/support/error-trapping/socket-operation-a-non-socket-error/#:~:text=The%20%E2%80%9CSocket%20operation%20on%20a%20non%2Dsocket%E2%80%9D%20error%20means,has%20been%20shut%20down%20abruptly.
