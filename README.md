@@ -91,5 +91,6 @@ See also : Host byte order (same same)
 
 1. Bind results in a permission denied when using port 81 
 
-Rep : https://stackoverflow.com/questions/31899673/bind-returning-permission-denied-c
+Quick answer : Ports below 1024 are considered to be privileged in Linux,
+  **Rep : https://stackoverflow.com/questions/31899673/bind-returning-permission-denied-c**
 
