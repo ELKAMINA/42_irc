@@ -6,7 +6,7 @@ Socketing::SimpleSocket::SimpleSocket(int domain, int service, int protocol, int
 an interface = for instance : if connections are made with Wi-fi and  Ethernet, the interfaces are Wi-fi and Ethernet
 */
 	/* address family or domain */
-	address.sin_family =  domain;
+	address.sin_family = domain;
 
 	/* naming a socket =  assigning a transport address to the socket (a port number in IP networking)*/
 	address.sin_port = htons(port);
@@ -25,7 +25,7 @@ an interface = for instance : if connections are made with Wi-fi and  Ethernet, 
 
 	- protocol: indicate a specific protocol to use in supporting the sockets operation.
 	*/
-	test_connection(connection);
+	// test_connection(connection);
 }
 
 void Socketing::SimpleSocket::test_connection(int item_to_test)
@@ -35,11 +35,13 @@ void Socketing::SimpleSocket::test_connection(int item_to_test)
 		perror("Failed to connect");
 		exit(EXIT_FAILURE);
 	}
+	// std::cout << item_to_test << std::endl;
 }
 
 sockaddr_in Socketing::SimpleSocket::get_address()
 {
-	return this->address;
+	// --show-leak-kinds=allstd::cout << "HOHO " << address.sin_family << std::endl;
+	return address;
 }
 
 int Socketing::SimpleSocket::get_sock()
