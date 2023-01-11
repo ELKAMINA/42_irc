@@ -86,7 +86,11 @@ See also : Host byte order (same same)
 
 > **Stateless application ** : A stateless app is an application program that does not save client data generated in one session for use in the next session with that client. Each session is carried out as if it was the first time and responses are not dependent upon data from a previous session
 
-> Optical Fiver cable
+> Optical Fiver cable : backbone of the internet
+
+> URL : Universal Resource Locator
+
+> REST APIs : Application programming interface, is a set of rules that define how applications or devices can connect to and communicate with each other. A REST API is an API that conforms to the design principles of the REST, or representational state transfer architectural style.
 
 # Main RFCs for basic HTTP 
 
@@ -111,18 +115,19 @@ Quick answer : Ports below 1024 are considered to be privileged in Linux,
 
 # Good to know : How does the Internet work ?
 
-**/!\** Internet & Web : are 2 different things. Internet is **the backbone of the web**. it's the technical infrastructure that makes the Web possible.
+/!\  Internet & Web : are 2 different things. Internet is **the backbone of the web**. it's the technical infrastructure that makes the Web possible.
 
-**/!\** Our computer at home are not servers bc they are not connected directly to the server. THEY ARE CLIENTS BC THEY ARE INDIRECTLY CONNECTED TO THE INTERNET THROUGH AN ISP (*INTERNET SERVICE PROVIDER)**
+/!\  Our computer at home are not servers bc they are not connected directly to the server. THEY ARE CLIENTS BC THEY ARE INDIRECTLY CONNECTED TO THE INTERNET THROUGH AN ISP (*INTERNET SERVICE PROVIDER)**
 
-/!\ Whenever an email/pictures or webpage travels accross the internet, computers break the information into smaller pieces (PAQUETS) and then reassemble it.
+/!\  Whenever an email/pictures or webpage travels accross the internet, computers break the information into smaller pieces (PAQUETS) and then reassemble it.
 
-/!\ Everything connected directly/indirectly to internet has an IP Address( computers, servers, cellphones, equipment in between). At every intersection with internet, there is a router helping each paquets getting one step closer to its destination.
+/!\  Everything connected directly/indirectly to internet has an IP Address( computers, servers, cellphones, equipment in between). At every intersection with internet, there is a router helping each paquets getting one step closer to its destination.
 
-/!\ it's the ISP that gives an IP address to the equipment
+/!\  it's the ISP that gives an IP address to the equipment
 
-/!\ Internet usses DNS (phonebook) : equivalence between the IP address and the domain name.
+/!\  Internet usses DNS (phonebook) : equivalence between the IP address and the domain name.
 
 
 > Internet : is a large network of computers which communicate all together and whatever happens, they find a way to stay connected.
 
+> Protocols : Management of the flow of the data paquets. They set the rules for data paquets conversion, attachment of the source and destination addresses to each paquet and the rules for routers ...
