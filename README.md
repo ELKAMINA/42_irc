@@ -31,6 +31,7 @@ Links that helped
 
 | Nginx Server and Location block | https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms |
 
+| AF_INET & struct address | https://stackoverflow.com/questions/1593946/what-is-af-inet-and-why-do-i-need-it |
 
 
 # Global glossary
@@ -81,6 +82,12 @@ HTTP communication usually takes place over TCP/IP connections. The default port
 See also : Host byte order (same same)
 
 > **Address family** : The address family configuration options allow you to specify how a particular routing protocol behaves with regards to multiple Layer 3 protocols. An address family can be IPv4, IPv6. An address family configuration simply tells the routing protocol how to deal with routes that are learned via a routing protocol.
+
+> **Stateless application ** : A stateless app is an application program that does not save client data generated in one session for use in the next session with that client. Each session is carried out as if it was the first time and responses are not dependent upon data from a previous session
+
+# Main RFCs for basic HTTP 
+
+**7230** : 
 
 # Pending questionning
 
