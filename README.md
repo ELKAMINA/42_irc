@@ -44,11 +44,17 @@ is a type of publication from the Internet Engineering Task Force (IETF) and the
  
 > **OSI** : Open Systems Interconnection model (OSI model) is a conceptual model that characterizes and standardizes the communication functions of a telecommunication or computing system without regard to its underlying internal structure and technology. Its goal is the interoperability of diverse communication systems with standard protocols.  The model partitions a communication system into abstraction layers. Original version of the model defines 7 layers :
   - physical
+  
   - Data link
+  
   - Network
+  
   - Transport
-  - Session 
+  
+  - Session
+  
   - Presentation
+  
   - Application
  
  For http, what imports is the transport Layer. It ensures that data is transferred from one point to another reliably and without errors (  making sure data are sent and received in the correct sequence.). The Transport layer provides flow control and error handling, and participates in solving problems concerned with the transmission and reception of packets.
