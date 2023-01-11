@@ -33,6 +33,7 @@ Links that helped
 
 | AF_INET & struct address | https://stackoverflow.com/questions/1593946/what-is-af-inet-and-why-do-i-need-it |
 
+| How internet works | https://www.youtube.com/watch?v=7_LPdttKXPc |
 
 # Global glossary
 
@@ -105,3 +106,14 @@ Quick answer : Ports below 1024 are considered to be privileged in Linux,
 2. Failed to connect: Socket operation on non-socket
 
 **Rep**: https://www.sendblaster.com/support/error-trapping/socket-operation-a-non-socket-error/#:~:text=The%20%E2%80%9CSocket%20operation%20on%20a%20non%2Dsocket%E2%80%9D%20error%20means,has%20been%20shut%20down%20abruptly.
+
+# Good to know : How does the Internet work ?
+
+**/!\** Internet & Web : are 2 different things. Internet is **the backbone of the web**. it's the technical infrastructure that makes the Web possible.
+**/!\** Our computer at home are not servers bc they are not connected directly to the server. THEY ARE CLIENTS BC THEY ARE INDIRECTLY CONNECTED TO THE INTERNET THROUGH AN ISP (*INTERNET SERVICE PROVIDER)**
+/!\ Whenever an email/pictures or webpage travels accross the internet, computers break the information into smaller pieces (PAQUETS) and then reassemble it.
+/!\ Everything connected directly/indirectly to internet has an IP Address( computers, servers, cellphones, equipment in between). At every intersection with internet, there is a router helping each paquets getting one step closer to its destination.
+
+
+> Internet : is a large network of computers which communicate all together and whatever happens, they find a way to stay connected.
+
