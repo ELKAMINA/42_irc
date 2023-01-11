@@ -1,5 +1,10 @@
 #include "./testServer.hpp"
 #include <cstring>
+#include <istream>
+#include <iostream>
+#include <ostream>
+#include <stdio.h>
+#include <unistd.h>
 
 Socketing::testServer::testServer() : SimpleServer(AF_INET, SOCK_STREAM, 0, 1024, INADDR_ANY, 10)
 {
@@ -27,8 +32,10 @@ void	Socketing::testServer::handler()
 
 void	Socketing::testServer::responder()
 {
-	const char *hello = "Hello from Server";
+	std::cout << "wesh 0" << std::endl;
+	const char *hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 	write(new_socket, hello, strlen(hello));
+	std::cout << new_socket << std::endl;
 	close(new_socket);
 }
 
