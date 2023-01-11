@@ -92,14 +92,32 @@ See also : Host byte order (same same)
 
 > REST APIs : Application programming interface, is a set of rules that define how applications or devices can connect to and communicate with each other. A REST API is an API that conforms to the design principles of the REST, or representational state transfer architectural style.
 
+> Gateways : A gateway is a network node used in telecommunications that connects two networks with different transmission protocols together. Gateways serve as an entry and exit point for a network as all data must pass through or communicate with the gateway prior to being routed.
+
 # Main RFCs for basic HTTP 
 
 **7230** : 
 
-# Pending questionning
+**793** : TCP/IP and Sockets
+  > *Idea 1* : TCP is to provide reliable, securable logical circuit or connection service between pairs of processes. To provide this services, there are 6 basics :
+    - Basic Data Transfer : The TCP is able to transfer a continuous stream of octets in each direction between its users by packaging some       number of octets into segments for transmission through the internet system ( see push function)
+    - Reliability
+    - Flow control
+    - Multiplexing
+    - Connections
+    - Precedence and Security
+
+# Questionning
 
 1. Socket operations are synchronous
 
+2.  Difference between socket and TCP/IP ?
+
+**TCP/IP** is the most common protocol stack used in the internet. It specifies how data should be addressed, transmitted, routed and received at the destination. It has 4 Layers: Application layer, Transport layer, Internet layer and Link layer.
+
+One of the most important protocol in this stack is TCP. TCP is a connection-oriented, end-to-end reliable protocol designed to fit into a layered hierarchy of protocols which support multi-network applications. TCP provides a reliable connection between two pairs of processes of computer hosts attached to a network. A TCP connection is defined by two endpoints aka sockets.
+
+**A socket** represents endpoints of communication between two programs in computer network. In order to communicate, we have to identify the computer using IP Address and specify the program using Port number.
 
 # Issues
 
@@ -113,7 +131,7 @@ Quick answer : Ports below 1024 are considered to be privileged in Linux,
 
 **Rep**: https://www.sendblaster.com/support/error-trapping/socket-operation-a-non-socket-error/#:~:text=The%20%E2%80%9CSocket%20operation%20on%20a%20non%2Dsocket%E2%80%9D%20error%20means,has%20been%20shut%20down%20abruptly.
 
-# Good to know : How does the Internet work ?
+# Good to know : How does the Internet works ?
 
 /!\  Internet & Web : are 2 different things. Internet is **the backbone of the web**. it's the technical infrastructure that makes the Web possible.
 
