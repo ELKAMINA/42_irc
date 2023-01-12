@@ -83,7 +83,20 @@ HTTP communication usually takes place over TCP/IP connections. The default port
 
 > **CGI**
 
+> **Network interface**
+
+Network interface may refer to:
+
+    *Network interface controller*, a computer hardware component that connects a computer to a computer network
+    *Network interface device*, a device that serves as the demarcation point between a telephone carrier's local loop and the customer's wiring
+    *Virtual network interface*, an abstract virtualized representation of a computer network interface
+    *Loopback interface*, a virtual network interface that connects a host to itself
+
 > **Socket** : is the mechanism that most popular operating systems provide to give programs access to the network. It allows messages to be sent and received between applications (unrelated processes) on different networked machines. The sockets mechanism has been created to be independent of any specific type of network. **IP (Internet Protocol), however, is by far the most dominant network and the most popular use of sockets.**
+
+There are some differents sockets :
+  - Unix domain socket : are file descriptors. Every I/O is done by writing or reading a file descriptor. 4 types : 
+  - TCP/IP socket : Open a network port to allow communicatio a system process.
 
 > **Network byte ordering** : convention defines the bit-order of network addresses as they pass through the network
 See also : Host byte order (same same)
@@ -117,7 +130,7 @@ See also : Host byte order (same same)
 
 1. Socket operations are synchronous
 
-2.  Difference between socket and TCP/IP ?
+2.  Difference between socket and TCP/IP ? {Check Global glossary on `Socket`}
 
 **TCP/IP** is the most common protocol stack used in the internet. It specifies how data should be addressed, transmitted, routed and received at the destination. It has 4 Layers: Application layer, Transport layer, Internet layer and Link layer.
 
@@ -125,6 +138,15 @@ One of the most important protocol in this stack is TCP. TCP is a connection-ori
 
 **A socket** represents endpoints of communication between two programs in computer network. In order to communicate, we have to identify the computer using IP Address and specify the program using Port number.
 
+*Following what was said in the glossary Socket part :*
+  A UNIX socket, AKA Unix Domain Socket, is an inter-process communication mechanism that allows bidirectional data exchange between processes running on the same machine.
+
+  IP sockets (especially TCP/IP sockets) are a mechanism allowing communication between processes over the network. In some cases, you can use TCP/IP sockets to talk with processes running on the same computer (by using the loopback interface).
+
+  UNIX domain sockets know that they’re executing on the same system, so they can avoid some checks and operations (like routing); which makes them faster and lighter than IP sockets. So if you plan to communicate with processes on the same host, this is a better option than IP sockets.
+  As per Nils Toedtmann's comment: UNIX domain sockets are subject to file system permissions, while TCP sockets can be controlled only on the packet filter level.
+  
+ 
 # Issues
 
 1. Bind results in a permission denied when using port 81 
@@ -155,3 +177,7 @@ Quick answer : Ports below 1024 are considered to be privileged in Linux,
 > Internet : is a large network of computers which communicate all together and whatever happens, they find a way to stay connected.
 
 > Protocols : Management of the flow of the data paquets. They set the rules for data paquets conversion, attachment of the source and destination addresses to each paquet and the rules for routers ...
+
+# Commandes 
+
+> netstat -pn (deprecated, replace by SS) : lists all the connections made by Unix Sockets or netstat -lpn for listenning sockets
