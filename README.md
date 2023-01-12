@@ -37,6 +37,9 @@ Links that helped
 
 | Socket Types | https://www.ibm.com/docs/pl/aix/7.1?topic=protocols-socket-types |
 
+| Nice guide for Network Programming | [https://www.ibm.com/docs/pl/aix/7.1?topic=protocols-socket-types](https://beej.us/guide/bgnet/pdf/bgnet_usl_c_1.pdf) |
+
+
 # Global glossary
 
 > **RFC** = Requests for comments. set of informations, documents and norms that standardize, describe, specify regarding network in general.
@@ -125,6 +128,11 @@ See also : Host byte order (same same)
 > **Pipelining HTTP** : is a feature of HTTP/1.1 which allows multiple HTTP requests to be sent over a single TCP connection without waiting for the corresponding responses. HTTP/1.1 requires servers to respond to pipelined requests correctly, with non-pipelined but valid responses even if server does not support HTTP pipelining. 
   Limitations : he server must send its responses in the same order that the requests were received—so the entire connection remains first-in-first-out[1] and HOL blocking can occur. HTTP pipelining requires both the client and the server to support it. HTTP/1.1 conforming servers are required to produce valid responses to pipelined requests, but may not actually process requests concurrently.
   /!\ Non-idempotent requests such as POST should not be pipelined.
+
+> ** Socket Pair ** : 
+
+Link : https://stackoverflow.com/questions/11129212/tcp-can-two-different-sockets-share-a-port
+
 
 # Main RFCs for basic HTTP 
 
