@@ -35,6 +35,8 @@ Links that helped
 
 | How internet works | https://www.youtube.com/watch?v=7_LPdttKXPc |
 
+| Socket Types | https://www.ibm.com/docs/pl/aix/7.1?topic=protocols-socket-types |
+
 # Global glossary
 
 > **RFC** = Requests for comments. set of informations, documents and norms that standardize, describe, specify regarding network in general.
@@ -105,13 +107,15 @@ See also : Host byte order (same same)
 
 > **Stateless application ** : A stateless app is an application program that does not save client data generated in one session for use in the next session with that client. Each session is carried out as if it was the first time and responses are not dependent upon data from a previous session
 
-> Optical Fiver cable : backbone of the internet
+> **Optical Fiver cable :** backbone of the internet
 
-> URL : Universal Resource Locator
+> **URL :** Universal Resource Locator
 
-> REST APIs : Application programming interface, is a set of rules that define how applications or devices can connect to and communicate with each other. A REST API is an API that conforms to the design principles of the REST, or representational state transfer architectural style.
+> **REST APIs :** Application programming interface, is a set of rules that define how applications or devices can connect to and communicate with each other. A REST API is an API that conforms to the design principles of the REST, or representational state transfer architectural style.
 
-> Gateways : A gateway is a network node used in telecommunications that connects two networks with different transmission protocols together. Gateways serve as an entry and exit point for a network as all data must pass through or communicate with the gateway prior to being routed.
+> **Gateways :** A gateway is a network node used in telecommunications that connects two networks with different transmission protocols together. Gateways serve as an entry and exit point for a network as all data must pass through or communicate with the gateway prior to being routed.
+
+> **out-of-band data transmission** : without passing by the LAN (Local Area Network)
 
 # Main RFCs for basic HTTP 
 
