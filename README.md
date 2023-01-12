@@ -89,15 +89,20 @@ HTTP communication usually takes place over TCP/IP connections. The default port
 
 Network interface may refer to:
 
-    *Network interface controller*, a computer hardware component that connects a computer to a computer network
-    *Network interface device*, a device that serves as the demarcation point between a telephone carrier's local loop and the customer's wiring
-    *Virtual network interface*, an abstract virtualized representation of a computer network interface
-    *Loopback interface*, a virtual network interface that connects a host to itself
+  *Network interface controller*, a computer hardware component that connects a computer to a computer network
+  *Network interface device*, a device that serves as the demarcation point between a telephone carrier's local loop and the customer's wiring
+  *Virtual network interface*, an abstract virtualized representation of a computer network interface
+  *Loopback interface*, a virtual network interface that connects a host to itself
 
 > **Socket** : is the mechanism that most popular operating systems provide to give programs access to the network. It allows messages to be sent and received between applications (unrelated processes) on different networked machines. The sockets mechanism has been created to be independent of any specific type of network. **IP (Internet Protocol), however, is by far the most dominant network and the most popular use of sockets.**
 
 There are some differents sockets :
-  - Unix domain socket : are file descriptors. Every I/O is done by writing or reading a file descriptor. 4 types : 
+  - Unix domain socket : are file descriptors. Every I/O is done by writing or reading a file descriptor. 4 types :
+    
+      a. Socket Stream : (interests for this one) : it works like a pipe and implemented on the transmission Control Protocol/Internet Protocol
+      b. Datagram Socket
+      c. Raw socket
+      d. Sequenced packet Socket
   - TCP/IP socket : Open a network port to allow communicatio a system process.
 
 > **Network byte ordering** : convention defines the bit-order of network addresses as they pass through the network
@@ -116,6 +121,10 @@ See also : Host byte order (same same)
 > **Gateways :** A gateway is a network node used in telecommunications that connects two networks with different transmission protocols together. Gateways serve as an entry and exit point for a network as all data must pass through or communicate with the gateway prior to being routed.
 
 > **out-of-band data transmission** : without passing by the LAN (Local Area Network)
+
+> **Pipelining HTTP** : is a feature of HTTP/1.1 which allows multiple HTTP requests to be sent over a single TCP connection without waiting for the corresponding responses. HTTP/1.1 requires servers to respond to pipelined requests correctly, with non-pipelined but valid responses even if server does not support HTTP pipelining. 
+  Limitations : he server must send its responses in the same order that the requests were received—so the entire connection remains first-in-first-out[1] and HOL blocking can occur. HTTP pipelining requires both the client and the server to support it. HTTP/1.1 conforming servers are required to produce valid responses to pipelined requests, but may not actually process requests concurrently.
+  /!\ Non-idempotent requests such as POST should not be pipelined.
 
 # Main RFCs for basic HTTP 
 
@@ -150,7 +159,9 @@ One of the most important protocol in this stack is TCP. TCP is a connection-ori
   UNIX domain sockets know that they’re executing on the same system, so they can avoid some checks and operations (like routing); which makes them faster and lighter than IP sockets. So if you plan to communicate with processes on the same host, this is a better option than IP sockets.
   As per Nils Toedtmann's comment: UNIX domain sockets are subject to file system permissions, while TCP sockets can be controlled only on the packet filter level.
   
-** Socket Communiation Domain :
+** Socket Communiation Domain : **
+
+* Maybe response : * https://stackoverflow.com/questions/48443105/does-tcp-ip-connection-automatically-closed-when-os-do-a-garbage-collection-afte
 
 Sockets that share common communication properties, such as naming conventions and protocol address formats, are grouped into communication domains. A communication domain is sometimes referred to as name or address space.
 
@@ -160,6 +171,8 @@ The communication domain includes the following:
 - Set of protocols, called the protocol family
 
 Communication domains also consist of two categories, socket types and descriptors. Socket types include stream, datagram, sequenced packet, raw, and connection-oriented datagram.
+
+3. Why connections cannot be closed immediately or bind to the same port in TCP/IP sockets ?
 
 # Issues
 
@@ -192,7 +205,7 @@ Quick answer : Ports below 1024 are considered to be privileged in Linux,
 
 > Protocols : Management of the flow of the data paquets. They set the rules for data paquets conversion, attachment of the source and destination addresses to each paquet and the rules for routers ...
 
-# Commandes 
+# Commands 
 
 > netstat -pn (deprecated, replace by SS) : lists all the connections made by Unix Sockets or netstat -lpn for listenning sockets
 
