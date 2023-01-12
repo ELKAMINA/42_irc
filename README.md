@@ -146,7 +146,17 @@ One of the most important protocol in this stack is TCP. TCP is a connection-ori
   UNIX domain sockets know that they’re executing on the same system, so they can avoid some checks and operations (like routing); which makes them faster and lighter than IP sockets. So if you plan to communicate with processes on the same host, this is a better option than IP sockets.
   As per Nils Toedtmann's comment: UNIX domain sockets are subject to file system permissions, while TCP sockets can be controlled only on the packet filter level.
   
- 
+** Socket Communiation Domain :
+
+Sockets that share common communication properties, such as naming conventions and protocol address formats, are grouped into communication domains. A communication domain is sometimes referred to as name or address space.
+
+The communication domain includes the following:
+- Rules for manipulating and interpreting names
+- Collection of related address formats that comprise an address family
+- Set of protocols, called the protocol family
+
+Communication domains also consist of two categories, socket types and descriptors. Socket types include stream, datagram, sequenced packet, raw, and connection-oriented datagram.
+
 # Issues
 
 1. Bind results in a permission denied when using port 81 
@@ -181,3 +191,5 @@ Quick answer : Ports below 1024 are considered to be privileged in Linux,
 # Commandes 
 
 > netstat -pn (deprecated, replace by SS) : lists all the connections made by Unix Sockets or netstat -lpn for listenning sockets
+
+> lsof : list open files on unix system
