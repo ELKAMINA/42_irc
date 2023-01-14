@@ -39,6 +39,7 @@ Links that helped
 
 | Nice guide for Network Programming | [https://www.ibm.com/docs/pl/aix/7.1?topic=protocols-socket-types](https://beej.us/guide/bgnet/pdf/bgnet_usl_c_1.pdf) |
 
+| About socket Blocking | https://dwise1.net/pgm/sockets/blocking.html |
 
 # Global glossary
 
@@ -181,6 +182,19 @@ The communication domain includes the following:
 Communication domains also consist of two categories, socket types and descriptors. Socket types include stream, datagram, sequenced packet, raw, and connection-oriented datagram.
 
 3. Why connections cannot be closed immediately or bind to the same port in TCP/IP sockets ?
+
+4. What is the diff between read vs recv and write vs send() ?
+
+  - send and write work only on socket descriptors and give the possibility to specity options for op and flags
+  - read and recv are the universal file descriptor functions working on all fds.
+
+5. Blocking Socket function : Is  a function that blocks because it has to wait for smthing to read so it wait until there is something there.
+The functions that are particularly problematic are : accept(), recv(), recvfrom().
+Blocking is a normal behavior but we need to take this behavior into account to deliver a robust responsive application
+
+6. Difference TCP / UDP :
+  TCP server needs multiple sockets (The listening socket and a separate socket for each client)  to handle multiple clients whereas UDP needs one socket to handle multiple clients but can't do anything while waiting for the next diagram.
+
 
 # Issues
 

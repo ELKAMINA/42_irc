@@ -8,7 +8,7 @@
 
 class ListeningSocket;
 
-/* Is a server a socket ? */
+/* Is a server a socket abstract class */
 namespace Socketing
 {
 	class SimpleServer
@@ -24,16 +24,5 @@ namespace Socketing
 			SimpleServer(int domain, int service, int protocol, int port, u_long interface, int bcklog);
 			virtual void launch() = 0;
 			ListeningSocket *get_server_socket();
-			// /* Virtual function to connect a network */
-			// virtual int connect_to_network(int sock, sockaddr_in add) = 0;
-
-			// /* Function for testing */
-			// void test_connection(int);
-
-			// /* Getters */
-			// struct sockaddr_in get_address();
-			// int get_sock();
-			// int get_connection();
-			// void set_connection(int newC);
 	};
 }

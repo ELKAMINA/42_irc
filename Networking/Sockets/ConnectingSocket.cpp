@@ -14,7 +14,12 @@ an interface = for instance : if connections are made with Wi-fi and  Ethernet, 
 int Socketing::ConnectingSocket::connect_to_network(int sock, struct sockaddr_in add)
 {
 
-/* The connect() function shall attempt to make a connection on a socket. The function takes the following arguments: socket / address / address_le.
+/* Client Side = We need to connect to the server
+
+sockaddr structure contains the server informations
+
+
+The connect() function shall attempt to make a connection on a socket. The function takes the following arguments: socket / address / address_le.
 If the socket has not already been bound to a local address, connect() shall bind it to an address which, unless the socket's address family is AF_UNIX, is an unused local address.*/
 
 	return connect(sock, (struct sockaddr *)&add, sizeof(add));

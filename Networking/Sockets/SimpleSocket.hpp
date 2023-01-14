@@ -35,7 +35,7 @@ namespace Socketing
 
 	Since the address structure may differ based on the type of transport used, the third parameter specifies the length of that structure. This is simply sizeof(struct sockaddr_in).
 	*/
-			int 		sock;
+			int 		sock; /* File descriptor for the socket as in files system*/
 			int 		connection;
 
 		public:
