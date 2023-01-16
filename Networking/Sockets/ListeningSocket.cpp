@@ -13,5 +13,6 @@ void Socketing::ListeningSocket::start_listening()
 {
 	// std::cout << backlog << std::endl;
 	listening = listen(get_sock(), backlog);
+	std::cout << "listening " << listening << std::endl;
 }
 

@@ -41,6 +41,10 @@ Links that helped
 
 | About socket Blocking | https://dwise1.net/pgm/sockets/blocking.html |
 
+| REUSE PORT | https://blog.flipkart.tech/linux-tcp-so-reuseport-usage-and-implementation-6bfbf642885a |
+
+
+
 # Global glossary
 
 > **RFC** = Requests for comments. set of informations, documents and norms that standardize, describe, specify regarding network in general.
@@ -109,6 +113,31 @@ There are some differents sockets :
       d. Sequenced packet Socket
   - TCP/IP socket : Open a network port to allow communicatio a system process.
 
+** Non-blocking sockets** : Very important
+
+/!\ Simple Fact : Sockets block. Why ?
+
+--> Any function (normal function though) performs its task or fails for some reason.
+and then it returns. If it takes that function a long time to perform its task, then it's going to be a long time before it returns. That's only natural. Well, that's exactly what a blocking sockets function call does, only since that function's task is to read a socket, that means that it won't return until it has read that socket. That means that if there's nothing ready to be read, then it's going to wait until there is something there, which will usually be a very noticeably long indeterminate time. That is why a sockets function call will block. Because it can't perform its task until data is available to be read. Or, in the case of accept, until a client tries to connect to the server *(EXAMPLE : waiting for user's input in standard input. It can block a long until the user write smthg.)
+
+In sockets, the functions that are particular problematic are accept() and recv() and recvfrom(). Especially in a multi-client server, you cannot afford to sit there waiting for the next client to connect -- which could literally take days to happen -- and be unable to handle any of the clients who have already connected. This makes learning how to deal with blocking functions absolutely essential.
+
+*So how to deal with blocking sockets ?*
+
+4 techniques :
+
+	1. Have a design that doesn't care about blocking => (nope for webserver project)
+
+	2. Use the "select" function (nope but intersting for EXAM 05) :
+
+		As we want to deal with blocking sockets. Select function resolve this problem by making you toknow before you make that function call whether there's any data waiting to be read in a socket. If there is then you make the function call, but if there isn't then you skip that socket this time around and launch it later once data is available.
+
+		/!\ **Select** is a good way to deal with blocking socket and is easy to use when starting socket programming, but you have to keep in mind that select can iterate through a significant amount of fds (define by the nfds argument), so the downside of this function is that in the long run and on a solicited server the program will lose in performance.
+
+	3. Use non-blocking sockets (nope)
+
+	4. Use multithreading or multitasking (Yes, for webserver project)
+
 > **Network byte ordering** : convention defines the bit-order of network addresses as they pass through the network
 See also : Host byte order (same same)
 
@@ -131,6 +160,12 @@ See also : Host byte order (same same)
   /!\ Non-idempotent requests such as POST should not be pipelined.
 
 > ** Socket Pair ** : 
+
+> ICP : InterProcess Communication (Mutex!!!!!!).
+
+> no-op : A no op (or no-op), for no operation , is a computer instruction that takes up a small amount of space but specifies no operation. The computer processor simply moves to the next sequential instruction. The no op is included in most assembler languages. It may have a label and can serve as a placeholder for a useful instruction to be inserted later during code development.
+
+
 
 Link : https://stackoverflow.com/questions/11129212/tcp-can-two-different-sockets-share-a-port
 
@@ -196,6 +231,7 @@ Blocking is a normal behavior but we need to take this behavior into account to 
   TCP server needs multiple sockets (The listening socket and a separate socket for each client)  to handle multiple clients whereas UDP needs one socket to handle multiple clients but can't do anything while waiting for the next diagram.
 
 
+
 # Issues
 
 1. Bind results in a permission denied when using port 81 
@@ -207,6 +243,10 @@ Quick answer : Ports below 1024 are considered to be privileged in Linux,
 2. Failed to connect: Socket operation on non-socket
 
 **Rep**: https://www.sendblaster.com/support/error-trapping/socket-operation-a-non-socket-error/#:~:text=The%20%E2%80%9CSocket%20operation%20on%20a%20non%2Dsocket%E2%80%9D%20error%20means,has%20been%20shut%20down%20abruptly.
+
+3. Noticing that wehn a request is made by a browser, the server receives two requests.
+
+**Rep**: its a feature included in Chrome. Reference : https://stackoverflow.com/questions/41686296/why-does-node-hear-two-requests-favicon (same same for c++ i guess)
 
 # Good to know : How does the Internet works ?
 

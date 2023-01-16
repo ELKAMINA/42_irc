@@ -4,6 +4,10 @@
 
 int main()
 {
-	Socketing::testServer t;
+	// while (i < 5)
+	// {
+		Socketing::testServer t;
+	// 	i++;
+	// }
 
 }
