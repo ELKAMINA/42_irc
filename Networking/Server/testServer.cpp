@@ -31,8 +31,24 @@ void	Socketing::testServer::accepter()
 	// std::cout << "Ici ???? " << std::endl;
 	sockaddr_in add = get_server_socket()->get_address();
 	int addrlen = sizeof(add);
-	new_socket = accept(get_server_socket()->get_sock(), (struct sockaddr *)&add, (socklen_t *)&addrlen); // this socket will be used for data exchange (it is converted in file descriptor). The accept system call grabs the first connection request on the queue of pending connections (set up in listen) and creates a new socket for that connection. (this socket is the one that will be used for data exchange)
+	new_socket = accept(get_server_socket()->get_sock(), (struct sockaddr *)&add, (socklen_t *)&addrlen); // this socket will be used for data exchange (it is converted in file descriptor). The accept system call grabs the first connection request on the queue of pending connections (set up in listen) and creates a new socket for that connection. it's a reference file descriptor for a client connection
 	recv(new_socket, this->buffer, 30000, 0); // equivalent of read(), will read the request from the client with the passive socket
+
+	// 	request current(buffer); //creer la requete et tu las met dans la map
+	// response responsecurrent(current);
+	//	send(response.strtosend());
+
+	// faire un truc apres :
+	// if(!checkDANSlAMAP(socket))
+	// 	request current(buffer); //creer la requete et tu las met dans la map
+	// else
+	// 	current.addBuffer(buffer); //sinon tu rajoute le buffer a la requeste
+	// if (current.isComplete())
+	// {
+	// 	response lol(current);
+	// 	sendResponse(lol);
+	// }
+	// retour a epoll;
 }
 
 

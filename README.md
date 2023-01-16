@@ -165,6 +165,7 @@ See also : Host byte order (same same)
 
 > no-op : A no op (or no-op), for no operation , is a computer instruction that takes up a small amount of space but specifies no operation. The computer processor simply moves to the next sequential instruction. The no op is included in most assembler languages. It may have a label and can serve as a placeholder for a useful instruction to be inserted later during code development.
 
+> Three way handshake : SYN / SYN-ACK (synchronize, aknowledge) / ACK (permet d'etablir une connexion entre le client et le serveur ).
 
 
 Link : https://stackoverflow.com/questions/11129212/tcp-can-two-different-sockets-share-a-port

@@ -1,6 +1,11 @@
 # preco
 
 > Etape 1 : creer mini-serveur ou implementer socket
+==> Faire une classe Request et une classe response 
+
+command (GET POST DELETE)
+cible (/favicon.ico)
+map
 > Etape 2 : fichier de configuration (tuto) et ensuite tu le parses ( pour le fichier de ocnfig : creer une classe qui recup les infos du fichier de config au fur et a mesure)
 > Etape 3 : implementer le websoockets et serveurs
 > Etape 4 : envoi/reception des reponses (posts)
@@ -23,4 +28,3 @@ Division du travail :
 > sinon travail ensemble
 
 
-source :
