@@ -43,6 +43,10 @@ Links that helped
 
 | REUSE PORT | https://blog.flipkart.tech/linux-tcp-so-reuseport-usage-and-implementation-6bfbf642885a |
 
+| Binding to any available port | https://www.baeldung.com/cs/binding-available-ports |
+
+| Simple HTTP Server | https://trungams.github.io/2020-08-23-a-simple-http-server-from-scratch/ |
+
 
 
 # Global glossary
