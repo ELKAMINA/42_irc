@@ -54,6 +54,8 @@ Links that helped
 
 | HTTP Benchmarking Tool | https://github.com/wg/wrk |
 
+| ePoll | https://suchprogramming.com/epoll-in-3-easy-steps/ |
+
 
 # Global glossary
 
