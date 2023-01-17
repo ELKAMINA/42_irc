@@ -15,8 +15,10 @@ This project is about writing our own HTTP server and test it with an actual bro
 
 # Steps to follow :
 
-1. Implement TCP :
-2. 
+1. Implementing TCP Server
+2. Creating a client request
+3. Parsing the request 
+4. 
 
 # #####
 
@@ -239,7 +241,9 @@ Blocking is a normal behavior but we need to take this behavior into account to 
 6. Difference TCP / UDP :
   TCP server needs multiple sockets (The listening socket and a separate socket for each client)  to handle multiple clients whereas UDP needs one socket to handle multiple clients but can't do anything while waiting for the next diagram.
 
+7. Why choosing ePoll for handling multi-client server ? 
 
+**epoll** is a new system call introduced in Linux 2.6. It is designed to replace the **deprecated select** (and also poll). Unlike these earlier system calls, which are O(n), epoll is an O(1) algorithm – this means that it scales well as the number of watched file descriptors increase. select uses a linear search through the list of watched file descriptors, which causes its O(n) behaviour, whereas epoll uses callbacks in the kernel file structure.
 
 # Issues
 
