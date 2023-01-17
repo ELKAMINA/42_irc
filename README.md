@@ -48,6 +48,9 @@ Links that helped
 | Simple HTTP Server | https://trungams.github.io/2020-08-23-a-simple-http-server-from-scratch/ |
 
 
+| C10K | [https://trungams.github.io/2020-08-23-a-simple-http-server-from-scratch/](http://www.kegel.com/c10k.html) |
+
+
 
 # Global glossary
 
@@ -165,15 +168,15 @@ See also : Host byte order (same same)
 
 > ** Socket Pair ** : 
 
-> ICP : InterProcess Communication (Mutex!!!!!!).
+> **ICP** : InterProcess Communication (Mutex!!!!!!).
 
-> no-op : A no op (or no-op), for no operation , is a computer instruction that takes up a small amount of space but specifies no operation. The computer processor simply moves to the next sequential instruction. The no op is included in most assembler languages. It may have a label and can serve as a placeholder for a useful instruction to be inserted later during code development.
+> **no-op** : A no op (or no-op), for no operation , is a computer instruction that takes up a small amount of space but specifies no operation. The computer processor simply moves to the next sequential instruction. The no op is included in most assembler languages. It may have a label and can serve as a placeholder for a useful instruction to be inserted later during code development.
 
-> Three way handshake : SYN / SYN-ACK (synchronize, aknowledge) / ACK (permet d'etablir une connexion entre le client et le serveur ).
-
+> **Three way handshake** : SYN / SYN-ACK (synchronize, aknowledge) / ACK (permet d'etablir une connexion entre le client et le serveur ).
 
 Link : https://stackoverflow.com/questions/11129212/tcp-can-two-different-sockets-share-a-port
 
+> **C10K problem in webservs** : http://www.kegel.com/c10k.html
 
 # Main RFCs for basic HTTP 
 
