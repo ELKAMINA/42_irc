@@ -50,6 +50,7 @@ Links that helped
 
 | C10K | [https://trungams.github.io/2020-08-23-a-simple-http-server-from-scratch/](http://www.kegel.com/c10k.html) |
 
+| HTTP Benchmarking Tool | https://github.com/wg/wrk |
 
 
 # Global glossary
