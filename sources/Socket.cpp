@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 10:14:08 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/18 12:21:04 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/19 17:28:33 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,12 @@ Socket::Socket(int domain, int service, int protocol, int port, u_long interface
 
 	_socket = socket(domain, service, protocol);
 	test_connection(_socket);
+	int val = 1;
+	if(setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)))
+		std::cout << "ERROOOOOOR setsockopt" << std::endl;
+	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1)
+		std::cout << "ERROOOOOOR fcntl" << std::endl;
+	
 }
 
 Socket::Socket(const Socket& rhs)

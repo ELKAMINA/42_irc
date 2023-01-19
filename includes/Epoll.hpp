@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 10:23:17 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/18 10:15:50 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/19 11:09:53 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,13 @@ public:
 
 	// ajout de client/server -> EPOLL_ADD / epoll_create(int nb) ?
 	// suppression de client/server si fini ?
-	// wait for event -> epoll_wait()
+	int wait();
+	
 private:
 
-	int _instance; // structure de fd surveillés par epoll -> look further
+	int 			_instance; // structure de fd surveillés par epoll -> look further
+	int				_nfds;
+	epoll_event		_events;
 /*
 	update: l'itération sur tout les fd de l'instance est faite en interne par
 	epoll_wait qui renvoie dans le tableau epoll_event *events (passé en paramètre)
