@@ -19,7 +19,18 @@ _domain(domain), _service(service), _protocol(protocol), _port(port), _interface
 	// this->_server_events = new pollfd;
 	_online_clients = 0;
 	this->_client_events = new pollfd[max_co];
+	for (int i = 0; i < max_co; i++)
+	{
+		_client_events[i].events = 0;
+		_client_events[i].revents = 0;
+		_client_events[i].fd = 0;
+	}
 	_online_clients++;
+	global.buf[0] = '\0';
+	global.fd = 0;
+	global.id_requests = 0;
+	global.n = 0;
+	global.state = 0;
 	// nb_client_events = 1;
 
 }
@@ -133,6 +144,7 @@ int Server::routine()
 			{
 				perror("Not Pollin");
 				return 1;
+
 			}			
 			if	(_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
 				new_client();
@@ -218,16 +230,15 @@ void Server::read_client_req(int *i)
 }
 
 
+
 void Server::handle_request(char *buf, int* i)
 {
-	cinfo	*global = NULL;
-
-	global->id_requests ++;
+	
 	Request req(buf);
 	std::vector<std::string>::iterator it = req.entries.begin();
-	
+	global.id_requests++;
 	(void)i;
-	parsing_request(&req, global);
+	parsing_request(&req);
 	// (void)it;
 	/*	 Verif que l'on recupere bien toute la string 	*/
 	while(it != req.entries.end())
@@ -238,9 +249,9 @@ void Server::handle_request(char *buf, int* i)
 	/* *********************************************** */
 }
 
-void Server::parsing_request(Request *req, cinfo *glob)
+void Server::parsing_request(Request *req)
 {
-	req->_id = glob->id_requests;
+	req->_id = global.id_requests;
 
 	
 }

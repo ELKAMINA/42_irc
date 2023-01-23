@@ -4,6 +4,7 @@
 
 int main()
 {
+	cinfo *global;
 	// while (i < 5)
 	// {
 		Socketing::testServer t;
