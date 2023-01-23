@@ -233,25 +233,23 @@ void Server::read_client_req(int *i)
 
 void Server::handle_request(char *buf, int* i)
 {
-	
 	Request req(buf);
-	std::vector<std::string>::iterator it = req.entries.begin();
+	// std::vector<std::string>::iterator it = req.entries.begin();
 	global.id_requests++;
 	(void)i;
 	parsing_request(&req);
 	// (void)it;
 	/*	 Verif que l'on recupere bien toute la string 	*/
-	while(it != req.entries.end())
-	{
-		std::cout << *it << std::endl;
-		it++;
-	}
+	// while(it != req.entries.end())
+	// {
+	// 	std::cout << *it << std::endl;
+	// 	it++;
+	// }
 	/* *********************************************** */
 }
 
 void Server::parsing_request(Request *req)
 {
 	req->_id = global.id_requests;
-
 	
 }
