@@ -6,11 +6,12 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/23 15:26:14 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/23 16:56:57 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
+#include <algorithm>
 
 Channel::Channel( std::vector<Client>& allUsers, std::string channelName, Client& owner ) :
 _allUsers(allUsers), _name(channelName)
@@ -59,3 +60,28 @@ Channel::~Channel()
 	this->_banned.clear();
 }
 
+void Channel::addUser(Client& user)
+{
+
+}
+
+void Channel::deleteUser(Client& user)
+{
+
+}
+
+void Channel::addOperator(Client& user)
+{
+
+}
+
+void Channel::deleteOperator(Client& user, std::string fault)
+{
+
+}
+
+void Channel::ban(Client& user, std::string fault)
+{
+	if (!find(_operators.begin(), _operators.end(), user.getNickName()))
+
+}
