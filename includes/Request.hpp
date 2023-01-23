@@ -20,11 +20,11 @@ class Request
 {
 	public:
 		int							_id;
-		std::vector<std::string>	entries;
-		char						_prefix;
-		std::string					_command;
+		std::vector<std::string>	entries; // Max 512 caracteres (including the CR-LF)
+		char						_prefix; // Optional : ":" used by servers to indicate the true origin of the message
+		std::string					_command; 
 		std::string					_body;
-		std::vector<std::string>	_params;		
+		std::vector<std::string>	_params; // Command parameters	( may be up to 15)
 		// Client&						_origin;
 		bool						_entry_isWrong;
 		// int							type;
