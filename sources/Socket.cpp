@@ -26,7 +26,7 @@ Socket::Socket(int domain, int service, int protocol, int port, u_long interface
 	int val = 1;
 	if(setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)))
 		std::cout << "ERROOOOOOR setsockopt" << std::endl;
-	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1)
+	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1) /*Syscall (service from program to kernel) = makes a socket Non blocking*/
 		std::cout << "ERROOOOOOR fcntl" << std::endl;
 	
 }

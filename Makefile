@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME		=			myServ
+NAME		=			ircserv
 
 CC			=			c++
 CPPFLAGS	=			-MMD -Wall -Werror -Wextra -std=c++98
@@ -22,6 +22,8 @@ SRCS 		= 			$(addprefix $(SRCS_PATH),	\
 						Server.cpp \
 						ServerSocket.cpp \
 						Socket.cpp \
+						Client.cpp \
+						Request.cpp \
 						)
 
 SRCS_PATH	=			./sources/

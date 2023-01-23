@@ -14,14 +14,31 @@
 # define SERVER_HPP
 
 
+#include "Server.hpp"
+# include "./Colors.hpp"
 # include <vector>
 # include <iostream>
 # include <string>
+# include <cstring>
 # include <sys/socket.h>
 # include <netinet/in.h>
-# include <sys/epoll.h>
-# include "Server.hpp"
+# include <poll.h>
 # include "ServerSocket.hpp"
+# include <map>
+# include "Client.hpp"
+# include "Request.hpp"
+
+class Client;
+class Request;
+
+struct cinfo
+{
+	int fd;
+	char buf[30000 + 1];
+	int n;
+	int state;
+	int	id_requests;
+};
 
 class ServerSocket;
 
@@ -53,18 +70,31 @@ public:
 /* EXCEPTIONS ????*/
 
 	/* METHODS */
-	void start_server();
-	int routine();
+	void 			start_server();
+	int				routine();
+	void			new_client();
+	void			read_client_req(int *i);
+	void			write_to_client(struct pollfd client);
+	void			handle_request(char *buf, int *i);
+	std::string		welcoming_newClients();
+	void			parsing_request(Request *req, cinfo *global);
+
 	// config method
 
+	std::string		name; // limited to 63 characters
 	ServerSocket*	server_socket;
 	// Epoll*			server_epoll;
 
-	struct epoll_event*	_client_events;
-	struct epoll_event*	_server_events;
-	int	epfd; // epoll instance
+	struct pollfd*		_client_events;
+	struct pollfd*		_server_events;
+	// int	epfd; // epoll instance
 	int nb_client_events; // aka nfds
 	char read_buffer[30000 + 1];
+	int n_ci;
+	int fd_ci;
+	std::string client_welcoming;
+	std::map<Client, std::map<int, Request> >	_req_per_chan; /* differentiate Clients by their nickname as it is unique*/
+	// struct cinfo	*ci;
 
 	
 private:
