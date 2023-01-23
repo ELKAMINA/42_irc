@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/23 16:14:26 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/23 17:28:29 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class Channel
 		void deleteUser(Client &user);
 		void addOperator(Client &user);
 		void deleteOperator(Client &user, std::string fault);
-		void ban(Client &user, std::string fault);
+		void ban(Client& ope, Client& user, std::string fault); // named KICK in RFC
 		void inviteIn(Client& inviter, Client &invited);
 		void authorizeVocal(Client &user);
 		void mute(Client &user);

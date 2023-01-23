@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/25 14:39:40 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/25 14:40:10 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,20 @@ void Channel::deleteOperator(Client& user, std::string fault)
 
 }
 
-void Channel::ban(Client& user, std::string fault)
+void Channel::ban(Client& ope, Client& user, std::string fault)
 {
-	if (!find(_operators.begin(), _operators.end(), user.getNickName()))
+	std::vector<std::string>::iterator sender;
+	std::vector<std::string>::iterator target;
+	sender = find(_operators.begin(), _operators.end(), ope.getNickName());
+	target = find(_users.begin(), _users.end(), user.getNickName());
+	if (sender == _operators.end())
+		std::cout << "erreur" << std::endl;
+	else if (target == _users.end())
+		std::cout << "Erreur" << std::endl;
+	else
+	{
+		std::cout << "et c'est le ban" << std::endl;
+		_users.erase(target);
+	}
 
 }
