@@ -77,23 +77,22 @@ public:
 	void			write_to_client(struct pollfd client);
 	void			handle_request(char *buf, int *i);
 	std::string		welcoming_newClients();
-	void			parsing_request(Request *req, cinfo *global);
+	void			parsing_request(Request *req);
 
-	// config method
 
+
+	cinfo			global;
 	std::string		name; // limited to 63 characters
 	ServerSocket*	server_socket;
-	// Epoll*			server_epoll;
 
 	struct pollfd*		_client_events;
 	struct pollfd*		_server_events;
-	// int	epfd; // epoll instance
 	int nb_client_events; // aka nfds
 	char read_buffer[30000 + 1];
 	int n_ci;
 	int fd_ci;
 	std::string client_welcoming;
-	std::map<Client, std::map<int, Request> >	_req_per_chan; /* differentiate Clients by their nickname as it is unique*/
+	// std::map<Client, std::map<int, Request> >	_req_per_chan; /* differentiate Clients by their nickname as it is unique*/
 	// struct cinfo	*ci;
 
 	

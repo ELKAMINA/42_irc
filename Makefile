@@ -13,7 +13,7 @@
 NAME		=			ircserv
 
 CC			=			c++
-CPPFLAGS	=			-MMD -Wall -Werror -Wextra -std=c++98
+CPPFLAGS	=			-g3 -MMD -Wall -Werror -Wextra -std=c++98
 
 INC			=			-I ./includes/\
 						-I ./includes/numeric_replies/
