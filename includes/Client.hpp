@@ -33,6 +33,7 @@ class Client
 		std::string getUserName() const;
 
 	/* SETTERS */
+		int		getFdClient();
 		void	setFdClient(int fd);
 
 	/* METHODS */

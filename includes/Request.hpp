@@ -13,6 +13,31 @@
 # include <map>
 // # include "Channels.hpp"
 # include "Client.hpp"
+#include <sstream>
+
+enum state
+{
+	treated = 1,
+	ongoing,
+	waiting,
+};
+
+enum valid_req
+{
+	valid_req,
+	invalid_req,
+	valid_body,
+	invalid_body,
+	empty,
+};
+
+enum cmd
+{
+	PASS,
+	NICK,
+	USER,
+	JOIN,
+};
 
 class Client;
 
@@ -20,13 +45,19 @@ class Request
 {
 	public:
 		int							_id;
+		std::string					_raw_req;
 		std::vector<std::string>	entries; // Max 512 caracteres (including the CR-LF)
 		char						_prefix; // Optional : ":" used by servers to indicate the true origin of the message
-		std::string					_command; 
+		std::string					_command;
+		int							_cmd_types;
 		std::string					_body;
 		std::vector<std::string>	_params; // Command parameters	( may be up to 15)
 		// Client&						_origin;
-		bool						_entry_isWrong;
+		std::string						serv_origin;
+		enum state						status;
+		enum valid_req					req_validity; //Valid request or not
+		std::string					response;
+
 		// int							type;
 
 	public:
