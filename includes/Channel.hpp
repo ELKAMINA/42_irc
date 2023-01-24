@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/23 17:28:29 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/24 11:22:36 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,13 @@ class Channel
 
 		/* COMMUNICATION*/
 		void sendMessageToMembers(Message &message, Client &from);
-	/* CHAN INFO GETTERS */
 
+		/* CHAN INFO CHECKERS */
 		bool isMember(Client &user);
 		bool isOperator(Client &user);
 		bool isBanned(Client &user);
 		bool canTalk(Client &user);
+		
 	private:
 
 		char							_prefix;

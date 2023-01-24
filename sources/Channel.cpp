@@ -6,12 +6,17 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/25 14:40:10 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/25 14:41:02 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 #include <algorithm>
+
+
+/* ****************************** */
+/* *** COPLIEN STUFF ************ */
+/* ****************************** */
 
 Channel::Channel( std::vector<Client>& allUsers, std::string channelName, Client& owner ) :
 _allUsers(allUsers), _name(channelName)
@@ -60,14 +65,34 @@ Channel::~Channel()
 	this->_banned.clear();
 }
 
+/* ****************************** */
+/* *** RIGHTS & STATUS ********** */
+/* ****************************** */
+
 void Channel::addUser(Client& user)
 {
-
+	std::vector<std::string>::iterator target;
+	target = find(_users.begin(), _users.end(), user.getNickName());
+	if (target != _users.end())
+		std::cout << "User already in channel" << std::endl;
+	else
+	{
+		std::cout << user.getNickName() << "has successfully joined channel" << std::endl;
+		_users.push_back(user.getNickName());
+	}
 }
 
 void Channel::deleteUser(Client& user)
 {
-
+	std::vector<std::string>::iterator target;
+	target = find(_users.begin(), _users.end(), user.getNickName());
+	if (target == _users.end())
+		std::cout << "No such User" << std::endl;
+	else
+	{
+		std::cout << user.getNickName() << "has been successfully erased from channel" << std::endl;
+		_users.erase(target);
+	}
 }
 
 void Channel::addOperator(Client& user)
@@ -77,7 +102,7 @@ void Channel::addOperator(Client& user)
 
 void Channel::deleteOperator(Client& user, std::string fault)
 {
-
+	
 }
 
 void Channel::ban(Client& ope, Client& user, std::string fault)
@@ -87,13 +112,68 @@ void Channel::ban(Client& ope, Client& user, std::string fault)
 	sender = find(_operators.begin(), _operators.end(), ope.getNickName());
 	target = find(_users.begin(), _users.end(), user.getNickName());
 	if (sender == _operators.end())
-		std::cout << "erreur" << std::endl;
+		std::cout << "Tu t'es pris pour le boss ?" << std::endl;
 	else if (target == _users.end())
-		std::cout << "Erreur" << std::endl;
+		std::cout << "Bro, y'a personne ici avec ce blase" << std::endl;
 	else
 	{
-		std::cout << "et c'est le ban" << std::endl;
+		std::cout << "et c'est le ban, BOUYAAAA" << std::endl;
 		_users.erase(target);
+		_banned.push_back(user.getNickName());
 	}
+}
 
+void Channel::inviteIn(Client& inviter, Client& invited)
+{
+	std::vector<std::string>::iterator src;
+	std::vector<std::string>::iterator dst;
+
+	src = find(_users.begin(), _users.end(), inviter.getNickName());
+	dst = find(_users.begin(), _users.end(), invited.getNickName());
+	if (src == _users.end())
+		std::cout << "casse-toi tu pues t'es pas d'ma bande" << std::endl;
+	else if (dst != _users.end())
+		std::cout << "il est deja parmis nous ducon" << std::endl;
+	else
+	{
+		dst = find(_banned.begin(), _banned.end(), invited.getNickName());
+		if (dst != _banned.end())
+			std::cout << "son exil n'est pas fini" << std::endl;
+	}
+}
+
+/* ****************************** */
+/* *** CHAN INFO CHECKERS ******* */
+/* ****************************** */
+
+bool Channel::isMember(Client& user)
+{
+	std::vector<std::string>::iterator it;
+
+	it = find(_users.begin(), _users.end(), user.getNickName());
+	return (it != _users.end());
+}
+
+bool Channel::isOperator(Client& user)
+{
+	std::vector<std::string>::iterator it;
+
+	it = find(_operators.begin(), _operators.end(), user.getNickName());
+	return (it != _operators.end());
+}
+
+bool Channel::isBanned(Client& user)
+{
+	std::vector<std::string>::iterator it;
+
+	it = find(_banned.begin(), _banned.end(), user.getNickName());
+	return (it != _banned.end());
+}
+
+bool Channel::canTalk(Client& user)
+{
+	std::vector<std::string>::iterator it;
+
+	it = find(_vocal.begin(), _vocal.end(), user.getNickName());
+	return (it != _vocal.end());
 }
