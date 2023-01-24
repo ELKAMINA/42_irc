@@ -99,7 +99,7 @@ public:
 	int n_ci;
 	int fd_ci;
 	std::string 				client_welcoming;
-	// std::vector<Client> 		_all_clients;
+	std::vector<Client> 		_all_clients;
 	// std::map<Client*, Request*>	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	
