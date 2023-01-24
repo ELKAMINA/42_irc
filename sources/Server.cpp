@@ -69,10 +69,6 @@ struct sockaddr_in Server::get_address() const
 	return _address;
 }
 
-// const int& Server::get_socket() const
-// {
-// 	return _socket;
-// }
 
 const int& Server::get_domain() const
 {
@@ -152,8 +148,6 @@ int Server::routine()
 			{
 				if (_client_events[i].events & POLLIN) /*If the fd already exists and its an entry */
 					read_client_req(&i);
-				// else if(_client_events[i].events & POLLOUT) /*If the fd already exists and its an output*/
-				// 	write_to_client(_client_events[i]);
 			}						
 		}
 	}
@@ -213,43 +207,73 @@ void Server::read_client_req(int *i)
 
 		std::cout << read_buffer << std::endl;	
 		handle_request(read_buffer, i);
-		// if (strcmp(read_buffer, "PASS"))
-		// {
-		// 	std::cout << "OKKKK on connait " << std::endl;
-		// 	std::string ok = "OK man, you can enter";
-		// 	send(_client_events[*i].fd, ok.c_str(), ok.size(), 0);
-		// }
-		// else
-		// {
-		// 	std::cout << "deso je connais pas " << std::endl;
-		// 	std::string ko = "Not good man!";
-		// 	send(_client_events[*i].fd, ko.c_str(), ko.size(), 0);
-		// }
-		// memset(&read_buffer, 0, 30000);
 	}
+	memset(&read_buffer, 0, 30000); /* Pour reset les saisies Clients*/
 }
 
 
 
 void Server::handle_request(char *buf, int* i)
 {
-	Request req(buf);
-	// std::vector<std::string>::iterator it = req.entries.begin();
+	/* Creating the request and the client associated */
+	Request *req = new Request(buf);
 	global.id_requests++;
-	(void)i;
-	parsing_request(&req);
-	// (void)it;
-	/*	 Verif que l'on recupere bien toute la string 	*/
-	// while(it != req.entries.end())
-	// {
-	// 	std::cout << *it << std::endl;
-	// 	it++;
-	// }
-	/* *********************************************** */
+	req->_id = global.id_requests;
+	Client	*cli = new Client(_client_events[*i].fd);
+
+	check_req_validity(&req);
+	if	(req->req_validity == invalid_req)
+		req->response = "Invalid entry\n";
+	else if	(req->req_validity == invalid_body)
+		req->response = "Invalid message\n";
+	else if (req->req_validity == empty)
+	{} /* DO nothing */
+	else if (req->req_validity == valid_body || req->req_validity == valid_req)
+	{
+	/* Adding Client and its request onto the map in the server, to keep track of all the requests and clients*/
+		std::pair<Client*, Request*> pairing = std::make_pair (cli, req);
+		_req_per_id.insert(pairing); // insert Client associated to the client
+		req->response = "OK, c'est good pr le moment \n";
+	}
+	// std::cout << " req response " << req.response << std::endl;
+	if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
+		return (perror("Problem in sending from server ")); // a t on le droit ??
 }
 
-void Server::parsing_request(Request *req)
+int	Server::is_charset(char c)
 {
-	req->_id = global.id_requests;
-	
+	if (isalpha(c))
+		return 0; // true
+	else
+		return 1;
+}
+
+void Server::check_req_validity(Request **r)
+{
+	Request *req = *r;
+
+	if (req->_raw_req.length() == 1 && req->_raw_req[0] == '\n') /* Empty entry */
+	{
+		req->req_validity = empty;
+		return ;
+	}
+	if	(req->_raw_req[0] == ' ' || !req->_raw_req[0])
+		req->req_validity = invalid_req;
+	for(size_t i = 0; i < req->entries[0].size() - 1; i++)
+	{
+		if (isupper(req->entries[0][i]) == 0)
+		{
+			req->req_validity = invalid_req;
+			return ;
+		}
+	}
+	for(size_t i = 0; i < req->_raw_req.size(); i++)
+	{
+		if	((req->_raw_req[i] == ':' && req->_raw_req[i - 1] != ' ' ) || (req->_raw_req[i] == ':' && req->_raw_req[i - 1] == ' ' && req->_raw_req[i + 1] == ' '))
+		{
+			req->req_validity = invalid_body;
+			return ;
+		}
+	}
+	req->_command = req->entries[0];
 }
