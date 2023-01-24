@@ -11,6 +11,7 @@
 # include <map>
 // # include "Channels.hpp"
 # include "Request.hpp"
+# include "./numeric_replies/numeric_replies.hpp"
 
 class Request;
 
@@ -26,15 +27,26 @@ class Client
 	
 	/* OPERATOR OVERLOADS */
 		Client & operator= ( const Client & rhs );
-	
-	/* GETTERS */
-		int	getFdClient();
-		std::string getNickName() const;
-		std::string getUserName() const;
+		int				getFdClient();
+		void			setFdClient(int fd);
+		std::string 	getNickName() const;
+		std::string 	getUserName() const;
 
-	/* SETTERS */
-		int		getFdClient();
-		void	setFdClient(int fd);
+	/* METHODS */
+		// void receiveMessage(Message& message);
+	
+	private:
+
+		int									                _clientFd;
+		std::string							                _nickName; //rfc: MAX 9 caracteres
+		std::string							                _userName;
+        std::string                                         _pass;
+		const std::string					                _host;
+		std::string							                _id;
+		std::map<int, Request>								all_req;	
+
+
+	// private:
 
 	/* METHODS */
 		void receiveMessage(Message& message);
