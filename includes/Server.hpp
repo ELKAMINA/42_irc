@@ -28,6 +28,7 @@
 # include <map>
 # include "Client.hpp"
 # include "Request.hpp"
+# include "./numeric_replies/numeric_replies.hpp"
 
 class Client;
 class Request;
@@ -85,6 +86,7 @@ public:
 	/* Receiving and handling request */
 	void			handle_request(char *buf, int *i);
 	void			check_req_validity(Request **req);
+	void			_parsing(Client *cli, Request *req);
 
 	cinfo					global;
 	std::string				name; // limited to 63 characters

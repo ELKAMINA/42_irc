@@ -222,19 +222,18 @@ void Server::handle_request(char *buf, int* i)
 	Client	*cli = new Client(_client_events[*i].fd);
 
 	check_req_validity(&req);
+	if (req->req_validity == valid_body || req->req_validity == valid_req)
+	{
+		_parsing(cli, req);
+	}
 	if	(req->req_validity == invalid_req)
 		req->response = "Invalid entry\n";
 	else if	(req->req_validity == invalid_body)
 		req->response = "Invalid message\n";
+	else if	(req->req_validity == notEnough_params)
+		req->response = errNeedMoreParams(cli, req);
 	else if (req->req_validity == empty)
 	{} /* DO nothing */
-	else if (req->req_validity == valid_body || req->req_validity == valid_req)
-	{
-	/* Adding Client and its request onto the map in the server, to keep track of all the requests and clients*/
-		std::pair<Client*, Request*> pairing = std::make_pair (cli, req);
-		_req_per_id.insert(pairing); // insert Client associated to the client
-		req->response = "OK, c'est good pr le moment \n";
-	}
 	// std::cout << " req response " << req.response << std::endl;
 	if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
 		return (perror("Problem in sending from server ")); // a t on le droit ??
@@ -275,5 +274,25 @@ void Server::check_req_validity(Request **r)
 			return ;
 		}
 	}
+	req->entries[0].resize(req->entries[0].size() - 1); /* Take off the \n*/
 	req->_command = req->entries[0];
 }
+
+void Server::_parsing(Client *cli, Request *req)
+{
+	/* Adding Client and its request onto the map in the server, to keep track of all the requests and clients*/
+	std::pair<Client*, Request*> pairing = std::make_pair (cli, req);
+	_req_per_id.insert(pairing); // insert Client associated to the client
+	/* ****** JUST A TEST******* */
+		// std::map<Client *, Request*>::iterator it = _req_per_id.begin();
+		// std::cout << "First " << it->first->getFdClient() << "Second " << it->second->getEntries(2) << std::endl;
+	/* ************** */
+	// req->response = "OK, c'est good pr le moment \n";
+	if	(req->entries[0].compare("PASS") == 0)
+	{
+		std::cout << " loooool " << std::endl;
+		req->_pass(cli, req, this);
+	}
+
+}
+
