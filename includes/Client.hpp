@@ -51,6 +51,15 @@ class Client
 
 	// private:
 
+	public:
+		Client();
+		Client( int fd );
+		Client( const Client & x );
+		~Client();
+		Client & operator= ( const Client & rhs );
+		int		getFdClient();
+		void	setFdClient(int fd);
+
 
 };
 

@@ -23,6 +23,7 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <poll.h>
+# include <utility>
 # include "ServerSocket.hpp"
 # include <map>
 # include "Client.hpp"
@@ -75,26 +76,29 @@ public:
 	void			new_client();
 	void			read_client_req(int *i);
 	void			write_to_client(struct pollfd client);
-	void			handle_request(char *buf, int *i);
 	std::string		welcoming_newClients();
-	void			parsing_request(Request *req);
+	
+	/* Utils */
+	int	is_charset(char c);
 
 
+	/* Receiving and handling request */
+	void			handle_request(char *buf, int *i);
+	void			check_req_validity(Request **req);
 
-	cinfo			global;
-	std::string		name; // limited to 63 characters
-	ServerSocket*	server_socket;
+	cinfo					global;
+	std::string				name; // limited to 63 characters
+	ServerSocket*			server_socket;
 
-	struct pollfd*		_client_events;
-	struct pollfd*		_server_events;
-	int nb_client_events; // aka nfds
-	char read_buffer[30000 + 1];
+	struct pollfd*			_client_events;
+	struct pollfd*			_server_events;
+	int 					nb_client_events; // aka nfds
+	char 					read_buffer[30000 + 1];
 	int n_ci;
 	int fd_ci;
-	std::string client_welcoming;
-	// std::map<Client, std::map<int, Request> >	_req_per_chan; /* differentiate Clients by their nickname as it is unique*/
-	// struct cinfo	*ci;
-
+	std::string 				client_welcoming;
+	std::vector<Client> 		_all_clients;
+	std::map<Client*, Request*>	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	
 private:
 
@@ -108,9 +112,6 @@ private:
 	std::string			_name;
 	std::string			_pass;
 	int					_online_clients;
-
-
-	// std::map<undefined, undefined>_client_socket;
 };
 
 #endif
