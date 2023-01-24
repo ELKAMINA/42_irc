@@ -21,7 +21,7 @@ Request::Request(char* buffer)
 		token = strtok(NULL, " ");
 	}
 	req_validity = valid_req;
-	_cmd_types = 0;
+	_cmd_types = UNKNOWN;
 }
 
 Request::Request( const Request& x )
@@ -38,3 +38,27 @@ Request & Request::operator=( const Request& rhs )
 
 
 Request::~Request() {};
+
+std::string Request::getEntries(size_t i) const 
+{
+	return entries[i];
+}
+
+void Request::_pass(Client *cli, Request *req, Server *serv)
+{
+	(void)cli;
+	std::cout << "siiiize " << serv->get_pass() << std::endl;
+	if(req->entries.size() > 2 || req->entries.size() < 2)
+	{
+		req->req_validity = notEnough_params;
+		return ;
+	}
+	else if (req->entries.size() == 2)
+	{
+		if (req->entries[1] == serv->get_pass())
+		{
+			std::cout << "yasssss " << std::endl;
+		}
+
+	}
+}

@@ -25,6 +25,7 @@ SRCS 		= 			$(addprefix $(SRCS_PATH),	\
 						Socket.cpp \
 						Client.cpp \
 						Request.cpp \
+						./numeric_replies/numeric_replies.cpp \
 						)
 
 SRCS_PATH	=			./sources/

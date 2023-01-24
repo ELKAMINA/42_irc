@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 17:48:06 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/23 18:00:55 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/30 11:54:36 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 // all prints on std streams will be replaced by a message object which will
 // be sent to client
 
-// void	errAlreadyInUse(std::string serverName, std::string nickName) // Amina: doublon avec celle d'en bas, je me permets de la commenter pr mes tests
-// {
-// 	std::cout << serverName << " 433 * " << nickName << " :Nickname already in use" << std::endl;
-// }
+void	errAlreadyInUse(std::string serverName, std::string nickName)
+{
+	std::cout << serverName << " 433 * " << nickName << " :Nickname already in use" << std::endl;
+}
 
 void	errNoSuchNick(std::string nickName)
 {
