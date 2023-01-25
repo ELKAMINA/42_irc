@@ -30,6 +30,7 @@ enum valid_req
 	valid_body,
 	invalid_body,
 	notEnough_params,
+	incorrect_pwd,
 	empty,
 };
 
