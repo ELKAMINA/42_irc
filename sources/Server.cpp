@@ -216,6 +216,7 @@ void Server::read_client_req(int *i)
 void Server::handle_request(char *buf, int* i)
 {
 	/* Creating the request and the client associated */
+	std::vector <Request*> all_req_per_client;
 	Request *req = new Request(buf);
 	global.id_requests++;
 	req->_id = global.id_requests;
@@ -224,7 +225,7 @@ void Server::handle_request(char *buf, int* i)
 	check_req_validity(&req);
 	if (req->req_validity == valid_body || req->req_validity == valid_req)
 	{
-		_parsing(cli, req);
+		_parsing(cli, req, all_req_per_client);
 	}
 	if	(req->req_validity == invalid_req)
 		req->response = "Invalid entry\n";
@@ -283,18 +284,17 @@ void Server::check_req_validity(Request **r)
 	// std::cout << "size of req entries 0 " << req->entries[0].size() << std::endl;
 }
 
-void Server::_parsing(Client *cli, Request *req)
+void Server::_parsing(Client *cli, Request *req, std::vector<Request*> _all_req_per_client)
 {
-	/* Adding Client and its request onto the map in the server, to keep track of all the requests and clients*/
-	std::pair<Client*, Request*> pairing = std::make_pair (cli, req);
+	_all_req_per_client.push_back(req);
+	std::pair<Client*, std::vector<Request*> > pairing = std::make_pair (cli, _all_req_per_client);
+	/* Verifier si c'est le même client */
 	_req_per_id.insert(pairing); // insert Client associated to the client
-	/* ****** JUST A TEST******* */
-		// std::map<Client *, Request*>::iterator it = _req_per_id.begin();
-		// std::cout << "First " << it->first->getFdClient() << "Second " << it->second->getEntries(2) << std::endl;
-	/* ************** */
-	// req->response = "OK, c'est good pr le moment \n";
-	if	(req->entries[0].compare("PASS") == 0)
-		req->_pass(cli, req, this);
 
+	/* PASS COMMAND */
+	if	(req->_command.compare("PASS") == 0)
+		req->_pass(cli, req, this);
+	else if(req->_command.compare("PRIVMSG") == 0)
+		req->_privmsg(cli, req, this);
 }
 

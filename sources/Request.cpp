@@ -59,13 +59,39 @@ void Request::_pass(Client *cli, Request *req, Server *serv)
 		req->entries[1].resize(req->entries[1].size() - 1); // take off the \n
 		if (req->entries[1] == serv->get_pass())
 		{
-			
+			req->req_validity = valid_req; // A changer 
+			return ;
 		}
 		else
 		{
 			req->req_validity = incorrect_pwd;
 			return ;
 		}
+	}
+}
 
+void Request::_privmsg(Client *cli, Request *req, Server *serv)
+{
+	(void)cli;
+	// std::cout << "siiiize " << serv->get_pass() << std::endl;
+	// std::cout << req->entries[1] << req->entries[1].size() << std::endl;
+	if(req->entries.size() < 3)
+	{
+		req->req_validity = notEnough_params;
+		return ;
+	}
+	else if (req->entries.size() >= 3)
+	{
+		req->entries[1].resize(req->entries[1].size() - 1); // take off the \n
+		if (req->entries[1] == serv->get_pass())
+		{
+			req->req_validity = valid_req; // A changer 
+			return ;
+		}
+		else
+		{
+			req->req_validity = incorrect_pwd;
+			return ;
+		}
 	}
 }
