@@ -47,7 +47,8 @@ std::string Request::getEntries(size_t i) const
 void Request::_pass(Client *cli, Request *req, Server *serv)
 {
 	(void)cli;
-	std::cout << "siiiize " << serv->get_pass() << std::endl;
+	// std::cout << "siiiize " << serv->get_pass() << std::endl;
+	// std::cout << req->entries[1] << req->entries[1].size() << std::endl;
 	if(req->entries.size() > 2 || req->entries.size() < 2)
 	{
 		req->req_validity = notEnough_params;
@@ -55,9 +56,15 @@ void Request::_pass(Client *cli, Request *req, Server *serv)
 	}
 	else if (req->entries.size() == 2)
 	{
+		req->entries[1].resize(req->entries[1].size() - 1); // take off the \n
 		if (req->entries[1] == serv->get_pass())
 		{
-			std::cout << "yasssss " << std::endl;
+			
+		}
+		else
+		{
+			req->req_validity = incorrect_pwd;
+			return ;
 		}
 
 	}
