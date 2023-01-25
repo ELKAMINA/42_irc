@@ -216,6 +216,7 @@ void Server::read_client_req(int *i)
 void Server::handle_request(char *buf, int* i)
 {
 	/* Creating the request and the client associated */
+	std::vector <Request*> all_req_per_client;
 	Request *req = new Request(buf);
 	global.id_requests++;
 	req->_id = global.id_requests;
