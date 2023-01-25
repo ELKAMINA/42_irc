@@ -232,6 +232,8 @@ void Server::handle_request(char *buf, int* i)
 		req->response = "Invalid message\n";
 	else if	(req->req_validity == notEnough_params)
 		req->response = errNeedMoreParams(cli, req);
+	else if	(req->req_validity == incorrect_pwd)
+		req->response = errPasswMismatch(cli, req);
 	else if (req->req_validity == empty)
 	{} /* DO nothing */
 	// std::cout << " req response " << req.response << std::endl;
@@ -274,7 +276,9 @@ void Server::check_req_validity(Request **r)
 			return ;
 		}
 	}
-	req->entries[0].resize(req->entries[0].size() - 1); /* Take off the \n*/
+	req->entries[0].resize(req->entries[0].size()); /* Take off the \n*/
+	// std::cout << "req entries 0 " << req->entries[0] << " size " << req->entries[0].size() << std::endl;
+	// std::cout << "size of req entries 0 " << req->entries[0].size() << std::endl;
 	req->_command = req->entries[0];
 }
 
@@ -290,7 +294,7 @@ void Server::_parsing(Client *cli, Request *req)
 	// req->response = "OK, c'est good pr le moment \n";
 	if	(req->entries[0].compare("PASS") == 0)
 	{
-		std::cout << " loooool " << std::endl;
+		// std::cout << "req entries 0 " << req->entries[1] << std::endl;
 		req->_pass(cli, req, this);
 	}
 
