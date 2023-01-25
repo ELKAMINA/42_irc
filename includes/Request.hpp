@@ -51,17 +51,17 @@ class Request
 	public:
 		int							_id;
 		std::string					_raw_req;
-		std::vector<std::string>	entries; // Max 512 caracteres (including the CR-LF)
+		std::vector<std::string>	entries; // Params + Commands (entries[0] Max 512 caracteres (including the CR-LF)
 		char						_prefix; // Optional : ":" used by servers to indicate the true origin of the message
 		std::string					_command;
 		enum cmd					_cmd_types;
 		std::string					_body;
-		std::vector<std::string>	_params; // Command parameters	( may be up to 15)
 		// Client&						_origin;
 		std::string					serv_origin;
 		enum state					status;
 		enum valid_req				req_validity; //Valid request or not
 		std::string					response;
+		std::vector<std::string>	target;
 
 		// int							type;
 
@@ -72,5 +72,6 @@ class Request
 		Request & operator = ( const Request &rhs );
 		std::string getEntries(size_t i) const;
 		void		_pass(Client* cli, Request* req, Server *serv);
+		void		_privmsg(Client* cli, Request* req, Server *serv);
 
 };
