@@ -276,10 +276,11 @@ void Server::check_req_validity(Request **r)
 			return ;
 		}
 	}
-	req->entries[0].resize(req->entries[0].size()); /* Take off the \n*/
+	if(req->entries.size() == 1)
+		req->entries[0].resize(req->entries[0].size() - 1); /* Take off the \n*/
+	req->_command = req->entries[0];
 	// std::cout << "req entries 0 " << req->entries[0] << " size " << req->entries[0].size() << std::endl;
 	// std::cout << "size of req entries 0 " << req->entries[0].size() << std::endl;
-	req->_command = req->entries[0];
 }
 
 void Server::_parsing(Client *cli, Request *req)
@@ -293,10 +294,7 @@ void Server::_parsing(Client *cli, Request *req)
 	/* ************** */
 	// req->response = "OK, c'est good pr le moment \n";
 	if	(req->entries[0].compare("PASS") == 0)
-	{
-		// std::cout << "req entries 0 " << req->entries[1] << std::endl;
 		req->_pass(cli, req, this);
-	}
 
 }
 
