@@ -86,7 +86,7 @@ public:
 	/* Receiving and handling request */
 	void			handle_request(char *buf, int *i);
 	void			check_req_validity(Request **req);
-	void			_parsing(Client *cli, Request *req);
+	void			_parsing(Client *cli, Request *req, std::vector<Request*>);
 
 	cinfo					global;
 	std::string				name; // limited to 63 characters
@@ -100,7 +100,8 @@ public:
 	int fd_ci;
 	std::string 				client_welcoming;
 	std::vector<Client> 		_all_clients;
-	std::map<Client*, Request*>	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
+	// std::map<Client*, Request*>	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
+	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	
 private:
 
