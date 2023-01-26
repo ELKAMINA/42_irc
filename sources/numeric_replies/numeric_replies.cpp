@@ -92,6 +92,7 @@ std::string	errPasswMismatch(Client *cli, Request *req) // Modifier "unregistere
 {
 	// std::cout << "" << cli->getNickName() << req->_command << " :Not enough parameters" << std::endl;
 	(void)cli; /* le temps de comprendre a quoi correspond <client>*/
+	(void)req;
 	std::ostringstream oss;
 	oss << "464 * " << " :Password incorrect\n";
 	std::string var = oss.str();
