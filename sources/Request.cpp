@@ -135,7 +135,7 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 		entries[0].resize(entries[0].size() - 1);
 		cli->setNickname(entries[0]);
 		req->_nickname_cli = entries[0];
-		std::cout << " OK c'est good " << std::endl;
+		// std::cout << " OK c'est good " << std::endl;
 	}
 
 }
@@ -159,9 +159,39 @@ int Request::wrong_nickname()
 {
 	for (size_t i = 0; i < entries[0].size() - 1; i++)
 	{
-		std::cout << " char = " << entries[0][i] << " alnum = " << isalnum(entries[0][i]) << std::endl;
+		// std::cout << " char = " << entries[0][i] << " alnum = " << isalnum(entries[0][i]) << std::endl;
 		if	((isalnum(entries[0][i]) == 0 || entries[0].size() > 9) && entries[0][i]  != '-')
 			return 0;
 	}
 	return 1;
+}
+
+void Request::_user(Client *cli, Request *req, Server *serv)
+{
+	(void)cli;
+	(void)serv;
+	(void)req;
+	// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
+	if (req->entries.size() < 4 || req->entries.size() > 4)
+	{
+		req->req_validity = notEnough_params;
+		return ;	
+	}
+	else if (cli->getPwd() == "UNDEFINED" && cli->getNickName() == "UNDEFINED" )
+	{
+		req->req_validity = omitted_cmd;
+		return ;
+	}
+	else
+	{
+		std::cout << "hey   " << std::endl;
+		entries[0].resize(entries[0].size() - 1);
+		int mde = atoi(entries[1].c_str());
+		cli->setUsername(entries[0]);
+		cli->setMode(mde);
+		cli->setRealname(entries[3]);
+		req->req_validity = welcome_msg;
+		// std::cout << " OK c'est good " << std::endl;
+	}
+
 }

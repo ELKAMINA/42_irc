@@ -31,12 +31,18 @@ class Client
 		void			setFdClient(int fd);
 		std::string 	getNickName() const;
 		std::string 	getUserName() const;
+		std::string 	getRealName() const;
+		int 			getmode() const;
 		std::string 	getPwd() const;
 
 	/* SETTERS */
 		std::string		setPrefix();
 		void			setPwd(std::string passwd);
 		void			setNickname(std::string name);
+		void			setUsername(std::string name);
+		void			setRealname(std::string name);
+		void			setMode(int mode);
+		// void			setId(std::string);
 
 	/* METHODS */
 		// void receiveMessage(Message& message);
@@ -46,10 +52,11 @@ class Client
 		int									                _clientFd;
 		std::string							                _nickName; //rfc: MAX 9 caracteres
 		std::string							                _userName;
+		std::string							                _realName;
         std::string                                         _pass;
 		const std::string					                _host;
 		std::string							                _id;
-		char												_mode;
+		int													_mode;
 		std::map<int, Request>								all_req;	
 
 

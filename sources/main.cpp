@@ -23,7 +23,7 @@ int main(int ac, char *av[])
 		return (std::cout << "<exec> <port> <password> format expected" << std::endl, 1);
 	int port = atoi(av[1]);
 	std::string pass(av[2]);
-	std::string name = "testServ";
+	std::string name = "Our IRC";
 	Server* myServ = new Server(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, 10, name, pass);
 	std::cout << "port is " << port << ", name is " << myServ->get_name() << " and pass is " << myServ->get_pass() << std::endl;
 	myServ->start_server(); // initalise la socket server en ecoute

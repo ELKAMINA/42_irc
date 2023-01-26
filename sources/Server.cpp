@@ -148,15 +148,6 @@ int Server::routine()
 			if	(_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
 			{
 				new_client();
-				std::cout << _all_clients[0]->getFdClient() << std::endl;
-				// std::vector<Client *>::iterator it = _all_clients.begin();
-				// while(it != _all_clients.end())
-				// {
-				// 	// if	((*it)->getFdClient() == _client_events[i].fd)
-				// 	// 	read_client_req(_all_clients[i], &i);
-				// 	std::cout << *it << std::endl;
-				// 	it++;
-				// }
 			}
 			else
 			{
@@ -267,6 +258,15 @@ void Server::handle_request(char *buf, int* i, Client *cli)
 		req->response = "Please enter the password or Nickname first\n";
 	else if (req->req_validity == erroneous_nickname)
 		req->response = errErroneusNickname(cli, req);
+	else if (req->req_validity == welcome_msg)
+	{
+		std::ostringstream oss;
+		if	(cli->getNickName().empty())
+			cli->setNickname("*");
+		oss << ":" << this->get_name() << " " << "001" << cli->getNickName() << " " << cli->setPrefix();
+		std::string var = oss.str();
+		req->response = var;
+	}
 	else if (req->req_validity == empty)
 	{} /* DO nothing */
 	// std::cout << " req response " << req.response << std::endl;
@@ -329,10 +329,9 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request*> _all_req_
 	if	(req->_command.compare("PASS") == 0)
 		req->_pass(cli, req, this);
 	if	(req->_command.compare("NICK") == 0)
-	{
-		// std::cout << "hello " << std::endl;
 		req->_nick(cli, req, this);	
-	}
+	if	(req->_command.compare("USER") == 0)
+		req->_user(cli, req, this);	
 	// else if(req->_command.compare("PRIVMSG") == 0)
 	// {
 	// 	if (req->_privmsg(cli, req, this) == 0)
