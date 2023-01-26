@@ -221,6 +221,7 @@ void Server::handle_request(char *buf, int* i)
 	global.id_requests++;
 	req->_id = global.id_requests;
 	Client	*cli = new Client(_client_events[*i].fd);
+	cli->setPwd(_pass);
 
 	check_req_validity(&req);
 	if (req->req_validity == valid_body || req->req_validity == valid_req)
@@ -235,6 +236,10 @@ void Server::handle_request(char *buf, int* i)
 		req->response = errNeedMoreParams(cli, req);
 	else if	(req->req_validity == incorrect_pwd)
 		req->response = errPasswMismatch(cli, req);
+	else if (req->req_validity == already_registered)
+		req->response = errAlreadyRegistered(cli, req);
+	else if (req->req_validity == omitted_cmd)
+		req->response = "Please enter the password or Nickname first\n";
 	else if (req->req_validity == empty)
 	{} /* DO nothing */
 	// std::cout << " req response " << req.response << std::endl;
@@ -280,6 +285,8 @@ void Server::check_req_validity(Request **r)
 	if(req->entries.size() == 1)
 		req->entries[0].resize(req->entries[0].size() - 1); /* Take off the \n*/
 	req->_command = req->entries[0];
+	std::vector<std::string>::iterator it = req->entries.begin();
+	req->entries.erase(it);
 	// std::cout << "req entries 0 " << req->entries[0] << " size " << req->entries[0].size() << std::endl;
 	// std::cout << "size of req entries 0 " << req->entries[0].size() << std::endl;
 }
@@ -294,7 +301,19 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request*> _all_req_
 	/* PASS COMMAND */
 	if	(req->_command.compare("PASS") == 0)
 		req->_pass(cli, req, this);
-	else if(req->_command.compare("PRIVMSG") == 0)
-		req->_privmsg(cli, req, this);
+	if	(req->_command.compare("NICK") == 0)
+	{
+		// std::cout << "hello " << std::endl;
+		req->_nick(cli, req, this);	
+	}
+	// else if(req->_command.compare("PRIVMSG") == 0)
+	// {
+	// 	if (req->_privmsg(cli, req, this) == 0)
+	// 	{
+	// 		// req->response = privmsg_one;
+			
+	// 	}
+
+	// }
 }
 

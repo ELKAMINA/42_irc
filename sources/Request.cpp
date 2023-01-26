@@ -47,19 +47,26 @@ std::string Request::getEntries(size_t i) const
 void Request::_pass(Client *cli, Request *req, Server *serv)
 {
 	(void)cli;
+	(void)serv;
 	// std::cout << "siiiize " << serv->get_pass() << std::endl;
 	// std::cout << req->entries[1] << req->entries[1].size() << std::endl;
-	if(req->entries.size() > 2 || req->entries.size() < 2)
+	if((req->entries.size() + 1) > 2 || (req->entries.size() + 1) < 2)
 	{
 		req->req_validity = notEnough_params;
 		return ;
 	}
-	else if (req->entries.size() == 2)
+	else if(cli->getNickName() != "UNDEFINED")
 	{
-		req->entries[1].resize(req->entries[1].size() - 1); // take off the \n
-		if (req->entries[1] == serv->get_pass())
+		req->req_validity = already_registered;
+		return ;
+	}
+	else if ((req->entries.size() + 1) == 2)
+	{
+		req->entries[0].resize(req->entries[0].size() - 1); // take off the \n
+		if (req->entries[0] == serv->get_pass())
 		{
 			req->req_validity = valid_req; // A changer 
+			cli->setPwd(req->entries[0]);
 			return ;
 		}
 		else
@@ -70,28 +77,71 @@ void Request::_pass(Client *cli, Request *req, Server *serv)
 	}
 }
 
-void Request::_privmsg(Client *cli, Request *req, Server *serv)
+int Request::_privmsg(Client *cli, Request *req, Server *serv)
 {
 	(void)cli;
-	// std::cout << "siiiize " << serv->get_pass() << std::endl;
-	// std::cout << req->entries[1] << req->entries[1].size() << std::endl;
+	(void)serv;
 	if(req->entries.size() < 3)
 	{
 		req->req_validity = notEnough_params;
-		return ;
+		return 1;
 	}
 	else if (req->entries.size() >= 3)
 	{
-		req->entries[1].resize(req->entries[1].size() - 1); // take off the \n
-		if (req->entries[1] == serv->get_pass())
+		if	(entries[1][0] != '&' && entries[1][0] != '#')
 		{
-			req->req_validity = valid_req; // A changer 
-			return ;
+			target.push_back(entries[1]);
+			return 0;
+			// msg_to_user(cli, req, serv);
 		}
 		else
 		{
-			req->req_validity = incorrect_pwd;
-			return ;
+			std::cout << "it's a chanel thing " << std::endl;
+			return 2;
 		}
+			
 	}
+	return 5;
+}
+
+void Request::_nick(Client *cli, Request *req, Server *serv)
+{
+	(void)cli;
+	(void)serv;
+	(void)req;
+	if (req->entries.size() < 1 || req->entries.size() < 1)
+	{
+		req->req_validity = notEnough_params;
+		return ;	
+	}
+	else if (cli->getPwd() == "UNDEFINED" && cli->getUserName() == "UNDEFINED" )
+	{
+		// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
+		req->req_validity = omitted_cmd;
+		return ;
+	}
+
+	if (user_existence(entries[1], serv) == 0)
+	{
+		req->req_validity = nickname_exists;
+		return ;
+	}
+	else
+		std::cout << " OK c'est good " << std::endl;
+
+}
+
+int Request::user_existence(std::string dest, Server *serv)
+{
+	// std::map<Client*, std::vector<Request*> >::key_compare my_comp = serv->_req_per_id.key_comp();
+	std::map<Client*, std::vector<Request*> >::iterator it = serv->_req_per_id.begin();
+
+	size_t i = 0;
+	while (i < serv->_req_per_id.size())
+	{
+		if	((*it).first->getNickName() == dest)
+			return 0;
+		i++;
+	}
+	return 1;
 }

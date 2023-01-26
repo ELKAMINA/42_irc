@@ -14,8 +14,8 @@
 # define NUMERIC_REPLIES_HPP
 
 # include "Client.hpp"
-# include "Channel.hpp"
 # include "Request.hpp"
+// # include "Channel.hpp"
 # include <sstream>
 
 class Client;
