@@ -15,15 +15,22 @@
 
 # include "Client.hpp"
 # include "Channel.hpp"
+# include "Request.hpp"
 # include <sstream>
 
-void	errAlreadyInUse(std::string serverName, std::string nickName);
-void	errNoSuchNick(std::string nickName);
-void	errNoSuchChannel(std::string channelName);
-void	errCannotSendToChan(std::string channelName);
+class Client;
+class Request;
+
+void	            errAlreadyInUse(std::string serverName, std::string nickName);
+void	            errNoSuchNick(std::string nickName);
+void	            errNoSuchChannel(std::string channelName);
+void	            errCannotSendToChan(std::string channelName);
 std::string			errNeedMoreParams(Client *cli, Request *req);
 std::string			errPasswMismatch(Client *cli, Request *req); // Server client need to be disconected from the server after this
 std::string			errAlreadyRegistered(Client *cli, Request *req);
+std::string	        errNicknameInUse(Client *cli, Request *req);
+std::string	        errErroneusNickname(Client *cli, Request *req);
+std::string	        errNoNicknameGiven(Client *cli, Request *req);
 
 
 #endif
