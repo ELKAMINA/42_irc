@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/25 14:41:02 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/26 12:19:15 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ _allUsers(allUsers), _name(channelName), _key(channelKey)
 {
 	_operators.push_back(owner.getNickName()); // Client doesn't has a nickName getter yet
 	_onlineUsers = 1;
+	_mods.push_back('k');
 	_topic = "";
 }
 
@@ -53,6 +54,7 @@ Channel& Channel::operator=(const Channel& rhs)
 		this->_operators = rhs._operators;
 		this->_vocal = rhs._vocal;
 		this->_banned = rhs._banned;
+		this->_mods = rhs._mods;
 	}
 	return *this;
 }
@@ -63,6 +65,7 @@ Channel::~Channel()
 	this->_operators.clear();
 	this->_vocal.clear();
 	this->_banned.clear();
+	this->_mods.clear();
 }
 
 /* ****************************** */
@@ -176,4 +179,29 @@ bool Channel::canTalk(Client& user)
 
 	it = find(_vocal.begin(), _vocal.end(), user.getNickName());
 	return (it != _vocal.end());
+}
+
+/* ****************************** */
+/* *** CHAN MODE CHECKERS ******* */
+/* ****************************** */
+
+bool Channel::activeMode(char mode)
+{
+	std::vector<char>::iterator it;
+	it = find(_mods.begin(), _mods.end(), mode);
+	if (it != _mods.end())
+		return true;
+	return false;
+}
+
+/* ****************************** */
+/* *** COMMAND MANAGER ********** */
+/* ****************************** */
+// cote chan:
+// 		JOIN KICK KICKBAN INVITE PART TOPIC (OP) 
+// cote server:
+// 		LIST 
+void Channel::treatAndReturn(Request& message)
+{
+	
 }

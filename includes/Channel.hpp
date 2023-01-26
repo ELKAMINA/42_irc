@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/24 11:22:36 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/26 12:16:48 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,20 +41,36 @@ class Channel
 		void addUser(Client &user);
 		void deleteUser(Client &user);
 		void addOperator(Client &user);
-		void deleteOperator(Client &user, std::string fault);
-		void ban(Client& ope, Client& user, std::string fault); // named KICK in RFC
+		void deleteOperator(Client &user, std::string message);
+		void ban(Client& ope, Client& user, std::string message); // named KICK in RFC
 		void inviteIn(Client& inviter, Client &invited);
 		void authorizeVocal(Client &user);
 		void mute(Client &user);
 
+		/* MODES MANAGEMENT */
+		void addMode(Client& user, char mode, std::string key=0);
+		void modeBan(Client& target, std::string message=0);
+		void modeInvite(Client& target, std::string message=0);
+		void modeKey(Client& target, std::string message=0);
+		void modeLimite(Client& target, std::string message=0);
+		void modeOper(Client& target, std::string message=0);
+		void modePrivate(Client& target, std::string message=0);
+		void modeSecret(Client& target, std::string message=0);
+		void modeVocal(Client& target, std::string message=0);
+
 		/* COMMUNICATION*/
-		void sendMessageToMembers(Message &message, Client &from);
+		void sendMessageToMembers(Request &message, Client &from);
 
 		/* CHAN INFO CHECKERS */
 		bool isMember(Client &user);
 		bool isOperator(Client &user);
 		bool isBanned(Client &user);
 		bool canTalk(Client &user);
+
+		/* CHAN MODE CHECKER */
+		bool activeMode(char mode);
+		/* COMMAND MANAGER */
+		void treatAndReturn(Request &request);
 		
 	private:
 
@@ -68,7 +84,7 @@ class Channel
 		std::vector<std::string>		_vocal;
 		std::vector<std::string>		_banned;
 		std::vector<Client>&			_allUsers;
-		// vector<char>					_mods; a définir
+		std::vector<char>				_mods; //a définir
 
 };
 
