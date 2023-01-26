@@ -36,6 +36,7 @@ enum valid_req
 	nickname_exists,
 	erroneous_nickname,
 	privmsg_one,
+	welcome_msg,
 	empty,
 };
 
@@ -80,6 +81,7 @@ class Request
 		std::string getEntries(size_t i) const;
 		void		_pass(Client* cli, Request* req, Server *serv);
 		void		_nick(Client* cli, Request* req, Server *serv);
+		void		_user(Client* cli, Request* req, Server *serv);
 		int			_privmsg(Client* cli, Request* req, Server *serv);
 		void		msg_to_user(Client* cli, Request* req, Server *serv);
 		int			user_existence(std::string dest, Server *serv);

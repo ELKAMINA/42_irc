@@ -37,6 +37,16 @@ std::string Client::getUserName() const
 	return this->_userName;
 }
 
+std::string Client::getRealName() const
+{
+	return this->_realName;
+}
+
+int Client::getmode() const
+{
+	return this->_mode;
+}
+
 std::string Client::getPwd() const
 {
 	return this->_pass;
@@ -52,6 +62,21 @@ void Client::setNickname(std::string name)
 	this->_nickName = name;
 }
 
+void Client::setUsername(std::string name)
+{
+	this->_userName = name;
+}
+
+void Client::setRealname(std::string name)
+{
+	this->_realName = name;
+}
+
+void Client::setMode(int mode)
+{
+	this->_mode = mode;
+}
+
 void Client::setPwd(std::string pwd)
 {
 	_pass = pwd;
@@ -61,7 +86,7 @@ std::string Client::setPrefix()
 {
 	
 	std::ostringstream oss;
-	oss << _nickName << "!" << _nickName << "@" << _host;
+	oss << _nickName << "!" << _userName << "@" << _host;
 	std::string var = oss.str();
 	return (var);
 }
