@@ -77,33 +77,6 @@ void Request::_pass(Client *cli, Request *req, Server *serv)
 	}
 }
 
-int Request::_privmsg(Client *cli, Request *req, Server *serv)
-{
-	(void)cli;
-	(void)serv;
-	if(req->entries.size() < 3)
-	{
-		req->req_validity = notEnough_params;
-		return 1;
-	}
-	else if (req->entries.size() >= 3)
-	{
-		if	(entries[1][0] != '&' && entries[1][0] != '#')
-		{
-			target.push_back(entries[1]);
-			return 0;
-			// msg_to_user(cli, req, serv);
-		}
-		else
-		{
-			std::cout << "it's a chanel thing " << std::endl;
-			return 2;
-		}
-			
-	}
-	return 5;
-}
-
 void Request::_nick(Client *cli, Request *req, Server *serv)
 {
 	(void)cli;

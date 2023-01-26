@@ -85,6 +85,7 @@ class Request
 		int			_privmsg(Client* cli, Request* req, Server *serv);
 		void		msg_to_user(Client* cli, Request* req, Server *serv);
 		int			user_existence(std::string dest, Server *serv);
+		Client*		find(std::string dest, Server *serv);
 		int			wrong_nickname();
 
 };
