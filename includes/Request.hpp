@@ -34,9 +34,13 @@ enum valid_req
 	already_registered,
 	omitted_cmd,
 	nickname_exists,
+<<<<<<< HEAD
 	erroneous_nickname,
 	privmsg_one,
 	welcome_msg,
+=======
+	privmsg_one,
+>>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 	empty,
 };
 
@@ -63,7 +67,10 @@ class Request
 		enum cmd					_cmd_types;
 		std::string					_body;
 		std::string					_origin;
+<<<<<<< HEAD
 		std::string					_nickname_cli;
+=======
+>>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 		// Client&						_origin; // a remplacer ac le nickname du client
 		std::string					serv_origin;
 		enum state					status;
@@ -81,10 +88,16 @@ class Request
 		std::string getEntries(size_t i) const;
 		void		_pass(Client* cli, Request* req, Server *serv);
 		void		_nick(Client* cli, Request* req, Server *serv);
+<<<<<<< HEAD
 		void		_user(Client* cli, Request* req, Server *serv);
 		int			_privmsg(Client* cli, Request* req, Server *serv);
 		void		msg_to_user(Client* cli, Request* req, Server *serv);
 		int			user_existence(std::string dest, Server *serv);
 		int			wrong_nickname();
+=======
+		int			_privmsg(Client* cli, Request* req, Server *serv);
+		void		msg_to_user(Client* cli, Request* req, Server *serv);
+		int			user_existence(std::string dest, Server *serv);
+>>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 
 };

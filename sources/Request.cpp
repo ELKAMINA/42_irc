@@ -66,7 +66,11 @@ void Request::_pass(Client *cli, Request *req, Server *serv)
 		if (req->entries[0] == serv->get_pass())
 		{
 			req->req_validity = valid_req; // A changer 
+<<<<<<< HEAD
 			cli->setPwd(serv->get_pass());
+=======
+			cli->setPwd(req->entries[0]);
+>>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 			return ;
 		}
 		else
@@ -109,22 +113,36 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 	(void)cli;
 	(void)serv;
 	(void)req;
+<<<<<<< HEAD
 	// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
 	if (req->entries.size() > 1 || req->entries.size() < 1)
+=======
+	if (req->entries.size() < 1 || req->entries.size() < 1)
+>>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 	{
 		req->req_validity = notEnough_params;
 		return ;	
 	}
 	else if (cli->getPwd() == "UNDEFINED" && cli->getUserName() == "UNDEFINED" )
 	{
+<<<<<<< HEAD
 		req->req_validity = omitted_cmd;
 		return ;
 	}
 	else if (user_existence(entries[1], serv) == 0)
+=======
+		// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
+		req->req_validity = omitted_cmd;
+		return ;
+	}
+
+	if (user_existence(entries[1], serv) == 0)
+>>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 	{
 		req->req_validity = nickname_exists;
 		return ;
 	}
+<<<<<<< HEAD
 	else if (wrong_nickname() == 0)
 	{
 		req->req_validity = erroneous_nickname;
@@ -137,6 +155,10 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 		req->_nickname_cli = entries[0];
 		// std::cout << " OK c'est good " << std::endl;
 	}
+=======
+	else
+		std::cout << " OK c'est good " << std::endl;
+>>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 
 }
 
@@ -153,6 +175,7 @@ int Request::user_existence(std::string dest, Server *serv)
 		i++;
 	}
 	return 1;
+<<<<<<< HEAD
 }
 
 int Request::wrong_nickname()
@@ -194,4 +217,6 @@ void Request::_user(Client *cli, Request *req, Server *serv)
 		// std::cout << " OK c'est good " << std::endl;
 	}
 
+=======
+>>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 }
