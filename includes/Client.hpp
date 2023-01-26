@@ -32,8 +32,11 @@ class Client
 		std::string 	getNickName() const;
 		std::string 	getUserName() const;
 		std::string 	getPwd() const;
+
+	/* SETTERS */
 		std::string		setPrefix();
 		void			setPwd(std::string passwd);
+		void			setNickname(std::string name);
 
 	/* METHODS */
 		// void receiveMessage(Message& message);
@@ -46,6 +49,7 @@ class Client
         std::string                                         _pass;
 		const std::string					                _host;
 		std::string							                _id;
+		char												_mode;
 		std::map<int, Request>								all_req;	
 
 

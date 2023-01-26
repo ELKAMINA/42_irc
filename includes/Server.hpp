@@ -75,7 +75,7 @@ public:
 	void 			start_server();
 	int				routine();
 	void			new_client();
-	void			read_client_req(int *i);
+	void			read_client_req(Client* cli, int *i);
 	void			write_to_client(struct pollfd client);
 	std::string		welcoming_newClients();
 	
@@ -84,7 +84,7 @@ public:
 
 
 	/* Receiving and handling request */
-	void			handle_request(char *buf, int *i);
+	void			handle_request(char *buf, int *i, Client *cli);
 	void			check_req_validity(Request **req);
 	void			_parsing(Client *cli, Request *req, std::vector<Request*>);
 
@@ -99,7 +99,7 @@ public:
 	int n_ci;
 	int fd_ci;
 	std::string 				client_welcoming;
-	// std::vector<Client> 		_all_clients;
+	std::vector<Client *> 		_all_clients;
 	// std::map<Client*, Request*>	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	
