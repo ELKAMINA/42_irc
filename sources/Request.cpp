@@ -66,7 +66,7 @@ void Request::_pass(Client *cli, Request *req, Server *serv)
 		if (req->entries[0] == serv->get_pass())
 		{
 			req->req_validity = valid_req; // A changer 
-			cli->setPwd(req->entries[0]);
+			cli->setPwd(serv->get_pass());
 			return ;
 		}
 		else
@@ -109,25 +109,34 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 	(void)cli;
 	(void)serv;
 	(void)req;
-	if (req->entries.size() < 1 || req->entries.size() < 1)
+	// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
+	if (req->entries.size() > 1 || req->entries.size() < 1)
 	{
 		req->req_validity = notEnough_params;
 		return ;	
 	}
 	else if (cli->getPwd() == "UNDEFINED" && cli->getUserName() == "UNDEFINED" )
 	{
-		// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
 		req->req_validity = omitted_cmd;
 		return ;
 	}
-
-	if (user_existence(entries[1], serv) == 0)
+	else if (user_existence(entries[1], serv) == 0)
 	{
 		req->req_validity = nickname_exists;
 		return ;
 	}
+	else if (wrong_nickname() == 0)
+	{
+		req->req_validity = erroneous_nickname;
+		return ;
+	}
 	else
+	{
+		entries[0].resize(entries[0].size() - 1);
+		cli->setNickname(entries[0]);
+		req->_nickname_cli = entries[0];
 		std::cout << " OK c'est good " << std::endl;
+	}
 
 }
 
@@ -142,6 +151,17 @@ int Request::user_existence(std::string dest, Server *serv)
 		if	((*it).first->getNickName() == dest)
 			return 0;
 		i++;
+	}
+	return 1;
+}
+
+int Request::wrong_nickname()
+{
+	for (size_t i = 0; i < entries[0].size() - 1; i++)
+	{
+		std::cout << " char = " << entries[0][i] << " alnum = " << isalnum(entries[0][i]) << std::endl;
+		if	((isalnum(entries[0][i]) == 0 || entries[0].size() > 9) && entries[0][i]  != '-')
+			return 0;
 	}
 	return 1;
 }

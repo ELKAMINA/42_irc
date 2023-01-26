@@ -34,6 +34,7 @@ enum valid_req
 	already_registered,
 	omitted_cmd,
 	nickname_exists,
+	erroneous_nickname,
 	privmsg_one,
 	empty,
 };
@@ -61,6 +62,7 @@ class Request
 		enum cmd					_cmd_types;
 		std::string					_body;
 		std::string					_origin;
+		std::string					_nickname_cli;
 		// Client&						_origin; // a remplacer ac le nickname du client
 		std::string					serv_origin;
 		enum state					status;
@@ -81,5 +83,6 @@ class Request
 		int			_privmsg(Client* cli, Request* req, Server *serv);
 		void		msg_to_user(Client* cli, Request* req, Server *serv);
 		int			user_existence(std::string dest, Server *serv);
+		int			wrong_nickname();
 
 };

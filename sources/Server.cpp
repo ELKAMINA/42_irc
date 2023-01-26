@@ -117,7 +117,7 @@ int Server::routine()
 {
 	while (1)
 	{
-		std::cout << "=============== Waiting on poll() ==============" << std::endl;
+		// std::cout << "=============== Waiting on poll() ==============" << std::endl;
 		std::cout << std::endl;
 
 		int active_co = poll(_client_events, _online_clients, -1); // equivalent epoll_wait: attend qu'un fd devienne dispo
@@ -135,7 +135,10 @@ int Server::routine()
 		{
 			/*r_events is an attribute of pollfd structure that is filled by the kernel depending on what type of events we're waiting for*/
 			if (_client_events[i].revents == 0) /*revents = 0 means that client_events[i].fd is negative which mean that is not an open file so there isnt any event for now */
+			{
+				// std::cout << "here " << std::endl;
 				continue;
+			} 
 			if (_client_events[i].revents != POLLIN) /* revent is not POLLIN so dont know what it is*/
 			{
 				perror("Not Pollin");
@@ -143,11 +146,32 @@ int Server::routine()
 
 			}			
 			if	(_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
+			{
 				new_client();
+				std::cout << _all_clients[0]->getFdClient() << std::endl;
+				// std::vector<Client *>::iterator it = _all_clients.begin();
+				// while(it != _all_clients.end())
+				// {
+				// 	// if	((*it)->getFdClient() == _client_events[i].fd)
+				// 	// 	read_client_req(_all_clients[i], &i);
+				// 	std::cout << *it << std::endl;
+				// 	it++;
+				// }
+			}
 			else
 			{
 				if (_client_events[i].events & POLLIN) /*If the fd already exists and its an entry */
-					read_client_req(&i);
+				{
+
+					std::vector<Client *>::iterator it = _all_clients.begin();
+					while(it != _all_clients.end())
+					{
+						// std::cout << (*it)->getFdClient() << _client_events[i].fd << std::endl;
+						if	((*it)->getFdClient() == _client_events[i].fd)
+							read_client_req(*it, &i);
+						it++;
+					}
+				}
 			}						
 		}
 	}
@@ -168,6 +192,8 @@ void Server::new_client()
 	} 
 	_client_events[_online_clients].events = POLLIN;
 	_client_events[_online_clients].fd =  sock; /*We need to assign to the new client a new fd for the socket it refers to and add it the clients events tab*/
+	Client	*cli = new Client(_client_events[_online_clients].fd);
+	_all_clients.push_back(cli);
 	_online_clients++; /* incrementing the nb of connections */
 	std::string homepage = welcoming_newClients();
 	if	(send(sock, homepage.c_str(), homepage.length(), 0) == -1)
@@ -188,13 +214,13 @@ std::string Server::welcoming_newClients()
 	return (client_welcoming);
 }
 
-void Server::read_client_req(int *i)
+void Server::read_client_req(Client *cli, int *i)
 {
-	n_ci = recv(_client_events[*i].fd, read_buffer, 30000, 0);
+	n_ci = recv(cli->getFdClient(), read_buffer, 30000, 0);
 	if (n_ci <= 0)
 	{
 		if	(n_ci == 0)
-			std::cout << "The client which fd is " << _client_events[*i].fd << " sent an empty request " << std::endl;
+			std::cout << "The client which fd is " << cli->getFdClient() << " sent an empty request " << std::endl;
 		else
 			perror("Baaaad");
 		close(_client_events[*i].fd);
@@ -205,23 +231,22 @@ void Server::read_client_req(int *i)
 	else
 	{
 
-		std::cout << read_buffer << std::endl;	
-		handle_request(read_buffer, i);
+		// std::cout << read_buffer << std::endl;	
+		handle_request(read_buffer, i, cli);
 	}
 	memset(&read_buffer, 0, 30000); /* Pour reset les saisies Clients*/
 }
 
 
 
-void Server::handle_request(char *buf, int* i)
-{
+void Server::handle_request(char *buf, int* i, Client *cli)
+{							
 	/* Creating the request and the client associated */
 	std::vector <Request*> all_req_per_client;
 	Request *req = new Request(buf);
 	global.id_requests++;
 	req->_id = global.id_requests;
-	Client	*cli = new Client(_client_events[*i].fd);
-	cli->setPwd(_pass);
+	// cli->setPwd(_pass);
 
 	check_req_validity(&req);
 	if (req->req_validity == valid_body || req->req_validity == valid_req)
@@ -240,6 +265,8 @@ void Server::handle_request(char *buf, int* i)
 		req->response = errAlreadyRegistered(cli, req);
 	else if (req->req_validity == omitted_cmd)
 		req->response = "Please enter the password or Nickname first\n";
+	else if (req->req_validity == erroneous_nickname)
+		req->response = errErroneusNickname(cli, req);
 	else if (req->req_validity == empty)
 	{} /* DO nothing */
 	// std::cout << " req response " << req.response << std::endl;

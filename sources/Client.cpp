@@ -47,6 +47,11 @@ void Client::setFdClient(int fd)
 	_clientFd = fd;
 }
 
+void Client::setNickname(std::string name)
+{
+	this->_nickName = name;
+}
+
 void Client::setPwd(std::string pwd)
 {
 	_pass = pwd;
