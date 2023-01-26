@@ -31,7 +31,6 @@ class Client
 		void			setFdClient(int fd);
 		std::string 	getNickName() const;
 		std::string 	getUserName() const;
-<<<<<<< HEAD
 		std::string 	getRealName() const;
 		int 			getmode() const;
 		std::string 	getPwd() const;
@@ -44,11 +43,6 @@ class Client
 		void			setRealname(std::string name);
 		void			setMode(int mode);
 		// void			setId(std::string);
-=======
-		std::string 	getPwd() const;
-		std::string		setPrefix();
-		void			setPwd(std::string passwd);
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 
 	/* METHODS */
 		// void receiveMessage(Message& message);

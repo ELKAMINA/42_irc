@@ -282,7 +282,6 @@ int	Server::is_charset(char c)
 		return 1;
 }
 
-<<<<<<< HEAD
 void Server::check_req_validity(Request **r)
 {
 	Request *req = *r;
@@ -321,89 +320,6 @@ void Server::check_req_validity(Request **r)
 
 void Server::_parsing(Client *cli, Request *req, std::vector<Request*> _all_req_per_client)
 {
-=======
-
-void Server::handle_request(char *buf, int* i)
-{
-	/* Creating the request and the client associated */
-	std::vector <Request*> all_req_per_client;
-	Request *req = new Request(buf);
-	global.id_requests++;
-	req->_id = global.id_requests;
-	Client	*cli = new Client(_client_events[*i].fd);
-	cli->setPwd(_pass);
-
-	check_req_validity(&req);
-	if (req->req_validity == valid_body || req->req_validity == valid_req)
-	{
-		_parsing(cli, req, all_req_per_client);
-	}
-	if	(req->req_validity == invalid_req)
-		req->response = "Invalid entry\n";
-	else if	(req->req_validity == invalid_body)
-		req->response = "Invalid message\n";
-	else if	(req->req_validity == notEnough_params)
-		req->response = errNeedMoreParams(cli, req);
-	else if	(req->req_validity == incorrect_pwd)
-		req->response = errPasswMismatch(cli, req);
-	else if (req->req_validity == already_registered)
-		req->response = errAlreadyRegistered(cli, req);
-	else if (req->req_validity == omitted_cmd)
-		req->response = "Please enter the password or Nickname first\n";
-	else if (req->req_validity == empty)
-	{} /* DO nothing */
-	// std::cout << " req response " << req.response << std::endl;
-	if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
-		return (perror("Problem in sending from server ")); // a t on le droit ??
-}
-
-int	Server::is_charset(char c)
-{
-	if (isalpha(c))
-		return 0; // true
-	else
-		return 1;
-}
-
-void Server::check_req_validity(Request **r)
-{
-	Request *req = *r;
-
-	if (req->_raw_req.length() == 1 && req->_raw_req[0] == '\n') /* Empty entry */
-	{
-		req->req_validity = empty;
-		return ;
-	}
-	if	(req->_raw_req[0] == ' ' || !req->_raw_req[0])
-		req->req_validity = invalid_req;
-	for(size_t i = 0; i < req->entries[0].size() - 1; i++)
-	{
-		if (isupper(req->entries[0][i]) == 0)
-		{
-			req->req_validity = invalid_req;
-			return ;
-		}
-	}
-	for(size_t i = 0; i < req->_raw_req.size(); i++)
-	{
-		if	((req->_raw_req[i] == ':' && req->_raw_req[i - 1] != ' ' ) || (req->_raw_req[i] == ':' && req->_raw_req[i - 1] == ' ' && req->_raw_req[i + 1] == ' '))
-		{
-			req->req_validity = invalid_body;
-			return ;
-		}
-	}
-	if(req->entries.size() == 1)
-		req->entries[0].resize(req->entries[0].size() - 1); /* Take off the \n*/
-	req->_command = req->entries[0];
-	std::vector<std::string>::iterator it = req->entries.begin();
-	req->entries.erase(it);
-	// std::cout << "req entries 0 " << req->entries[0] << " size " << req->entries[0].size() << std::endl;
-	// std::cout << "size of req entries 0 " << req->entries[0].size() << std::endl;
-}
-
-void Server::_parsing(Client *cli, Request *req, std::vector<Request*> _all_req_per_client)
-{
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 	_all_req_per_client.push_back(req);
 	std::pair<Client*, std::vector<Request*> > pairing = std::make_pair (cli, _all_req_per_client);
 	/* Verifier si c'est le même client */
@@ -413,24 +329,12 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request*> _all_req_
 	if	(req->_command.compare("PASS") == 0)
 		req->_pass(cli, req, this);
 	if	(req->_command.compare("NICK") == 0)
-<<<<<<< HEAD
 		req->_nick(cli, req, this);	
 	if	(req->_command.compare("USER") == 0)
 		req->_user(cli, req, this);	
-=======
+	if(req->_command.compare("PRIVMSG") == 0)
 	{
-		// std::cout << "hello " << std::endl;
-		req->_nick(cli, req, this);	
+		req->_privmsg(cli, req, this);
 	}
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
-	// else if(req->_command.compare("PRIVMSG") == 0)
-	// {
-	// 	if (req->_privmsg(cli, req, this) == 0)
-	// 	{
-	// 		// req->response = privmsg_one;
-			
-	// 	}
-
-	// }
 }
 

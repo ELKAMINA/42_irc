@@ -66,11 +66,7 @@ void Request::_pass(Client *cli, Request *req, Server *serv)
 		if (req->entries[0] == serv->get_pass())
 		{
 			req->req_validity = valid_req; // A changer 
-<<<<<<< HEAD
 			cli->setPwd(serv->get_pass());
-=======
-			cli->setPwd(req->entries[0]);
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 			return ;
 		}
 		else
@@ -81,68 +77,27 @@ void Request::_pass(Client *cli, Request *req, Server *serv)
 	}
 }
 
-int Request::_privmsg(Client *cli, Request *req, Server *serv)
-{
-	(void)cli;
-	(void)serv;
-	if(req->entries.size() < 3)
-	{
-		req->req_validity = notEnough_params;
-		return 1;
-	}
-	else if (req->entries.size() >= 3)
-	{
-		if	(entries[1][0] != '&' && entries[1][0] != '#')
-		{
-			target.push_back(entries[1]);
-			return 0;
-			// msg_to_user(cli, req, serv);
-		}
-		else
-		{
-			std::cout << "it's a chanel thing " << std::endl;
-			return 2;
-		}
-			
-	}
-	return 5;
-}
-
 void Request::_nick(Client *cli, Request *req, Server *serv)
 {
 	(void)cli;
 	(void)serv;
 	(void)req;
-<<<<<<< HEAD
 	// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
 	if (req->entries.size() > 1 || req->entries.size() < 1)
-=======
-	if (req->entries.size() < 1 || req->entries.size() < 1)
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 	{
 		req->req_validity = notEnough_params;
 		return ;	
 	}
 	else if (cli->getPwd() == "UNDEFINED" && cli->getUserName() == "UNDEFINED" )
 	{
-<<<<<<< HEAD
 		req->req_validity = omitted_cmd;
 		return ;
 	}
 	else if (user_existence(entries[1], serv) == 0)
-=======
-		// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
-		req->req_validity = omitted_cmd;
-		return ;
-	}
-
-	if (user_existence(entries[1], serv) == 0)
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 	{
 		req->req_validity = nickname_exists;
 		return ;
 	}
-<<<<<<< HEAD
 	else if (wrong_nickname() == 0)
 	{
 		req->req_validity = erroneous_nickname;
@@ -155,10 +110,6 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 		req->_nickname_cli = entries[0];
 		// std::cout << " OK c'est good " << std::endl;
 	}
-=======
-	else
-		std::cout << " OK c'est good " << std::endl;
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 
 }
 
@@ -175,7 +126,21 @@ int Request::user_existence(std::string dest, Server *serv)
 		i++;
 	}
 	return 1;
-<<<<<<< HEAD
+}
+
+Client* Request::find(std::string dest, Server *serv)
+{
+	// std::map<Client*, std::vector<Request*> >::key_compare my_comp = serv->_req_per_id.key_comp();
+	std::map<Client*, std::vector<Request*> >::iterator it = serv->_req_per_id.begin();
+
+	size_t i = 0;
+	while (i < serv->_req_per_id.size())
+	{
+		if	((*it).first->getNickName() == dest)
+			return it->first;
+		i++;
+	}
+	return serv->_req_per_id.end()->first; // returning the end of the tree
 }
 
 int Request::wrong_nickname()
@@ -217,6 +182,37 @@ void Request::_user(Client *cli, Request *req, Server *serv)
 		// std::cout << " OK c'est good " << std::endl;
 	}
 
-=======
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
+}
+
+int Request::_privmsg(Client *cli, Request *req, Server *serv)
+{
+	(void)cli;
+	(void)serv;
+	if(req->entries.size() < 2)
+	{
+		req->req_validity = notEnough_params;
+		return 1;
+	}
+	else if (req->entries.size() == 2)
+	{
+		if	(entries[0][0] != '&' && entries[0][0] != '#')
+		{
+			if (find(entries[0], serv) != serv->_req_per_id.end()->first)
+			{
+				std::cout << "kikouuu " << std::endl;
+				if (send(find(entries[1], serv)->getFdClient(), req->entries[1].c_str(), req->entries[1].length(), 0) == -1)
+					return (-1); // a t on le droit ??
+				// target.push_back(entries[1]);
+
+				// msg_to_user(cli, req, serv);
+			}
+			return 0;
+		}
+		if (entries[1][0] == '&' && entries[1][0] == '#')
+		{
+			std::cout << "it's a chanel thing " << std::endl;
+			return 2;
+		}
+	}
+	return 5;
 }

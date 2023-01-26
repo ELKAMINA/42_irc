@@ -81,7 +81,6 @@ public:
 	
 	/* Utils */
 	int	is_charset(char c);
-<<<<<<< HEAD
 
 
 	/* Receiving and handling request */
@@ -89,15 +88,6 @@ public:
 	void			check_req_validity(Request **req);
 	void			_parsing(Client *cli, Request *req, std::vector<Request*>);
 
-=======
-
-
-	/* Receiving and handling request */
-	void			handle_request(char *buf, int *i);
-	void			check_req_validity(Request **req);
-	void			_parsing(Client *cli, Request *req, std::vector<Request*>);
-
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 	cinfo					global;
 	std::string				name; // limited to 63 characters
 	ServerSocket*			server_socket;
@@ -109,11 +99,7 @@ public:
 	int n_ci;
 	int fd_ci;
 	std::string 				client_welcoming;
-<<<<<<< HEAD
 	std::vector<Client *> 		_all_clients;
-=======
-	// std::vector<Client> 		_all_clients;
->>>>>>> 0d3c488cb44d2a66dd5a21627011376596c492f1
 	// std::map<Client*, Request*>	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	
