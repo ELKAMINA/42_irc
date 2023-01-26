@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Server.hpp"
+# include "Server.hpp"
 # include "./Colors.hpp"
 # include <vector>
 # include <iostream>
@@ -14,7 +14,7 @@
 // # include "Channels.hpp"
 # include "Client.hpp"
 #include <sstream>
-# include "./numeric_replies/numeric_replies.hpp"
+# include "numeric_replies.hpp"
 
 enum state
 {
@@ -31,6 +31,10 @@ enum valid_req
 	invalid_body,
 	notEnough_params,
 	incorrect_pwd,
+	already_registered,
+	omitted_cmd,
+	nickname_exists,
+	privmsg_one,
 	empty,
 };
 
@@ -56,22 +60,26 @@ class Request
 		std::string					_command;
 		enum cmd					_cmd_types;
 		std::string					_body;
-		// Client&						_origin;
+		std::string					_origin;
+		// Client&						_origin; // a remplacer ac le nickname du client
 		std::string					serv_origin;
 		enum state					status;
 		enum valid_req				req_validity; //Valid request or not
 		std::string					response;
 		std::vector<std::string>	target;
-
+		// std::vector<Channel*>		all_chans;
 		// int							type;
 
 	public:
-		Request(char* buf);
-		~Request();
-		Request( const Request &x );
-		Request & operator = ( const Request &rhs );
+		Request		(char* buf);
+		~Request	();
+		Request		( const Request &x );
+		Request & 	operator = ( const Request &rhs );
 		std::string getEntries(size_t i) const;
 		void		_pass(Client* cli, Request* req, Server *serv);
-		void		_privmsg(Client* cli, Request* req, Server *serv);
+		void		_nick(Client* cli, Request* req, Server *serv);
+		int			_privmsg(Client* cli, Request* req, Server *serv);
+		void		msg_to_user(Client* cli, Request* req, Server *serv);
+		int			user_existence(std::string dest, Server *serv);
 
 };
