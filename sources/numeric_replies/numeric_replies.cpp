@@ -33,3 +33,34 @@ void	errCannotSendToChan(std::string channelName)
 {
 	std::cout << "404 * " << channelName << " :Cannot send to channel" << std::endl;
 }
+
+std::string	errNeedMoreParams(Client *cli, Request *req)
+{
+	// std::cout << "" << cli->getNickName() << req->_command << " :Not enough parameters" << std::endl;
+	(void)cli; /* le temps de comprendre a quoi correspond <client>*/
+	std::ostringstream oss;
+	oss << "461 * " << "Unregistered Client" << " " << req->_command << " :Not enough parameters\n";
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	errPasswMismatch(Client *cli, Request *req) // Modifier "unregistered client par le vrai client user"
+{
+	// std::cout << "" << cli->getNickName() << req->_command << " :Not enough parameters" << std::endl;
+	(void)cli; /* le temps de comprendre a quoi correspond <client>*/
+	std::ostringstream oss;
+	oss << "464 * " << "Unregistered Client" << " " << req->_command << " :Password incorrect\n";
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	errAlreadyRegistered(Client *cli, Request *req)
+{
+	// std::cout << "" << cli->getNickName() << req->_command << " :Not enough parameters" << std::endl;
+	(void)cli;
+	(void)req; /* le temps de comprendre a quoi correspond <client>*/
+	std::ostringstream oss;
+	oss << "462 * " << "Unregistered Client : You may not reregister\n";
+	std::string var = oss.str();
+	return (var);
+}
