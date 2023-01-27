@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/27 17:03:23 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/27 18:57:13 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ _name(channelName), _allUsers(allUsers)
 {
 	_operators.push_back(owner.getNickName()); // Client doesn't has a nickName getter yet
 	_onlineUsers = 1;
+	_maxUsers = -1;
 	_topic = "";
 	_key = "";
 }
@@ -32,7 +33,8 @@ _name(channelName), _key(channelKey), _allUsers(allUsers)
 {
 	_operators.push_back(owner.getNickName()); // Client doesn't has a nickName getter yet
 	_onlineUsers = 1;
-	_mods.push_back('k');
+	_maxUsers = -1;
+	_mods['k'] = true;
 	_topic = "";
 }
 
@@ -157,11 +159,11 @@ bool Channel::isMember(Client& user)
 	return (it != _users.end());
 }
 
-bool Channel::isOperator(Client& user)
+bool Channel::isOperator(std::string& user)
 {
 	std::vector<std::string>::iterator it;
 
-	it = find(_operators.begin(), _operators.end(), user.getNickName());
+	it = find(_operators.begin(), _operators.end(), user);
 	return (it != _operators.end());
 }
 
@@ -187,7 +189,7 @@ bool Channel::canTalk(Client& user)
 
 bool Channel::activeMode(char mode)
 {
-	std::vector<char>::iterator it;
+	std::map<char, bool>::iterator it;
 	it = find(_mods.begin(), _mods.end(), mode);
 	if (it != _mods.end())
 		return true;

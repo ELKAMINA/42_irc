@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 12:17:09 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/27 17:30:24 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/27 18:49:02 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,27 @@ typedef void (Channel::*act)(Client&, std::string);
 	
 // }
 
-// void Channel::modeLimite(bool add, int max=0)
-// {
-	
-// }
+void Channel::modeLimite(Request& request, std::pair<std::string, std::string> command)
+{
+	if (command.first[0] == '+')
+	{
+		try
+		{
+			int max = stoi(command.second);
+			this->_maxUsers = max;
+			_mods['l'] = true;
+		}
+		catch (const std::exception & e)
+		{
+			//bad value
+		}
+	}
+	else
+	{
+		this->_maxUsers = -1;
+		_mods.erase('l');
+	}
+}
 
 // void Channel::modeOper(Client& target, std::string message=0)
 // {
@@ -120,11 +137,11 @@ static std::map<std::string, std::string> splitModes(std::vector<std::string>par
 	return modes;
 }
 
-int Channel::addMode(std::vector<std::string>params)
+int Channel::addMode(Request& request, std::vector<std::string>params)
 {
 	uint countParams;
 	std::map<std::string, std::string>modes;
-	// if (isOperator(user))
+	// if (isOperator(request.nickName))
 	// {
 		countParams = checkModes(params[1]);
 		if (countParams != params.size() - 2)
@@ -133,7 +150,8 @@ int Channel::addMode(std::vector<std::string>params)
 		for (std::map<std::string, std::string>::iterator it = modes.begin(); it != modes.end(); it++){
 			std::cout << "mode = " << it->first << ", param = "<< it->second << std::endl;
 		}
-	return 0;
 	// }
-	// else message erreur pas operateur
+	// else
+	// 	raise error not on chan
+	return 0;
 }

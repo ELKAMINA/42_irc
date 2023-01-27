@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/27 17:14:35 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/27 18:49:23 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,11 @@ class Channel
 		void mute(Client &user);
 
 		/* MODES MANAGEMENT */
-		int addMode(std::vector<std::string>params);
+		int addMode(Request& request, std::vector<std::string>params);
 		void modeBan(Client& target, std::string message=0);
 		void modeInvite(Client& target, std::string message=0);
 		void modeKey(Client& target, std::string message=0);
-		void modeLimite(Client& target, std::string message=0);
+		void modeLimite(Request& request, std::pair<std::string, std::string> command);
 		void modeOper(Client& target, std::string message=0);
 		void modePrivate(Client& target, std::string message=0);
 		void modeSecret(Client& target, std::string message=0);
@@ -63,7 +63,7 @@ class Channel
 
 		/* CHAN INFO CHECKERS */
 		bool isMember(Client &user);
-		bool isOperator(Client &user);
+		bool isOperator(std::string &user);
 		bool isBanned(Client &user);
 		bool canTalk(Client &user);
 
@@ -76,6 +76,7 @@ class Channel
 
 		char							_prefix;
 		int								_onlineUsers;
+		int								_maxUsers;
 		std::string						_name;
 		std::string						_key;
 		std::string						_topic;
@@ -84,7 +85,7 @@ class Channel
 		std::vector<std::string>		_vocal;
 		std::vector<std::string>		_banned;
 		std::vector<Client>&			_allUsers;
-		std::vector<char>				_mods; //a définir
+		std::map<char, bool>			_mods; //a définir
 
 };
 
