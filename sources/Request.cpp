@@ -157,11 +157,13 @@ void Request::_user(Client *cli, Request *req, Server *serv)
 	}
 	else
 	{
-		std::cout << "hey   " << std::endl;
+		// std::cout << "hey   " << std::endl;
 		entries[0].resize(entries[0].size() - 1);
 		int mde = atoi(entries[1].c_str());
 		cli->setUsername(entries[0]);
 		cli->setMode(mde);
+		if (entries[3][0])
+			entries[3].resize(entries[3].size() - 1);
 		cli->setRealname(entries[3]);
 		req->req_validity = welcome_msg;
 		// std::cout << " OK c'est good " << std::endl;
