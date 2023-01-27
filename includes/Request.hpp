@@ -62,7 +62,7 @@ class Request
 		std::string					_command;
 		enum cmd					_cmd_types;
 		std::string					_body;
-		std::string					_origin;
+		// std::string					_origin;
 		std::string					_nickname_cli;
 		// Client&						_origin; // a remplacer ac le nickname du client
 		std::string					serv_origin;

@@ -14,7 +14,6 @@ Request::Request(char* buffer)
 
 	_raw_req = buffer;
 	char * token = strtok(buffer, " ");
-	// std::cout << "token " << token << std::endl;
    // loop through the string to extract all other tokens
 	while( token != NULL ) {
 		entries.push_back(token);
@@ -106,6 +105,7 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 	else
 	{
 		entries[0].resize(entries[0].size() - 1);
+		// std::cout << entries[0] << entries[0].size() << std::endl;
 		cli->setNickname(entries[0]);
 		req->_nickname_cli = entries[0];
 		// std::cout << " OK c'est good " << std::endl;
