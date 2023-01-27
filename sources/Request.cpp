@@ -14,7 +14,6 @@ Request::Request(char* buffer)
 
 	_raw_req = buffer;
 	char * token = strtok(buffer, " ");
-	// std::cout << "token " << token << std::endl;
    // loop through the string to extract all other tokens
 	while( token != NULL ) {
 		entries.push_back(token);
@@ -106,6 +105,7 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 	else
 	{
 		entries[0].resize(entries[0].size() - 1);
+		// std::cout << entries[0] << entries[0].size() << std::endl;
 		cli->setNickname(entries[0]);
 		req->_nickname_cli = entries[0];
 		// std::cout << " OK c'est good " << std::endl;
@@ -198,22 +198,33 @@ int Request::_privmsg(Client *cli, Request *req, Server *serv)
 		req->req_validity = notEnough_params;
 		return 1;
 	}
-	else if (req->entries.size() == 2)
+	else if (req->entries.size() >= 2)
 	{
 		if	(entries[0][0] != '&' && entries[0][0] != '#')
 		{
-			// std::cout << "ici " << std::endl;
-			if (find(entries[0], serv) != serv->_req_per_id.end()->first)
+			std::vector<std::string>::iterator it = entries.begin();
+			std::string dest;
+			dest =  entries[0];
+			std::string message;
+			entries.erase(it);
+			if (find(dest, serv) != serv->_req_per_id.end()->first)
 			{
-				// std::cout << "kikouuu " << find(entries[0], serv)->getFdClient() << std::endl;
+				std::cout << "ici 2" << std::endl;
+				if (entries.size() >= 2)
+				{
+					size_t i = 0;
+					while (i < entries.size())
+					{
+						message.append(entries[i]);
+						message.append(" ");
+						i++;
+					}
+				}
 				std::ostringstream oss;
-				oss << ":" << cli->getNickName() << "!" << cli->getNickName() << "@" << cli->getRealName() << " PRIVMSG " << entries[0] << " " << entries[1];
+				oss << ":" << cli->getNickName() << "!" << cli->getNickName() << "@" << cli->getRealName() << " PRIVMSG " << dest << " " << message;
 				std::string var = oss.str();
-				if (send(find(entries[0], serv)->getFdClient(), var.c_str(), var.length(), 0) == -1)
-					return (-1); // a t on le droit ??
-				// target.push_back(entries[1]);
-
-				// msg_to_user(cli, req, serv);
+				if (send(find(dest, serv)->getFdClient(), var.c_str(), var.length(), 0) == -1)
+					return (-1);
 			}
 			return 0;
 		}
