@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/26 12:19:15 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/27 17:03:23 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 /* ****************************** */
 
 Channel::Channel( std::vector<Client>& allUsers, std::string channelName, Client& owner ) :
-_allUsers(allUsers), _name(channelName)
+_name(channelName), _allUsers(allUsers)
 {
 	_operators.push_back(owner.getNickName()); // Client doesn't has a nickName getter yet
 	_onlineUsers = 1;
@@ -28,7 +28,7 @@ _allUsers(allUsers), _name(channelName)
 }
 
 Channel::Channel( std::vector<Client>& allUsers, std::string channelName, std::string channelKey, Client& owner ) :
-_allUsers(allUsers), _name(channelName), _key(channelKey)
+_name(channelName), _key(channelKey), _allUsers(allUsers)
 {
 	_operators.push_back(owner.getNickName()); // Client doesn't has a nickName getter yet
 	_onlineUsers = 1;
@@ -98,15 +98,15 @@ void Channel::deleteUser(Client& user)
 	}
 }
 
-void Channel::addOperator(Client& user)
-{
+// void Channel::addOperator(Client& user)
+// {
 
-}
+// }
 
-void Channel::deleteOperator(Client& user, std::string fault)
-{
+// void Channel::deleteOperator(Client& user, std::string fault)
+// {
 	
-}
+// }
 
 void Channel::ban(Client& ope, Client& user, std::string fault)
 {
@@ -120,7 +120,7 @@ void Channel::ban(Client& ope, Client& user, std::string fault)
 		std::cout << "Bro, y'a personne ici avec ce blase" << std::endl;
 	else
 	{
-		std::cout << "et c'est le ban, BOUYAAAA" << std::endl;
+		std::cout << "et c'est le ban, BOUYAAAA" << fault<< std::endl;
 		_users.erase(target);
 		_banned.push_back(user.getNickName());
 	}
@@ -201,7 +201,7 @@ bool Channel::activeMode(char mode)
 // 		JOIN KICK KICKBAN INVITE PART TOPIC (OP) 
 // cote server:
 // 		LIST 
-void Channel::treatAndReturn(Request& message)
-{
+// void Channel::treatAndReturn(Request& message)
+// {
 	
-}
+// }

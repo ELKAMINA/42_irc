@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/26 12:16:48 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/27 17:14:35 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class Channel
 		void mute(Client &user);
 
 		/* MODES MANAGEMENT */
-		void addMode(Client& user, char mode, std::string key=0);
+		int addMode(std::vector<std::string>params);
 		void modeBan(Client& target, std::string message=0);
 		void modeInvite(Client& target, std::string message=0);
 		void modeKey(Client& target, std::string message=0);
@@ -59,7 +59,7 @@ class Channel
 		void modeVocal(Client& target, std::string message=0);
 
 		/* COMMUNICATION*/
-		void sendMessageToMembers(Request &message, Client &from);
+		// void sendMessageToMembers(Request &message, Client &from);
 
 		/* CHAN INFO CHECKERS */
 		bool isMember(Client &user);
@@ -70,7 +70,7 @@ class Channel
 		/* CHAN MODE CHECKER */
 		bool activeMode(char mode);
 		/* COMMAND MANAGER */
-		void treatAndReturn(Request &request);
+		// void treatAndReturn(Request &request);
 		
 	private:
 

@@ -6,7 +6,7 @@
 #    By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/17 07:46:31 by jcervoni          #+#    #+#              #
-#    Updated: 2023/01/23 17:48:34 by jcervoni         ###   ########.fr        #
+#    Updated: 2023/01/27 17:14:53 by jcervoni         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,12 +19,14 @@ INC			=			-I ./includes/\
 						-I ./includes/numeric_replies/
 
 SRCS 		= 			$(addprefix $(SRCS_PATH),	\
-						main.cpp \
+						test_folder/main_channel_test.cpp \
 						Server.cpp \
 						ServerSocket.cpp \
 						Socket.cpp \
 						Client.cpp \
 						Request.cpp \
+						Channel.cpp \
+						Channel_mode.cpp \
 						./numeric_replies/numeric_replies.cpp \
 						)
 
