@@ -189,6 +189,7 @@ void Server::new_client()
 	std::string homepage = welcoming_newClients();
 	if	(send(sock, homepage.c_str(), homepage.length(), 0) == -1)
 		perror("Big time for welcoming_ Bravo");
+	// memset((homepage.c_str()), 0, 0);
 }
 
 std::string Server::welcoming_newClients()

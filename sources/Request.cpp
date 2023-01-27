@@ -133,12 +133,15 @@ Client* Request::find(std::string dest, Server *serv)
 	// std::map<Client*, std::vector<Request*> >::key_compare my_comp = serv->_req_per_id.key_comp();
 	std::map<Client*, std::vector<Request*> >::iterator it = serv->_req_per_id.begin();
 
-	size_t i = 0;
-	while (i < serv->_req_per_id.size())
+	// size_t i = 0;
+	while (it != serv->_req_per_id.end())
 	{
 		if	((*it).first->getNickName() == dest)
+		{
+			std::cout << "dest " << (*it).first->getNickName() << std::endl;
 			return it->first;
-		i++;
+		}
+		it++;
 	}
 	return serv->_req_per_id.end()->first; // returning the end of the tree
 }
@@ -172,11 +175,13 @@ void Request::_user(Client *cli, Request *req, Server *serv)
 	}
 	else
 	{
-		std::cout << "hey   " << std::endl;
+		// std::cout << "hey   " << std::endl;
 		entries[0].resize(entries[0].size() - 1);
 		int mde = atoi(entries[1].c_str());
 		cli->setUsername(entries[0]);
 		cli->setMode(mde);
+		if (entries[3][0])
+			entries[3].resize(entries[3].size() - 1);
 		cli->setRealname(entries[3]);
 		req->req_validity = welcome_msg;
 		// std::cout << " OK c'est good " << std::endl;
@@ -197,10 +202,14 @@ int Request::_privmsg(Client *cli, Request *req, Server *serv)
 	{
 		if	(entries[0][0] != '&' && entries[0][0] != '#')
 		{
+			// std::cout << "ici " << std::endl;
 			if (find(entries[0], serv) != serv->_req_per_id.end()->first)
 			{
-				std::cout << "kikouuu " << std::endl;
-				if (send(find(entries[1], serv)->getFdClient(), req->entries[1].c_str(), req->entries[1].length(), 0) == -1)
+				// std::cout << "kikouuu " << find(entries[0], serv)->getFdClient() << std::endl;
+				std::ostringstream oss;
+				oss << ":" << cli->getNickName() << "!" << cli->getNickName() << "@" << cli->getRealName() << " PRIVMSG " << entries[0] << " " << entries[1];
+				std::string var = oss.str();
+				if (send(find(entries[0], serv)->getFdClient(), var.c_str(), var.length(), 0) == -1)
 					return (-1); // a t on le droit ??
 				// target.push_back(entries[1]);
 
