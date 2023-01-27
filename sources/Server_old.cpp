@@ -147,12 +147,7 @@ int Server::routine()
 			}			
 			if	(_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
 			{
-				// std::cout << "server socket " << server_socket->get_sock() << std::endl;	
 				new_client();
-				Client	*cli = new Client(_client_events[_online_clients].fd);
-				// std::cout << " clients[online_client] " << _client_events[_online_clients].fd << std::endl;
-				_all_clients.push_back(cli);
-				_online_clients++;
 			}
 			else
 			{
@@ -188,14 +183,12 @@ void Server::new_client()
 	} 
 	_client_events[_online_clients].events = POLLIN;
 	_client_events[_online_clients].fd =  sock; /*We need to assign to the new client a new fd for the socket it refers to and add it the clients events tab*/
-	// std::cout << " sock " << sock << "  online clients " << _online_clients << std::endl;
-	// _online_clients++; /* incrementing the nb of connections */
+	Client	*cli = new Client(_client_events[_online_clients].fd);
+	_all_clients.push_back(cli);
+	_online_clients++; /* incrementing the nb of connections */
 	std::string homepage = welcoming_newClients();
-	// std::cout << " sock " << sock << homepage.length() << std::endl;
-	if	(send(sock, homepage.c_str(), 1067, 0) == -1)
+	if	(send(sock, homepage.c_str(), homepage.length(), 0) == -1)
 		perror("Big time for welcoming_ Bravo");
-	// char[50000] = homepage.c_str();
-	// memset((homepage.c_str()), 0, 50000);
 }
 
 std::string Server::welcoming_newClients()
@@ -339,14 +332,9 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request*> _all_req_
 		req->_nick(cli, req, this);	
 	if	(req->_command.compare("USER") == 0)
 		req->_user(cli, req, this);	
-	// else if(req->_command.compare("PRIVMSG") == 0)
-	// {
-	// 	if (req->_privmsg(cli, req, this) == 0)
-	// 	{
-	// 		// req->response = privmsg_one;
-			
-	// 	}
-
-	// }
+	if(req->_command.compare("PRIVMSG") == 0)
+	{
+		req->_privmsg(cli, req, this);
+	}
 }
 
