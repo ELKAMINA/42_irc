@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/29 11:11:31 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/29 11:25:50 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,18 +74,19 @@ class Channel
 		
 	private:
 
-		char							_prefix;
-		int								_onlineUsers;
-		int								_maxUsers;
-		string						_name;
-		string						_key;
-		string						_topic;
+		char				_prefix;
+		int					_onlineUsers;
+		int					_maxUsers;
+		string				_name;
+		string				_key;
+		string				_topic;
 		vector<string>		_users;
 		vector<string>		_operators; // separated from users or duplicated ?
 		vector<string>		_vocal;
 		vector<string>		_banned;
-		vector<Client>&			_allUsers;
-		map<char, bool>			_mods; //a définir
+		vector<string>		_invited;
+		vector<Client>&		_allUsers;
+		map<char, bool>		_mods; //a définir
 
 };
 

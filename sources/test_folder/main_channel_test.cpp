@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/27 17:04:00 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/29 10:37:57 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/29 11:26:55 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,4 +35,6 @@ int main()
 	test.push_back("20");
 	
 	chanTest->addMode(*requete, test);
+	delete(requete);
+	delete(chanTest);
 }

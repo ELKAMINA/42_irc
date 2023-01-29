@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/29 11:11:47 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/29 11:30:34 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ Channel::~Channel()
 	this->_operators.clear();
 	this->_vocal.clear();
 	this->_banned.clear();
+	this->_invited.clear();
 	this->_mods.clear();
 }
 
