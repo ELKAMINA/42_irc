@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/27 17:04:00 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/27 17:52:02 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/29 10:37:57 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,9 @@ using namespace std;
 int main()
 {
 	vector<string>test;
-	Request* requete;
 	string name = "testicule";
+	char lala[] = "testicule";
+	Request* requete = new Request(lala);
 	vector<Client>clients;
 	Client mitch = Client(4);
 	Channel* chanTest = new Channel(clients, name, mitch);
@@ -32,6 +33,6 @@ int main()
 	// test.push_back("Mitch");
 	test.push_back("lalala");
 	test.push_back("20");
-
+	
 	chanTest->addMode(*requete, test);
 }

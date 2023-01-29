@@ -6,40 +6,71 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 12:17:09 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/27 18:49:02 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/29 11:13:17 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
+#include <string>
 
-typedef void (Channel::*act)(Client&, std::string);
+typedef void (Channel::*act)(Client&, string);
 
-// void Channel::modeBan(std::string target, std::string message=0)
-// {
-
-// }
-
-// void Channel::modeInvite(bool add)
-// {
-	
-// }
-
-// void Channel::modeKey(bool add, std::string key=0)
-// {
-	
-// }
-
-void Channel::modeLimite(Request& request, std::pair<std::string, std::string> command)
+void Channel::modeBan(Request& request, pair<string, string> command)
 {
+	(void)request;
+	vector<string>::iterator it;
+	if (command.first[0] == '+')
+	{
+		it = find(_banned.begin(), _banned.end(), command.second);
+		if (it != _banned.end())
+			cout << "already banned" << endl;
+		else
+		{
+			it = find(_users.begin(), _users.end(), command.second);
+			if (it == _users.end())
+				cout << "not on this chan" << endl;
+			else
+			{
+				_banned.push_back(*it);
+				_users.erase(it);
+				_operators.erase(find(_operators.begin(), _operators.end(), command.second));
+				_vocal.erase(find(_vocal.begin(), _vocal.end(), command.second));
+				cout << *it << "has been banned" << endl;
+			}
+		}
+	}
+	else
+	{
+		it = find(_users.begin(), _users.end(), command.second);
+		if (it != _users.end())
+			cout << *it << "isn't banned from this chan" << endl;
+		else
+		{
+			it = find(_banned.begin(), _banned.end(), command.second);
+			if (it != _banned.end())
+			{
+				_users.push_back(*it);
+				_banned.erase(it);
+				cout << *it << "is no longer banned" << endl;
+			}
+			else
+				cout << "unknown user" << endl;
+		}
+	}
+}
+
+void Channel::modeLimite(Request& request, pair<string, string> command)
+{
+	(void)request;
 	if (command.first[0] == '+')
 	{
 		try
 		{
-			int max = stoi(command.second);
+			int max = atoi(command.second.c_str());
 			this->_maxUsers = max;
 			_mods['l'] = true;
 		}
-		catch (const std::exception & e)
+		catch (const exception & e)
 		{
 			//bad value
 		}
@@ -47,31 +78,54 @@ void Channel::modeLimite(Request& request, std::pair<std::string, std::string> c
 	else
 	{
 		this->_maxUsers = -1;
-		_mods.erase('l');
+		_mods['l'] = false;
 	}
 }
 
-// void Channel::modeOper(Client& target, std::string message=0)
-// {
-	
-// }
+void Channel::changeChanMode(Request& request, pair<string, string> command)
+{
+	(void)request;
+	cout<< "command = " << command.first << ", param = "<<command.second<<endl;
+	if (command.first[1] == 'l')
+		modeLimite(request, command);
+	else if (command.first[1] == 'k')
+		_key = command.second;
+	if (command.first[0] == '+')
+	{
+		map<char, bool>::iterator it = _mods.find(command.first[1]);
+		if (it != _mods.end())
+		_mods[command.first[1]] = true;
+	}
+	else
+	{
+		_mods[command.first[1]] = false;
+	}
+}
 
-// void Channel::modePrivate(Client& target, std::string message=0)
-// {
-	
-// }
+void Channel::changeUserMode(Request& request, pair<string, string> command, vector<string>& target)
+{
+	(void)request;
+	vector<string>::iterator it;
+	cout<< "command = " << command.first << ", param = "<<command.second<<endl;
+	if (command.first[1] == 'b')
+		modeBan(request, command);
+	else
+	{
+		it = find(_users.begin(), _users.end(), command.second);
+		if (command.first[0] == '+')
+		{
+			if (find(target.begin(), target.end(), command.second) == target.end())
+				target.push_back(*it);
+		}
+		else
+		{
+			it = find(target.begin(), target.end(), command.second);
+			target.erase(it);
+		}
+	}
+}
 
-// void Channel::modeSecret(Client& target, std::string message=0)
-// {
-	
-// }
-
-// void Channel::modeVocal(Client& target, std::string message=0)
-// {
-	
-// }
-
-static int isInSet(char c, std::string set)
+static int isInSet(char c, string set)
 {
 	for (uint i = 0; i < set.size(); i++){
 		if (c == set[i])
@@ -80,12 +134,12 @@ static int isInSet(char c, std::string set)
 	return 0;
 }
 
-static uint checkModes(std::string params)
+static uint checkModes(string params)
 {
 	bool userMode = false;
 	bool chanMode = false;
 	int count = 0;
-	std::string found = "";
+	string found = "";
 	if ((params[0] != '-' && params[0] != '+') || params.size() < 2)
 		return 0;
 	for (uint i = 1; i < params.size(); i++){
@@ -113,12 +167,12 @@ static uint checkModes(std::string params)
 	return count;
 }
 
-static std::map<std::string, std::string> splitModes(std::vector<std::string>params)
+static map<string, string> splitModes(vector<string>params)
 {
-	std::map<std::string, std::string>modes;
+	map<string, string>modes;
 	uint countParams = 0;
 	for (uint i = 1; i < params[1].size(); i++){
-		std::string mode = "";
+		string mode = "";
 		mode += params[1][0];
 		mode += params[1][i];
 		if (params[1][i] == 'b' || params[1][i] == 'o' || params[1][i] == 'v')
@@ -137,18 +191,25 @@ static std::map<std::string, std::string> splitModes(std::vector<std::string>par
 	return modes;
 }
 
-int Channel::addMode(Request& request, std::vector<std::string>params)
+int Channel::addMode(Request& request, vector<string>params)
 {
 	uint countParams;
-	std::map<std::string, std::string>modes;
+	map<string, string>modes;
 	// if (isOperator(request.nickName))
 	// {
 		countParams = checkModes(params[1]);
 		if (countParams != params.size() - 2)
-			return (std::cout << "erreur de parametres"<<std::endl, 1);
+			return (cout << "erreur de parametres"<<endl, 1);
 		modes = splitModes(params);
-		for (std::map<std::string, std::string>::iterator it = modes.begin(); it != modes.end(); it++){
-			std::cout << "mode = " << it->first << ", param = "<< it->second << std::endl;
+		for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){
+			if (it->first[1] == 'b')
+				changeUserMode(request, *it, _banned);
+			else if (it->first[1] == 'o')
+				changeUserMode(request, *it, _operators);
+			else if (it->first[1] == 'v')
+				changeUserMode(request, *it, _vocal);
+			else
+				changeChanMode(request, *it);
 		}
 	// }
 	// else
