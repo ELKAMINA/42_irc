@@ -102,6 +102,8 @@ public:
 	std::vector<Client *> 		_all_clients;
 	// std::map<Client*, Request*>	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
+	// <std::vector<Channel*>		_all_chanels; //list of all existing channels
+
 	
 private:
 

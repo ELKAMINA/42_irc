@@ -1,7 +1,7 @@
 #include "../includes/Request.hpp"
 
 
-Request::Request(char* buffer)
+Request::Request(char* buffer, Client& cli) : _origin(cli)
 {
 	/* S'il faut gerer egalement les tabluations,ce code fait tres bien l'affaire. Il recupere les mots dans une phrase */
 		// std::string input = buffer;
@@ -13,6 +13,7 @@ Request::Request(char* buffer)
 	/* ********************************************* */
 
 	_raw_req = buffer;
+	// _origin = cli;
 	char * token = strtok(buffer, " ");
    // loop through the string to extract all other tokens
 	while( token != NULL ) {
@@ -21,9 +22,10 @@ Request::Request(char* buffer)
 	}
 	req_validity = valid_req;
 	_cmd_types = UNKNOWN;
+	// _origin = cli;
 }
 
-Request::Request( const Request& x )
+Request::Request( const Request& x ) : _origin(x._origin)
 {
 	*this = x;
 }
@@ -107,7 +109,7 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 		entries[0].resize(entries[0].size() - 1);
 		// std::cout << entries[0] << entries[0].size() << std::endl;
 		cli->setNickname(entries[0]);
-		req->_nickname_cli = entries[0];
+		// req->_nickname_cli = entries[0];
 		// std::cout << " OK c'est good " << std::endl;
 	}
 
@@ -228,11 +230,38 @@ int Request::_privmsg(Client *cli, Request *req, Server *serv)
 			}
 			return 0;
 		}
-		if (entries[1][0] == '&' && entries[1][0] == '#')
+		if (entries[0][0] == '&' && entries[0][0] == '#')
 		{
 			std::cout << "it's a chanel thing " << std::endl;
 			return 2;
 		}
 	}
 	return 5;
+}
+
+int	Request::_join(Client *cli, Request *req, Server *serv)
+{
+	/* Find si chanel existe ou non 
+	1. s'il existe alors ajouter le client au chanel
+	2. s'il nexiste pas, creer un chanel et rajouter dans la liste des chanel existants et ajouter l'utilisateur à la liste de sutilisateurs du chanel.
+	*/
+	(void)req;
+	(void)serv;
+	(void)cli;
+	if (entries.size() < 1)
+		std::cout << "error " << std::endl;
+	// if (entries.size() > 2)
+	// 	multiChan(cli, req, serv);
+	else if (entries.size() ==  1)
+		oneChan(cli, req, serv);
+	return 0;
+}
+
+void Request::oneChan(Client* cli, Request* req, Server *serv)
+{
+	(void)req;
+	(void)serv;
+	(void)cli;
+	entries[0].erase(0, 1); // RÉCUPÉRATION UNIQUEMENT DU NOM DU CHANEL
+	
 }

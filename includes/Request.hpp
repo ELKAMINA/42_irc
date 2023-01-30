@@ -63,8 +63,8 @@ class Request
 		enum cmd					_cmd_types;
 		std::string					_body;
 		// std::string					_origin;
-		std::string					_nickname_cli;
-		// Client&						_origin; // a remplacer ac le nickname du client
+		// std::string					_nickname_cli;
+		Client&						_origin; // a remplacer ac le nickname du client
 		std::string					serv_origin;
 		enum state					status;
 		enum valid_req				req_validity; //Valid request or not
@@ -74,18 +74,27 @@ class Request
 		// int							type;
 
 	public:
-		Request		(char* buf);
+		Request		(char* buf, Client& cli);
 		~Request	();
 		Request		( const Request &x );
 		Request & 	operator = ( const Request &rhs );
+
+		/* Getters */
 		std::string getEntries(size_t i) const;
+
+		/* Commands */
 		void		_pass(Client* cli, Request* req, Server *serv);
 		void		_nick(Client* cli, Request* req, Server *serv);
 		void		_user(Client* cli, Request* req, Server *serv);
 		int			_privmsg(Client* cli, Request* req, Server *serv);
+		int			_join(Client* cli, Request* req, Server *serv);
+
+		/* Utils for commands*/
 		void		msg_to_user(Client* cli, Request* req, Server *serv);
 		int			user_existence(std::string dest, Server *serv);
 		Client*		find(std::string dest, Server *serv);
 		int			wrong_nickname();
+		void		oneChan(Client* cli, Request* req, Server *serv);
+		void		multiChan(Client* cli, Request* req, Server *serv);
 
 };
