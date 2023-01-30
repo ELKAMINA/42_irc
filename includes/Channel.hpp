@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/29 11:25:50 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/30 16:50:37 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@
 
 using namespace std;
 
+class Request;
+class Client;
+
 class Channel
 {
 	public:
@@ -40,15 +43,6 @@ class Channel
 	
 	/* METHODS */
 
-		/* RIGHTS & STATUS */
-		void addUser(Client &user);
-		void deleteUser(Client &user);
-		// void addOperator(Client &user);
-		// void deleteOperator(Client &user, string message);
-		void ban(Client& ope, Client& user, string message); // named KICK in RFC
-		void inviteIn(Client& inviter, Client &invited);
-		// void authorizeVocal(Client &user);
-		// void mute(Client &user);
 
 		/* MODES MANAGEMENT */
 		void changeChanMode(Request& request, pair<string, string> command);
@@ -60,18 +54,23 @@ class Channel
 		/* COMMUNICATION*/
 		// void sendMessageToMembers(Request &message, Client &from);
 
+		/* COMMANDS */
+		void join(Request& request);
+		void invite(Request& request);
+		
 		/* CHAN INFO CHECKERS */
-		bool isMember(Client &user);
-		bool isOperator(string &user);
-		bool isBanned(Client &user);
-		bool canTalk(Client &user);
+		bool isInChanList(string const &user, vector<string>& list);
 
 		/* CHAN MODE CHECKER */
 		bool activeMode(char mode);
 		void initModes();
 		/* COMMAND MANAGER */
 		// void treatAndReturn(Request &request);
-		
+
+	/* ACCESSORS */
+		string getName() const;
+		string getTopic() const;
+			
 	private:
 
 		char				_prefix;

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/29 11:30:34 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/30 16:48:34 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,117 +82,17 @@ void Channel::initModes()
 	_mods.insert(make_pair('s', false));
 	_mods.insert(make_pair('t', false));
 }
-/* ****************************** */
-/* *** RIGHTS & STATUS ********** */
-/* ****************************** */
-
-void Channel::addUser(Client& user)
-{
-	vector<string>::iterator target;
-	target = find(_users.begin(), _users.end(), user.getNickName());
-	if (target != _users.end())
-		cout << "User already in channel" << endl;
-	else
-	{
-		cout << user.getNickName() << "has successfully joined channel" << endl;
-		_users.push_back(user.getNickName());
-	}
-}
-
-void Channel::deleteUser(Client& user)
-{
-	vector<string>::iterator target;
-	target = find(_users.begin(), _users.end(), user.getNickName());
-	if (target == _users.end())
-		cout << "No such User" << endl;
-	else
-	{
-		cout << user.getNickName() << "has been successfully erased from channel" << endl;
-		_users.erase(target);
-	}
-}
-
-// void Channel::addOperator(Client& user)
-// {
-
-// }
-
-// void Channel::deleteOperator(Client& user, string fault)
-// {
-	
-// }
-
-void Channel::ban(Client& ope, Client& user, string fault)
-{
-	vector<string>::iterator sender;
-	vector<string>::iterator target;
-	sender = find(_operators.begin(), _operators.end(), ope.getNickName());
-	target = find(_users.begin(), _users.end(), user.getNickName());
-	if (sender == _operators.end())
-		cout << "Tu t'es pris pour le boss ?" << endl;
-	else if (target == _users.end())
-		cout << "Bro, y'a personne ici avec ce blase" << endl;
-	else
-	{
-		cout << "et c'est le ban, BOUYAAAA" << fault<< endl;
-		_users.erase(target);
-		_banned.push_back(user.getNickName());
-	}
-}
-
-void Channel::inviteIn(Client& inviter, Client& invited)
-{
-	vector<string>::iterator src;
-	vector<string>::iterator dst;
-
-	src = find(_users.begin(), _users.end(), inviter.getNickName());
-	dst = find(_users.begin(), _users.end(), invited.getNickName());
-	if (src == _users.end())
-		cout << "casse-toi tu pues t'es pas d'ma bande" << endl;
-	else if (dst != _users.end())
-		cout << "il est deja parmis nous ducon" << endl;
-	else
-	{
-		dst = find(_banned.begin(), _banned.end(), invited.getNickName());
-		if (dst != _banned.end())
-			cout << "son exil n'est pas fini" << endl;
-	}
-}
 
 /* ****************************** */
 /* *** CHAN INFO CHECKERS ******* */
 /* ****************************** */
 
-bool Channel::isMember(Client& user)
+bool Channel::isInChanList(string const &user, vector<string>& list)
 {
 	vector<string>::iterator it;
 
-	it = find(_users.begin(), _users.end(), user.getNickName());
-	return (it != _users.end());
-}
-
-bool Channel::isOperator(string& user)
-{
-	vector<string>::iterator it;
-
-	it = find(_operators.begin(), _operators.end(), user);
-	return (it != _operators.end());
-}
-
-bool Channel::isBanned(Client& user)
-{
-	vector<string>::iterator it;
-
-	it = find(_banned.begin(), _banned.end(), user.getNickName());
-	return (it != _banned.end());
-}
-
-bool Channel::canTalk(Client& user)
-{
-	vector<string>::iterator it;
-
-	it = find(_vocal.begin(), _vocal.end(), user.getNickName());
-	return (it != _vocal.end());
+	it = find(list.begin(), list.end(), user);
+	return (it != list.end());
 }
 
 /* ****************************** */
@@ -209,13 +109,15 @@ bool Channel::activeMode(char mode)
 }
 
 /* ****************************** */
-/* *** COMMAND MANAGER ********** */
+/* *** ACCESSORS **************** */
 /* ****************************** */
-// cote chan:
-// 		JOIN KICK KICKBAN INVITE PART TOPIC (OP) 
-// cote server:
-// 		LIST 
-// void Channel::treatAndReturn(Request& message)
-// {
-	
-// }
+
+string Channel::getName() const
+{
+	return this->_name;
+}
+
+string Channel::getTopic() const
+{
+	return this->_topic;
+}
