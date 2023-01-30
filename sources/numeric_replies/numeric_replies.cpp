@@ -91,6 +91,7 @@ std::string	errAlreadyRegistered(Client *cli, Request *req)
 std::string	errPasswMismatch(Client *cli, Request *req) // Modifier "unregistered client par le vrai client user"
 {
 	// std::cout << "" << cli->getNickName() << req->_command << " :Not enough parameters" << std::endl;
+	
 	(void)cli; /* le temps de comprendre a quoi correspond <client>*/
 	(void)req;
 	std::ostringstream oss;

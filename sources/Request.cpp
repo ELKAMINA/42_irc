@@ -1,7 +1,7 @@
 #include "../includes/Request.hpp"
 
 
-Request::Request(char* buffer)
+Request::Request(char* buffer, Client& cli) : _origin(cli)
 {
 	/* S'il faut gerer egalement les tabluations,ce code fait tres bien l'affaire. Il recupere les mots dans une phrase */
 		// std::string input = buffer;
@@ -13,6 +13,7 @@ Request::Request(char* buffer)
 	/* ********************************************* */
 
 	_raw_req = buffer;
+	// _origin = cli;
 	char * token = strtok(buffer, " ");
    // loop through the string to extract all other tokens
 	while( token != NULL ) {
@@ -21,9 +22,10 @@ Request::Request(char* buffer)
 	}
 	req_validity = valid_req;
 	_cmd_types = UNKNOWN;
+	// _origin = cli;
 }
 
-Request::Request( const Request& x )
+Request::Request( const Request& x ) : _origin(x._origin)
 {
 	*this = x;
 }
@@ -107,7 +109,7 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 		entries[0].resize(entries[0].size() - 1);
 		// std::cout << entries[0] << entries[0].size() << std::endl;
 		cli->setNickname(entries[0]);
-		req->_nickname_cli = entries[0];
+		// req->_nickname_cli = entries[0];
 		// std::cout << " OK c'est good " << std::endl;
 	}
 
