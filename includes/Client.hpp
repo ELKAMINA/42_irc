@@ -27,7 +27,6 @@ class Client
 	
 	/* OPERATOR OVERLOADS */
 		Client & operator= ( const Client & rhs );
-<<<<<<< HEAD
 		int				getFdClient();
 		void			setFdClient(int fd);
 		std::string 	getNickName() const;
@@ -35,19 +34,6 @@ class Client
 
 	/* METHODS */
 		// void receiveMessage(Message& message);
-=======
-	
-	/* GETTERS */
-		int	getFdClient();
-		std::string getNickName() const;
-		std::string getUserName() const;
-
-	/* SETTERS */
-		void	setFdClient(int fd);
-
-	/* METHODS */
-		void receiveMessage(Message& message);
->>>>>>> 5453c9f (WIP CLIENT CLASS :)
 	
 	private:
 
