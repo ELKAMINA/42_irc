@@ -31,7 +31,22 @@ std::string			errAlreadyRegistered(Client *cli, Request *req);
 std::string	        errNicknameInUse(Client *cli, Request *req);
 std::string	        errErroneusNickname(Client *cli, Request *req);
 std::string	        errNoNicknameGiven(Client *cli, Request *req);  
-std::string         rpl_welcome(Client *cli, Request *req)
+std::string         rpl_welcome(std::string str, std::string req);
+std::string         rpl_umodeis(std::string str, std::string req);
+std::string         rpl_topic(std::string channel, std::string topic);
+std::string         rpl_notopic(std::string channel, std::string topic=0);
+std::string         rpl_channelmodeis(std::string channel, std::string mode);
+std::string         rpl_namereply(std::string message, std::string option=0);
+std::string         rpl_endofnames(std::string message, std::string option=0);
+std::string         rpl_inviting(std::string channel, std::string nickname=0);
+std::string         rpl_away(std::string channel, std::string away=0);
+std::string         rpl_list(std::string message, std::string away=0);
+std::string	        rpl_listend(std::string message = 0, std::string op = 0);
+
+
+
+
+
 
 
 #endif

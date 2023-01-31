@@ -100,14 +100,101 @@ std::string	errPasswMismatch(Client *cli, Request *req) // Modifier "unregistere
 	return (var);
 }
 
-std::string	rpl_welcome(Client *cli, Request *req) // Modifier "unregistered client par le vrai client user"
+std::string	rpl_welcome(std::string prefix, std::string req) // Modifier "unregistered client par le vrai client user"
 {
-	// std::cout << "" << cli->getNickName() << req->_command << " :Not enough parameters" << std::endl;
-	
-	(void)cli; /* le temps de comprendre a quoi correspond <client>*/
-	(void)req;
+
 	std::ostringstream oss;
-	oss << "Welcome to the Internet Relay Network " << cli->getNickName() << "!" << cli->getUserName() << " @" << "host\n";
+	oss << "Welcome to the Internet Relay Network " << prefix << "\n";
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_umodeis(std::string prefix, std::string req) // Modifier "unregistered client par le vrai client user"
+{
+
+	std::ostringstream oss;
+	oss << prefix << "\n";
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_topic(std::string channel, std::string topic) // Modifier "unregistered client par le vrai client user"
+{
+
+	std::ostringstream oss;
+	oss << channel << ":" << topic << "\n";
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_notopic(std::string channel, std::string topic = 0) // Modifier "unregistered client par le vrai client user"
+{
+
+	std::ostringstream oss;
+	oss << channel << ":No topic is set" << "\n";
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_channelmodeis(std::string channel, std::string mode) // Modifier "unregistered client par le vrai client user"
+{ 
+	/* <channel><mode><modeparams> */
+	std::ostringstream oss;
+	oss << channel << " " << mode << "\n";
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_namereply(std::string message, std::string op = 0) // Modifier "unregistered client par le vrai client user"
+{
+
+	std::ostringstream oss;
+	oss << message;
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_namereply(std::string channel, std::string op = 0) // Modifier "unregistered client par le vrai client user"
+{
+	/* Résultat attendu : user per channels prend en compte les channels privés et secrets*/
+	std::ostringstream oss;
+	oss << channel << " " << "End of NAMES list\n";
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_inviting(std::string channel, std::string nickname = 0) // Modifier "unregistered client par le vrai client user"
+{
+	/* Résultat attendu : <channel> <nick>*/
+	std::ostringstream oss;
+	oss << channel << " " << nickname;
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_away(std::string nickname, std::string away = 0) // Modifier "unregistered client par le vrai client user"
+{
+	/* Résultat attendu : <nick>:<away> */
+	std::ostringstream oss;
+	oss << nickname << " " << away;
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_list(std::string message, std::string op = 0) // Modifier "unregistered client par le vrai client user"
+{
+	/* Résultat attendu : <channel> <#visible>:<topic> */
+	std::ostringstream oss;
+	oss << message;
+	std::string var = oss.str();
+	return (var);
+}
+
+std::string	rpl_listend(std::string message = 0, std::string op = 0) // Modifier "unregistered client par le vrai client user"
+{
+	/* Résultat attendu : <channel> <#visible>:<topic> */
+	std::ostringstream oss;
+	oss << "End of list\n";
 	std::string var = oss.str();
 	return (var);
 }
