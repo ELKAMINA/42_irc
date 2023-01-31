@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 14:34:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/31 17:45:39 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/01/31 17:50:58 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ string	errNoSuchNick(string senderNick=0, string wrongNick)
 	return (reply);
 }
 
-string	errNoSuchChannel(string senderNick=0, string wrongChan)
+string	errNoSuchChannel(string senderNick=0, string wrongChan=0)
 {
 	string reply;
 	reply = wrongChan + " 403 * :No such channel\n";
