@@ -1,7 +1,7 @@
 #include "../includes/Request.hpp"
 
 
-Request::Request(char* buffer, Client& cli) : _origin(cli)
+Request::Request(char* buffer, Client* cli) : _origin(cli)
 {
 	/* S'il faut gerer egalement les tabluations,ce code fait tres bien l'affaire. Il recupere les mots dans une phrase */
 		// std::string input = buffer;
@@ -84,6 +84,8 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 	(void)serv;
 	(void)req;
 	// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
+	// std::cout << "entry " << entries[0] << " size " << entries[0].size() << std::endl;
+	entries[0].resize(entries[0].size() - 1);
 	if (req->entries.size() > 1 || req->entries.size() < 1)
 	{
 		req->req_validity = notEnough_params;
@@ -94,7 +96,7 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 		req->req_validity = omitted_cmd;
 		return ;
 	}
-	else if (user_existence(entries[1], serv) == 0)
+	else if (user_existence(entries[0], serv) == 0)
 	{
 		req->req_validity = nickname_exists;
 		return ;
@@ -104,15 +106,10 @@ void Request::_nick(Client *cli, Request *req, Server *serv)
 		req->req_validity = erroneous_nickname;
 		return ;
 	}
-	else
-	{
-		entries[0].resize(entries[0].size() - 1);
-		// std::cout << entries[0] << entries[0].size() << std::endl;
-		cli->setNickname(entries[0]);
-		// req->_nickname_cli = entries[0];
-		// std::cout << " OK c'est good " << std::endl;
-	}
-
+	std::cout << "hereeee " << entries[0] << entries[0].size() << std::endl;
+	cli->setNickname(entries[0]);
+	// req->_nickname_cli = entries[0];
+	// std::cout << " OK c'est good " << std::endl
 }
 
 int Request::user_existence(std::string dest, Server *serv)
@@ -123,9 +120,13 @@ int Request::user_existence(std::string dest, Server *serv)
 	size_t i = 0;
 	while (i < serv->_req_per_id.size())
 	{
+		std::cout << "Nick " << (*it).first->getNickName() <<  "dest " << dest << std::endl;
 		if	((*it).first->getNickName() == dest)
+		{
 			return 0;
+		}	
 		i++;
+		it++;
 	}
 	return 1;
 }

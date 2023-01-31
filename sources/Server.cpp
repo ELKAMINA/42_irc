@@ -9,7 +9,6 @@
 /*   Updated: 2023/01/19 17:31:24 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "Server.hpp"
 #include <unistd.h>
 
@@ -234,7 +233,7 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 {
 	/* Creating the request and the client associated */
 	std::vector<Request *> all_req_per_client;
-	Request *req = new Request(buf, *cli);
+	Request *req = new Request(buf, cli);
 	global.id_requests++;
 	req->_id = global.id_requests;
 	// cli->setPwd(_pass);
@@ -258,13 +257,15 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 		req->response = "Please enter the password or Nickname first\n";
 	else if (req->req_validity == erroneous_nickname)
 		req->response = errErroneusNickname(cli, req);
+	else if (req->req_validity == nickname_exists)
+		req->response = errNicknameInUse(cli, req);
 	else if (req->req_validity == welcome_msg)
 	{
 		std::ostringstream oss;
 		if (cli->getNickName().empty())
 			cli->setNickname("*");
 		oss << ":" << this->get_name() << " "
-			<< "001" << cli->getNickName() << " " << cli->setPrefix();
+			<< "001" << cli->getNickName() << " " << cli->setPrefix() << "\n";
 		std::string var = oss.str();
 		req->response = var;
 	}
@@ -339,3 +340,4 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req
 	if (req->_command.compare("JOIN") == 0)
 		req->_join(cli, req, this);
 }
+

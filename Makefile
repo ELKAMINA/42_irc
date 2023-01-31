@@ -19,7 +19,7 @@ INC			=			-I ./includes/\
 						-I ./includes/numeric_replies/
 
 SRCS 		= 			$(addprefix $(SRCS_PATH),	\
-						test_folder/main_channel_test.cpp \
+						main.cpp \
 						Server.cpp \
 						ServerSocket.cpp \
 						Socket.cpp \

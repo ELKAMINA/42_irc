@@ -199,7 +199,7 @@ int Request::_privmsg(Client *cli, Request *req, Server *serv)
 		{
 			if (find(entries[0], serv) != serv->_req_per_id.end()->first)
 			{
-				std::cout << "kikouuu " << std::endl;
+				// std::cout << "kikouuu " << std::endl;
 				if (send(find(entries[1], serv)->getFdClient(), req->entries[1].c_str(), req->entries[1].length(), 0) == -1)
 					return (-1); // a t on le droit ??
 				// target.push_back(entries[1]);

@@ -64,17 +64,18 @@ class Request
 		std::string					_body;
 		// std::string					_origin;
 		// std::string					_nickname_cli;
-		Client&						_origin; // a remplacer ac le nickname du client
+		Client*						_origin; // a remplacer ac le nickname du client
 		std::string					serv_origin;
 		enum state					status;
 		enum valid_req				req_validity; //Valid request or not
 		std::string					response;
+		// ajouter une reply pour lexpediteur en cas de commande ou lexpediteur attend une réponse 
 		std::vector<std::string>	target;
 		// std::vector<Channel*>		all_chans;
 		// int							type;
 
 	public:
-		Request		(char* buf, Client& cli);
+		Request		(char* buf, Client* cli);
 		~Request	();
 		Request		( const Request &x );
 		Request & 	operator = ( const Request &rhs );
