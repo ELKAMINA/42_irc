@@ -130,6 +130,24 @@ int Request::user_existence(std::string dest, Server *serv)
 	return 1;
 }
 
+Client* Request::find(std::string dest, Server *serv)
+{
+	// std::map<Client*, std::vector<Request*> >::key_compare my_comp = serv->_req_per_id.key_comp();
+	std::map<Client*, std::vector<Request*> >::iterator it = serv->_req_per_id.begin();
+
+	// size_t i = 0;
+	while (it != serv->_req_per_id.end())
+	{
+		if	((*it).first->getNickName() == dest)
+		{
+			std::cout << "dest " << (*it).first->getNickName() << std::endl;
+			return it->first;
+		}
+		it++;
+	}
+	return serv->_req_per_id.end()->first; // returning the end of the tree
+}
+
 int Request::wrong_nickname()
 {
 	for (size_t i = 0; i < entries[0].size() - 1; i++)
