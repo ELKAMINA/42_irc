@@ -25,14 +25,14 @@ void	            errAlreadyInUse(std::string serverName, std::string nickName);
 void	            errNoSuchNick(std::string nickName);
 void	            errNoSuchChannel(std::string channelName);
 void	            errCannotSendToChan(std::string channelName);
-std::string			errNeedMoreParams(Client *cli, Request *req);
-std::string			errPasswMismatch(Client *cli, Request *req); // Server client need to be disconected from the server after this
-std::string			errAlreadyRegistered(Client *cli, Request *req);
-std::string	        errNicknameInUse(Client *cli, Request *req);
-std::string	        errErroneusNickname(Client *cli, Request *req);
-std::string	        errNoNicknameGiven(Client *cli, Request *req);  
-std::string         rpl_welcome(std::string str, std::string req);
-std::string         rpl_umodeis(std::string str, std::string req);
+std::string			errNeedMoreParams(Client *cli, Request *req  = 0);
+std::string			errPasswMismatch(Client *cli, Request *req = 0); // Server client need to be disconected from the server after this
+std::string			errAlreadyRegistered(Client *cli, Request *req = 0);
+std::string	        errNicknameInUse(Client *cli, Request *req = 0);
+std::string	        errErroneusNickname(Client *cli, Request *req = 0);
+std::string	        errNoNicknameGiven(Client *cli, Request *req = 0);  
+std::string         rpl_welcome(std::string str, std::string req = 0);
+std::string         rpl_umodeis(std::string str, std::string req = 0);
 std::string         rpl_topic(std::string channel, std::string topic);
 std::string         rpl_notopic(std::string channel, std::string topic=0);
 std::string         rpl_channelmodeis(std::string channel, std::string mode);
