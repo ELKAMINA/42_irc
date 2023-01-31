@@ -250,12 +250,15 @@ int	Request::_join(Client *cli, Request *req, Server *serv)
 	(void)req;
 	(void)serv;
 	(void)cli;
+
 	if (entries.size() < 1)
 		std::cout << "error " << std::endl;
-	// if (entries.size() > 2)
-	// 	multiChan(cli, req, serv);
-	else if (entries.size() ==  1)
+	if (entries.size() > 2)
+		multiChan(cli, req, serv);
+	if (entries.size() ==  1 && (entries[0][0] == '#' || entries[0][0] == '&'))
 		oneChan(cli, req, serv);
+	else if (entries.size() ==  1 && (entries[0][0] != '#' && entries[0][0] != '&'))
+		reply = "NOT A CHANNEL SORRYYYYY";
 	return 0;
 }
 
@@ -265,5 +268,18 @@ void Request::oneChan(Client* cli, Request* req, Server *serv)
 	(void)serv;
 	(void)cli;
 	entries[0].erase(0, 1); // RÉCUPÉRATION UNIQUEMENT DU NOM DU CHANEL
-	
+	std::cout << "OK user ajouté au chan " << std::endl; 
+	/* PSEUDO CODE 
+	=> Ajouter l'utilisateur à la lsite des utilsateurs du chan
+	*/
+	 
+}
+
+void Request::multiChan(Client* cli, Request* req, Server *serv)
+{
+	(void)req;
+	(void)serv;
+	(void)cli;
+	entries[0].erase(0, 1); // RÉCUPÉRATION UNIQUEMENT DU NOM DU CHANEL
+	std::cout << "OK user ajouté au chan " << std::endl;
 }
