@@ -172,3 +172,78 @@ void Request::_user(Client *cli, Request *req, Server *serv)
 	}
 
 }
+
+int Request::_privmsg(Client *cli, Request *req, Server *serv)
+{
+	(void)cli;
+	(void)serv;
+	if(req->entries.size() < 2)
+	{
+		req->req_validity = notEnough_params;
+		return 1;
+	}
+	else if (req->entries.size() >= 2)
+	{
+		if	(entries[0][0] != '&' && entries[0][0] != '#')
+		{
+			std::vector<std::string>::iterator it = entries.begin();
+			std::string dest;
+			dest =  entries[0];
+			std::string message;
+			entries.erase(it);
+			if (find(dest, serv) != serv->_req_per_id.end()->first)
+			{
+				std::cout << "ici 2" << std::endl;
+				if (entries.size() >= 2)
+				{
+					size_t i = 0;
+					while (i < entries.size())
+					{
+						message.append(entries[i]);
+						message.append(" ");
+						i++;
+					}
+				}
+				std::ostringstream oss;
+				oss << ":" << cli->getNickName() << "!" << cli->getNickName() << "@" << cli->getRealName() << " PRIVMSG " << dest << " " << message;
+				std::string var = oss.str();
+				if (send(find(dest, serv)->getFdClient(), var.c_str(), var.length(), 0) == -1)
+					return (-1);
+			}
+			return 0;
+		}
+		if (entries[0][0] == '&' && entries[0][0] == '#')
+		{
+			std::cout << "it's a chanel thing " << std::endl;
+			return 2;
+		}
+	}
+	return 5;
+}
+
+int	Request::_join(Client *cli, Request *req, Server *serv)
+{
+	/* Find si chanel existe ou non 
+	1. s'il existe alors ajouter le client au chanel
+	2. s'il nexiste pas, creer un chanel et rajouter dans la liste des chanel existants et ajouter l'utilisateur à la liste de sutilisateurs du chanel.
+	*/
+	(void)req;
+	(void)serv;
+	(void)cli;
+	if (entries.size() < 1)
+		std::cout << "error " << std::endl;
+	// if (entries.size() > 2)
+	// 	multiChan(cli, req, serv);
+	else if (entries.size() ==  1)
+		oneChan(cli, req, serv);
+	return 0;
+}
+
+void Request::oneChan(Client* cli, Request* req, Server *serv)
+{
+	(void)req;
+	(void)serv;
+	(void)cli;
+	entries[0].erase(0, 1); // RÉCUPÉRATION UNIQUEMENT DU NOM DU CHANEL
+	
+}
