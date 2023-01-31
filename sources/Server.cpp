@@ -14,7 +14,6 @@
 
 Server::Server(int domain, int service, int protocol, int port, u_long interface, int max_co, std::string name, std::string pass) : _domain(domain), _service(service), _protocol(protocol), _port(port), _interface(interface), _max_co(max_co), _name(name), _pass(pass)
 {
-	// this->_server_events = new pollfd;
 	_online_clients = 0;
 	this->_client_events = new pollfd[max_co];
 	for (int i = 0; i < max_co; i++)
