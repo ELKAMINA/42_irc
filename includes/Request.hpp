@@ -69,6 +69,7 @@ class Request
 		enum state					status;
 		enum valid_req				req_validity; //Valid request or not
 		std::string					response;
+		std::string					reply; /* Errors or Replies */
 		// ajouter une reply pour lexpediteur en cas de commande ou lexpediteur attend une réponse 
 		std::vector<std::string>	target;
 		// std::vector<Channel*>		all_chans;

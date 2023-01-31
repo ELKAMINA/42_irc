@@ -22,6 +22,7 @@ Request::Request(char* buffer, Client* cli) : _origin(cli)
 	}
 	req_validity = valid_req;
 	_cmd_types = UNKNOWN;
+	reply = "UNDEFINED";
 	// _origin = cli;
 }
 
