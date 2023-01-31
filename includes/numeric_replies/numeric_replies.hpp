@@ -30,7 +30,8 @@ std::string			errPasswMismatch(Client *cli, Request *req); // Server client need
 std::string			errAlreadyRegistered(Client *cli, Request *req);
 std::string	        errNicknameInUse(Client *cli, Request *req);
 std::string	        errErroneusNickname(Client *cli, Request *req);
-std::string	        errNoNicknameGiven(Client *cli, Request *req);
+std::string	        errNoNicknameGiven(Client *cli, Request *req);  
+std::string         rpl_welcome(Client *cli, Request *req)
 
 
 #endif
