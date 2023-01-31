@@ -34,6 +34,7 @@ class Client
 		std::string 	getRealName() const;
 		int 			getmode() const;
 		std::string 	getPwd() const;
+		std::string		getHost() const;
 
 	/* SETTERS */
 		std::string		setPrefix();

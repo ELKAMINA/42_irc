@@ -47,6 +47,11 @@ int Client::getmode() const
 	return this->_mode;
 }
 
+std::string Client::getHost() const
+{
+	return this->_host;
+}
+
 std::string Client::getPwd() const
 {
 	return this->_pass;
