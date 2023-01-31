@@ -85,18 +85,18 @@ class Request
 		std::string getEntries(size_t i) const;
 
 		/* Commands */
-		void		_pass(Client* cli, Request* req, Server *serv);
-		void		_nick(Client* cli, Request* req, Server *serv);
-		void		_user(Client* cli, Request* req, Server *serv);
-		int			_privmsg(Client* cli, Request* req, Server *serv);
-		int			_join(Client* cli, Request* req, Server *serv);
+		void		_pass(Client* cli, Server *serv);
+		void		_nick(Client* cli, Server *serv);
+		void		_user(Client* cli, Server *serv);
+		int			_privmsg(Client* cli, Server *serv);
+		int			_join(Client* cli, Server *serv);
 
 		/* Utils for commands*/
-		void		msg_to_user(Client* cli, Request* req, Server *serv);
+		void		msg_to_user(Client* cli, Server *serv);
 		int			user_existence(std::string dest, Server *serv);
 		Client*		find(std::string dest, Server *serv);
 		int			wrong_nickname();
-		void		oneChan(Client* cli, Request* req, Server *serv);
-		void		multiChan(Client* cli, Request* req, Server *serv);
+		void		oneChan(Client* cli, Server *serv);
+		void		multiChan(Client* cli, Server *serv);
 
 };

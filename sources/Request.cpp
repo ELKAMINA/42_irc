@@ -46,70 +46,69 @@ std::string Request::getEntries(size_t i) const
 	return entries[i];
 }
 
-void Request::_pass(Client *cli, Request *req, Server *serv)
+void Request::_pass(Client *cli, Server *serv)
 {
 	(void)cli;
 	(void)serv;
 	// std::cout << "siiiize " << serv->get_pass() << std::endl;
-	// std::cout << req->entries[1] << req->entries[1].size() << std::endl;
-	if((req->entries.size() + 1) > 2 || (req->entries.size() + 1) < 2)
+	// std::cout << entries[1] << entries[1].size() << std::endl;
+	if((entries.size() + 1) > 2 || (entries.size() + 1) < 2)
 	{
-		req->req_validity = notEnough_params;
+		req_validity = notEnough_params;
 		return ;
 	}
 	else if(cli->getNickName() != "UNDEFINED")
 	{
-		req->req_validity = already_registered;
+		req_validity = already_registered;
 		return ;
 	}
-	else if ((req->entries.size() + 1) == 2)
+	else if ((entries.size() + 1) == 2)
 	{
-		req->entries[0].resize(req->entries[0].size() - 1); // take off the \n
-		if (req->entries[0] == serv->get_pass())
+		entries[0].resize(entries[0].size() - 1); // take off the \n
+		if (entries[0] == serv->get_pass())
 		{
-			req->req_validity = valid_req; // A changer 
+			req_validity = valid_req; // A changer 
 			cli->setPwd(serv->get_pass());
 			return ;
 		}
 		else
 		{
-			req->req_validity = incorrect_pwd;
+			req_validity = incorrect_pwd;
 			return ;
 		}
 	}
 }
 
-void Request::_nick(Client *cli, Request *req, Server *serv)
+void Request::_nick(Client *cli, Server *serv)
 {
 	(void)cli;
 	(void)serv;
-	(void)req;
 	// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
 	// std::cout << "entry " << entries[0] << " size " << entries[0].size() << std::endl;
 	entries[0].resize(entries[0].size() - 1);
-	if (req->entries.size() > 1 || req->entries.size() < 1)
+	if (entries.size() > 1 || entries.size() < 1)
 	{
-		req->req_validity = notEnough_params;
+		req_validity = notEnough_params;
 		return ;	
 	}
 	else if (cli->getPwd() == "UNDEFINED" && cli->getUserName() == "UNDEFINED" )
 	{
-		req->req_validity = omitted_cmd;
+		req_validity = omitted_cmd;
 		return ;
 	}
 	else if (user_existence(entries[0], serv) == 0)
 	{
-		req->req_validity = nickname_exists;
+		req_validity = nickname_exists;
 		return ;
 	}
 	else if (wrong_nickname() == 0)
 	{
-		req->req_validity = erroneous_nickname;
+		req_validity = erroneous_nickname;
 		return ;
 	}
 	std::cout << "hereeee " << entries[0] << entries[0].size() << std::endl;
 	cli->setNickname(entries[0]);
-	// req->_nickname_cli = entries[0];
+	// _nickname_cli = entries[0];
 	// std::cout << " OK c'est good " << std::endl
 }
 
@@ -161,20 +160,19 @@ int Request::wrong_nickname()
 	return 1;
 }
 
-void Request::_user(Client *cli, Request *req, Server *serv)
+void Request::_user(Client *cli, Server *serv)
 {
 	(void)cli;
 	(void)serv;
-	(void)req;
 	// std::cout << cli->getPwd() <<  cli->getUserName() << std::endl;
-	if (req->entries.size() < 4 || req->entries.size() > 4)
+	if (entries.size() < 4 || entries.size() > 4)
 	{
-		req->req_validity = notEnough_params;
+		req_validity = notEnough_params;
 		return ;	
 	}
 	else if (cli->getPwd() == "UNDEFINED" && cli->getNickName() == "UNDEFINED" )
 	{
-		req->req_validity = omitted_cmd;
+		req_validity = omitted_cmd;
 		return ;
 	}
 	else
@@ -187,22 +185,22 @@ void Request::_user(Client *cli, Request *req, Server *serv)
 		if (entries[3][0])
 			entries[3].resize(entries[3].size() - 1);
 		cli->setRealname(entries[3]);
-		req->req_validity = welcome_msg;
+		req_validity = welcome_msg;
 		// std::cout << " OK c'est good " << std::endl;
 	}
 
 }
 
-int Request::_privmsg(Client *cli, Request *req, Server *serv)
+int Request::_privmsg(Client *cli, Server *serv)
 {
 	(void)cli;
 	(void)serv;
-	if(req->entries.size() < 2)
+	if(entries.size() < 2)
 	{
-		req->req_validity = notEnough_params;
+		req_validity = notEnough_params;
 		return 1;
 	}
-	else if (req->entries.size() >= 2)
+	else if (entries.size() >= 2)
 	{
 		if	(entries[0][0] != '&' && entries[0][0] != '#')
 		{
@@ -241,43 +239,45 @@ int Request::_privmsg(Client *cli, Request *req, Server *serv)
 	return 5;
 }
 
-int	Request::_join(Client *cli, Request *req, Server *serv)
+int	Request::_join(Client *cli, Server *serv)
 {
 	/* Find si chanel existe ou non 
 	1. s'il existe alors ajouter le client au chanel
 	2. s'il nexiste pas, creer un chanel et rajouter dans la liste des chanel existants et ajouter l'utilisateur à la liste de sutilisateurs du chanel.
 	*/
-	(void)req;
 	(void)serv;
 	(void)cli;
 
 	if (entries.size() < 1)
 		std::cout << "error " << std::endl;
 	if (entries.size() > 2)
-		multiChan(cli, req, serv);
+		multiChan(cli, serv);
 	if (entries.size() ==  1 && (entries[0][0] == '#' || entries[0][0] == '&'))
-		oneChan(cli, req, serv);
-	else if (entries.size() ==  1 && (entries[0][0] != '#' && entries[0][0] != '&'))
-		reply = "NOT A CHANNEL SORRYYYYY";
+		oneChan(cli, serv);
 	return 0;
 }
 
-void Request::oneChan(Client* cli, Request* req, Server *serv)
+void Request::oneChan(Client* cli, Server *serv)
 {
-	(void)req;
 	(void)serv;
 	(void)cli;
+	if (entries.size() ==  1 && (entries[0][0] != '#' && entries[0][0] != '&'))
+		reply = "NOT A CHANNEL SORRYYYYY";
 	entries[0].erase(0, 1); // RÉCUPÉRATION UNIQUEMENT DU NOM DU CHANEL
-	std::cout << "OK user ajouté au chan " << std::endl; 
 	/* PSEUDO CODE 
-	=> Ajouter l'utilisateur à la lsite des utilsateurs du chan
+	=> Chercher dans le vecteur Channel, si entries[0] existe deja 
+		Si oui, 
+			=> Ajouter l'utilisateur à la lsite des utilsateurs du chan
+		Si non,
+			=> new Channel 
+			=> Ajouter l'utilisateur à la lsite des utilsateurs du chan
+			=> Ajouter le channel dans le vecteur de Channel
 	*/
 	 
 }
 
-void Request::multiChan(Client* cli, Request* req, Server *serv)
+void Request::multiChan(Client* cli,Server *serv)
 {
-	(void)req;
 	(void)serv;
 	(void)cli;
 	entries[0].erase(0, 1); // RÉCUPÉRATION UNIQUEMENT DU NOM DU CHANEL

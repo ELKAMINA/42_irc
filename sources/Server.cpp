@@ -330,14 +330,14 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req
 
 	/* PASS COMMAND */
 	if (req->_command.compare("PASS") == 0)
-		req->_pass(cli, req, this);
+		req->_pass(cli, this);
 	if (req->_command.compare("NICK") == 0)
-		req->_nick(cli, req, this);
+		req->_nick(cli, this);
 	if (req->_command.compare("USER") == 0)
-		req->_user(cli, req, this);
+		req->_user(cli, this);
 	if (req->_command.compare("PRIVMSG") == 0)
-		req->_privmsg(cli, req, this);
+		req->_privmsg(cli, this);
 	if (req->_command.compare("JOIN") == 0)
-		req->_join(cli, req, this);
+		req->_join(cli, this);
 }
 
