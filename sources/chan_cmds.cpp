@@ -41,7 +41,10 @@ void Channel::join(Request &request)
 	string user = request._origin->getNickName();
 	vector<string>::iterator it;
 	if (isInChanList(user, _users))
+	{
+		// std::cout << " heeerewww " << std::endl;
 		return (errInCmd(request, errUserOnChannel(user,0)));
+	}
 	if (isInChanList(user, _banned))
 		return (errInCmd(request, errBannedFromChan(0, request.entries[2])));
 	if (_mods['l'] && _onlineUsers == _maxUsers)
@@ -52,9 +55,10 @@ void Channel::join(Request &request)
 			return (errInCmd(request, errInviteOnlyChan(0, request.entries[2])));
 		_invited.erase(it=find(_invited.begin(), _invited.end(), user));
 	}
-	_users.push_back(user);
 	_onlineUsers += 1;
 	request.target.insert(request.target.end(), _users.begin(), _users.end());
+	_users.push_back(user);
+	request.status = treated;
 }
 
 void Channel::invite(Request& request)

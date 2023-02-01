@@ -28,10 +28,12 @@
 # include <map>
 # include "Client.hpp"
 # include "Request.hpp"
+# include "Channel.hpp"
 # include "./numeric_replies/numeric_replies.hpp"
 
 class Client;
 class Request;
+class Channel;
 
 struct cinfo
 {
@@ -87,6 +89,7 @@ public:
 	void			handle_request(char *buf, int *i, Client *cli);
 	void			check_req_validity(Request **req);
 	void			_parsing(Client *cli, Request *req, std::vector<Request*>);
+	void			_chan_requests(Client *cli, Request *req, Channel *chan);
 
 	cinfo					global;
 	std::string				name; // limited to 63 characters
@@ -102,7 +105,8 @@ public:
 	std::vector<Client *> 		_all_clients;
 	// std::map<Client*, Request*>	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
 	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
-	// <std::vector<Channel*>		_all_chanels; //list of all existing channels
+	std::vector<Channel*>		_all_chanels; //list of all existing channels
+	bool						_test;
 
 	
 private:

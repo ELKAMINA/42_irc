@@ -141,7 +141,7 @@ Client* Request::find(std::string dest, Server *serv)
 	{
 		if	((*it).first->getNickName() == dest)
 		{
-			std::cout << "dest " << (*it).first->getNickName() << std::endl;
+			// std::cout << "dest " << (*it).first->getNickName() << std::endl;
 			return it->first;
 		}
 		it++;
@@ -257,14 +257,45 @@ int	Request::_join(Client *cli, Server *serv)
 	return 0;
 }
 
+Channel* Request::existing_chan(std::string name, Server *serv)
+{
+	std::vector<Channel *>::iterator it = serv->_all_chanels.begin();
+	while(it != serv->_all_chanels.end())
+	{
+		if ((*it)->getName() == name)
+			return *it;
+		it++;
+	}
+	return NULL;
+}
+
 void Request::oneChan(Client* cli, Server *serv)
 {
 	(void)serv;
-	(void)cli;
+	// (void)cli;
+	Channel *tmp;
 	if (entries.size() ==  1 && (entries[0][0] != '#' && entries[0][0] != '&'))
 		reply = "NOT A CHANNEL SORRYYYYY";
 	entries[0].erase(0, 1); // RÉCUPÉRATION UNIQUEMENT DU NOM DU CHANEL
-	/* PSEUDO CODE 
+	tmp = existing_chan(entries[0], serv);
+	this->status = ongoing;
+	if (tmp != NULL) /* Channel existe */
+	{
+		tmp->cmd_lexer(*this);
+		serv->_chan_requests(cli, this, tmp);
+	}
+	else
+	{
+		
+		// std::cout << "je rentre ici " << serv->_all_chanels.size() << std::endl;
+		Channel *to_add = new Channel((serv->_all_clients), entries[0], *cli);
+		serv->_all_chanels.push_back(to_add);
+		to_add->cmd_lexer(*this);
+		std::cout << " jojo " << std::endl;
+		serv->_chan_requests(cli, this, to_add);
+	}
+	/* PSEUDO CODE
+	
 	=> Chercher dans le vecteur Channel, si entries[0] existe deja 
 		Si oui, 
 			=> Ajouter l'utilisateur à la lsite des utilsateurs du chan

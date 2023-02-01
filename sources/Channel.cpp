@@ -18,22 +18,24 @@
 /* *** COPLIEN STUFF ************ */
 /* ****************************** */
 
-Channel::Channel( vector<Client>& allUsers, string channelName, Client& owner ) :
+Channel::Channel( vector<Client*>& allUsers, string channelName, Client& owner ) :
 _name(channelName), _allUsers(allUsers)
 {
 	initModes();
 	_operators.push_back(owner.getNickName()); // Client doesn't has a nickName getter yet
+	// _users.push_back(owner.getNickName()); 
 	_onlineUsers = 1;
 	_maxUsers = -1;
 	_topic = "";
 	_key = "";
 }
 
-Channel::Channel( vector<Client>& allUsers, string channelName, string channelKey, Client& owner ) :
+Channel::Channel( vector<Client*>& allUsers, string channelName, string channelKey, Client& owner ) :
 _name(channelName), _key(channelKey), _allUsers(allUsers)
 {
 	initModes();
 	_operators.push_back(owner.getNickName()); // Client doesn't has a nickName getter yet
+	// _users.push_back(owner.getNickName());
 	_onlineUsers = 1;
 	_maxUsers = -1;
 	_mods['k'] = true;

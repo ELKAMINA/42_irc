@@ -29,6 +29,7 @@ Server::Server(int domain, int service, int protocol, int port, u_long interface
 	global.id_requests = 0;
 	global.n = 0;
 	global.state = 0;
+	_test = false;
 	// nb_client_events = 1;
 }
 
@@ -248,17 +249,17 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 	else if (req->req_validity == invalid_body)
 		req->response = "Invalid message\n";
 	else if (req->req_validity == notEnough_params)
-		req->response = errNeedMoreParams(0, req->_command);
+		req->response = errNeedMoreParams(cli->getNickName(), req->_command);
 	else if (req->req_validity == incorrect_pwd)
-		req->response = errPasswMismatch(0,0);
+		req->response = errPasswMismatch(cli->getNickName(),cli->getNickName());
 	else if (req->req_validity == already_registered)
-		req->response = errAlreadyRegistered(0,0);
+		req->response = errAlreadyRegistered(cli->getNickName(),cli->getNickName());
 	else if (req->req_validity == omitted_cmd)
 		req->response = "Please enter the password or Nickname first\n";
 	// else if (req->req_validity == erroneous_nickname)
 	// 	req->response = errErroneusNickname(cli, req);
 	else if (req->req_validity == nickname_exists)
-		req->response = errNicknameInUse(0, req->entries[1]);
+		req->response = errNicknameInUse(cli->getNickName(), req->entries[1]);
 	else if (req->req_validity == welcome_msg)
 	{
 		std::ostringstream oss;
@@ -272,9 +273,12 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 	else if (req->req_validity == empty)
 	{
 	} /* DO nothing */
+	if (_test == false)
+	{
+		if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
+			return (perror("Problem in sending from server ")); // a t on le droit ??
+	}
 	// std::cout << " req response " << req.response << std::endl;
-	if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
-		return (perror("Problem in sending from server ")); // a t on le droit ??
 }
 
 int Server::is_charset(char c)
@@ -339,5 +343,35 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req
 		req->_privmsg(cli, this);
 	if (req->_command.compare("JOIN") == 0)
 		req->_join(cli, this);
+}
+
+void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
+{
+	(void)chan;
+	(void)cli;
+	if (req->reply != "UNDEFINED")
+	{
+		std::cout << "replyyyyyy " << req->reply << std::endl;
+		if (send(req->_origin->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
+			return (perror("Problem in sending from server ")); // a t on le droit ??
+	}
+	size_t i = 0;
+	std::cout << "target siiiiize " << req->target.size() << std::endl;
+	while (i < req->target.size())
+	{
+		// if (req->req_validity == joining_chan)
+		// {
+		req->response = "Ok u joined\n";
+		// std::cout 
+		// }
+		Client* tmp = req->find(req->target[i], this);
+		if	(tmp != NULL)	
+		{
+			if (send(tmp->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
+				return (perror("Problem in sending from server ")); // a t on le droit ?
+			_test = true;
+		}
+		i++;
+	}
 }
 

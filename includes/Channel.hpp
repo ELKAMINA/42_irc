@@ -34,8 +34,8 @@ class Channel
 	public:
 
 	/* CONSTRUCTORS */
-		Channel( vector<Client>& allUsers, string channelName, Client& owner );
-		Channel( vector<Client>& allUsers, string channelName, string channelKey, Client& owner );
+		Channel( vector<Client*>& allUsers, string channelName, Client& owner );
+		Channel( vector<Client*>& allUsers, string channelName, string channelKey, Client& owner );
 		Channel( const Channel& rhs );
 		~Channel();
 
@@ -86,7 +86,7 @@ class Channel
 		vector<string>		_vocal;
 		vector<string>		_banned;
 		vector<string>		_invited;
-		vector<Client>&		_allUsers;
+		vector<Client*>&	_allUsers;
 		map<char, bool>		_mods; //a définir
 
 };

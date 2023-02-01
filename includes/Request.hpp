@@ -11,7 +11,7 @@
 # include <poll.h>
 # include "ServerSocket.hpp"
 # include <map>
-// # include "Channels.hpp"
+# include "Channel.hpp"
 # include "Client.hpp"
 #include <sstream>
 # include "numeric_replies.hpp"
@@ -37,6 +37,7 @@ enum valid_req
 	erroneous_nickname,
 	privmsg_one,
 	welcome_msg,
+	joining_chan,
 	empty,
 };
 
@@ -72,7 +73,6 @@ class Request
 		std::string					reply; /* Errors or Replies */
 		// ajouter une reply pour lexpediteur en cas de commande ou lexpediteur attend une réponse 
 		std::vector<std::string>	target;
-		// std::vector<Channel*>		all_chans;
 		// int							type;
 
 	public:
@@ -98,5 +98,6 @@ class Request
 		int			wrong_nickname();
 		void		oneChan(Client* cli, Server *serv);
 		void		multiChan(Client* cli, Server *serv);
+		Channel*	existing_chan(std::string chan_name, Server *serv);
 
 };
