@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/30 16:50:37 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/01 12:57:31 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include "ServerSocket.hpp"
 # include "Request.hpp"
 # include "Client.hpp"
+# include "numeric_replies.hpp"
 
 using namespace std;
 
@@ -55,6 +56,7 @@ class Channel
 		// void sendMessageToMembers(Request &message, Client &from);
 
 		/* COMMANDS */
+		void cmd_lexer(Request& request);
 		void join(Request& request);
 		void invite(Request& request);
 		

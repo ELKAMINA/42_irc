@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 12:17:09 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/29 11:13:17 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/01 12:05:20 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,16 +64,14 @@ void Channel::modeLimite(Request& request, pair<string, string> command)
 	(void)request;
 	if (command.first[0] == '+')
 	{
-		try
+		int max = atoi(command.second.c_str());
+		if (max == 0)
 		{
-			int max = atoi(command.second.c_str());
-			this->_maxUsers = max;
-			_mods['l'] = true;
+			cout<<"bad value"<<endl;
+			return;
 		}
-		catch (const exception & e)
-		{
-			//bad value
-		}
+		this->_maxUsers = max;
+		_mods['l'] = true;
 	}
 	else
 	{
@@ -90,6 +88,8 @@ void Channel::changeChanMode(Request& request, pair<string, string> command)
 		modeLimite(request, command);
 	else if (command.first[1] == 'k')
 		_key = command.second;
+	else if (command.first[1] == 't')
+		_topic = command.second;
 	if (command.first[0] == '+')
 	{
 		map<char, bool>::iterator it = _mods.find(command.first[1]);
@@ -179,7 +179,8 @@ static map<string, string> splitModes(vector<string>params)
 			modes.insert(make_pair(mode, params[2]));
 		else
 		{
-			if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'))
+			if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'
+			|| params[1][i] == 't'))
 			{
 				modes.insert(make_pair(mode, params[2 + countParams]));
 				countParams += 1;
@@ -195,11 +196,11 @@ int Channel::addMode(Request& request, vector<string>params)
 {
 	uint countParams;
 	map<string, string>modes;
-	// if (isOperator(request.nickName))
+	// if (isOperator(request.sender.getNickName()))
 	// {
 		countParams = checkModes(params[1]);
 		if (countParams != params.size() - 2)
-			return (cout << "erreur de parametres"<<endl, 1);
+			return (request.response = errNeedMoreParams(request._origin->getNickName(), request._command), 1);
 		modes = splitModes(params);
 		for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){
 			if (it->first[1] == 'b')
@@ -213,6 +214,7 @@ int Channel::addMode(Request& request, vector<string>params)
 		}
 	// }
 	// else
-	// 	raise error not on chan
+		// request.response = errNoOperOnChan(request.sender, request);
+	// request.status = treated;
 	return 0;
 }
