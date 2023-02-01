@@ -6,10 +6,11 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/19 17:31:24 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/01 12:48:43 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "Server.hpp"
+
+#include "numeric_replies.hpp"
 #include <unistd.h>
 
 Server::Server(int domain, int service, int protocol, int port, u_long interface, int max_co, std::string name, std::string pass) : _domain(domain), _service(service), _protocol(protocol), _port(port), _interface(interface), _max_co(max_co), _name(name), _pass(pass)
@@ -247,17 +248,17 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 	else if (req->req_validity == invalid_body)
 		req->response = "Invalid message\n";
 	else if (req->req_validity == notEnough_params)
-		req->response = errNeedMoreParams(cli, req);
+		req->response = errNeedMoreParams(0, req->_command);
 	else if (req->req_validity == incorrect_pwd)
-		req->response = errPasswMismatch(cli, req);
+		req->response = errPasswMismatch(0,0);
 	else if (req->req_validity == already_registered)
-		req->response = errAlreadyRegistered(cli, req);
+		req->response = errAlreadyRegistered(0,0);
 	else if (req->req_validity == omitted_cmd)
 		req->response = "Please enter the password or Nickname first\n";
-	else if (req->req_validity == erroneous_nickname)
-		req->response = errErroneusNickname(cli, req);
+	// else if (req->req_validity == erroneous_nickname)
+	// 	req->response = errErroneusNickname(cli, req);
 	else if (req->req_validity == nickname_exists)
-		req->response = errNicknameInUse(cli, req);
+		req->response = errNicknameInUse(0, req->entries[1]);
 	else if (req->req_validity == welcome_msg)
 	{
 		std::ostringstream oss;
