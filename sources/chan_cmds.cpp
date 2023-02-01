@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/01 12:57:56 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/01 13:04:20 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "numeric_replies.hpp"
 
 typedef std::string	(*err)(string, string);
-typedef void		(Channel::*cmd)(Request&);
+typedef void		(Channel::*cmds)(Request&);
 
 void errInCmd(Request& request, string err)
 {
@@ -26,11 +26,11 @@ void errInCmd(Request& request, string err)
 
 void Channel::cmd_lexer(Request& request)
 {
-	vector<cmd>cmds;
+	vector<cmds>cmds;
 	cmds.push_back(&Channel::join);
 	cmds.push_back(&Channel::invite);
 	string cmd_name[] = {"JOIN", "INVITE"};
-	for (int i = 0; i< cmds.size(); i++){
+	for (size_t i = 0; i< cmds.size(); i++){
 		if (request._command == cmd_name[i])
 			(this->*(cmds[i]))(request);
 	}

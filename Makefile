@@ -6,7 +6,7 @@
 #    By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/17 07:46:31 by jcervoni          #+#    #+#              #
-#    Updated: 2023/02/01 12:43:06 by jcervoni         ###   ########.fr        #
+#    Updated: 2023/02/01 13:03:21 by jcervoni         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRCS 		= 			$(addprefix $(SRCS_PATH),	\
 						Request.cpp \
 						Channel.cpp \
 						Channel_mode.cpp \
+						chan_cmds.cpp \
 						./numeric_replies/numeric_replies.cpp \
 						./numeric_replies/numeric_errors.cpp \
 						)
