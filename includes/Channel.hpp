@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/01 12:57:31 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/01 18:59:51 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ class Channel
 
 		/* COMMANDS */
 		void cmd_lexer(Request& request);
+		void reply_joining(Request& request);
 		void join(Request& request);
 		void invite(Request& request);
 		

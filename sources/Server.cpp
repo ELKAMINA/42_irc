@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/01 12:48:43 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/01 20:05:59 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,6 +235,7 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 	/* Creating the request and the client associated */
 	std::vector<Request *> all_req_per_client;
 	Request *req = new Request(buf, cli);
+	_test  =false;
 	global.id_requests++;
 	req->_id = global.id_requests;
 	// cli->setPwd(_pass);
@@ -266,7 +267,7 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 		if (cli->getNickName().empty())
 			cli->setNickname("*");
 		oss << ":" << this->get_name() << " "
-			<< "001" << cli->getNickName() << " " << cli->setPrefix() << "\n";
+			<< "001 " << cli->getNickName() << " " << cli->setPrefix() << "\n";
 		std::string var = oss.str();
 		req->response = var;
 	}
@@ -351,8 +352,8 @@ void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
 	(void)cli;
 	if (req->reply != "UNDEFINED")
 	{
-		std::cout << "replyyyyyy " << req->reply << std::endl;
-		if (send(req->_origin->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
+		// std::cout << "replyyyyyy " << req->reply << std::endl;
+		if (send(req->_origin->getFdClient(), req->reply.c_str(), req->reply.length(), 0) == -1)
 			return (perror("Problem in sending from server ")); // a t on le droit ??
 	}
 	size_t i = 0;
@@ -361,7 +362,7 @@ void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
 	{
 		// if (req->req_validity == joining_chan)
 		// {
-		req->response = "Ok u joined\n";
+		// req->response = "Ok u joined\n";
 		// std::cout 
 		// }
 		Client* tmp = req->find(req->target[i], this);

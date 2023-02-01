@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/01 13:04:20 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/01 19:09:48 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ typedef void		(Channel::*cmds)(Request&);
 
 void errInCmd(Request& request, string err)
 {
-	request.response = err;
+	request.reply = err;
 	request.status = treated;
 }
 
@@ -36,15 +36,32 @@ void Channel::cmd_lexer(Request& request)
 	}
 }
 
+void Channel::reply_joining(Request& request)
+{
+	string rep = "";
+	vector<string>::iterator it;
+
+	if (this->_topic.size() > 0)
+		rep += "#" + this->getName() + " topic: " + this->_topic + '\n';
+	for (size_t i = 0; i < this->_users.size(); i++){
+		if ((it=find(_operators.begin(), _operators.end(), _users[i])) != _operators.end())
+			rep +="@";
+		else
+			rep +=":";
+		rep += _users[i];
+		if (i < _users.size() -1)
+			rep += ", ";
+	}
+	rep += '\n';
+	request.reply = rep;
+}
+
 void Channel::join(Request &request)
 {
 	string user = request._origin->getNickName();
 	vector<string>::iterator it;
 	if (isInChanList(user, _users))
-	{
-		// std::cout << " heeerewww " << std::endl;
 		return (errInCmd(request, errUserOnChannel(user,0)));
-	}
 	if (isInChanList(user, _banned))
 		return (errInCmd(request, errBannedFromChan(0, request.entries[2])));
 	if (_mods['l'] && _onlineUsers == _maxUsers)
@@ -57,6 +74,8 @@ void Channel::join(Request &request)
 	}
 	_onlineUsers += 1;
 	request.target.insert(request.target.end(), _users.begin(), _users.end());
+	request.response = ":" + request._origin->setPrefix() + " has join #" + this->getName() + '\n';
+	reply_joining(request);
 	_users.push_back(user);
 	request.status = treated;
 }
