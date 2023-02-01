@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/01 20:05:59 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/01 20:54:16 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,21 +246,21 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 		_parsing(cli, req, all_req_per_client);
 	}
 	if (req->req_validity == invalid_req)
-		req->response = "Invalid entry\n";
+		req->reply = "Invalid entry\n";
 	else if (req->req_validity == invalid_body)
-		req->response = "Invalid message\n";
+		req->reply = "Invalid message\n";
 	else if (req->req_validity == notEnough_params)
-		req->response = errNeedMoreParams(cli->getNickName(), req->_command);
+		req->reply = errNeedMoreParams(cli->getNickName(), req->_command);
 	else if (req->req_validity == incorrect_pwd)
-		req->response = errPasswMismatch(cli->getNickName(),cli->getNickName());
+		req->reply = errPasswMismatch(cli->getNickName(),cli->getNickName());
 	else if (req->req_validity == already_registered)
-		req->response = errAlreadyRegistered(cli->getNickName(),cli->getNickName());
+		req->reply = errAlreadyRegistered(cli->getNickName(),cli->getNickName());
 	else if (req->req_validity == omitted_cmd)
-		req->response = "Please enter the password or Nickname first\n";
+		req->reply = "Please enter the password or Nickname first\n";
 	// else if (req->req_validity == erroneous_nickname)
 	// 	req->response = errErroneusNickname(cli, req);
 	else if (req->req_validity == nickname_exists)
-		req->response = errNicknameInUse(cli->getNickName(), req->entries[1]);
+		req->reply = errNicknameInUse(cli->getNickName(), req->entries[1]);
 	else if (req->req_validity == welcome_msg)
 	{
 		std::ostringstream oss;
@@ -269,15 +269,21 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 		oss << ":" << this->get_name() << " "
 			<< "001 " << cli->getNickName() << " " << cli->setPrefix() << "\n";
 		std::string var = oss.str();
-		req->response = var;
+		req->reply = var;
 	}
 	else if (req->req_validity == empty)
 	{
 	} /* DO nothing */
-	if (_test == false)
+	if (_test == false && _client_events[*i].fd != req->_origin->getFdClient())
 	{
 		if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
 			return (perror("Problem in sending from server ")); // a t on le droit ??
+	}
+	else if (_test == false && _client_events[*i].fd == req->_origin->getFdClient())
+	{
+		if (req->reply != "UNDEFINED")
+			if (send(_client_events[*i].fd, req->reply.c_str(), req->reply.length(), 0) == -1)
+				return (perror("Problem in sending from server "));
 	}
 	// std::cout << " req response " << req.response << std::endl;
 }
