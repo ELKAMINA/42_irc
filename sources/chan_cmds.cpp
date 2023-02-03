@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 10:34:40 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/03 14:37:34 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ void Channel::invite(Request& request)
 	request.target.push_back(request.entries[1]);
 	request.response += request._origin->setPrefix() + " INVITE " + request.entries[1] + " #" + this->getName() + '\n';
 	request.reply = rpl_inviting(request.entries[1], this->getName());
+	request.status = treated;
 }
 
 void Channel::topic(Request& request)
@@ -134,6 +135,7 @@ void Channel::topic(Request& request)
 				this->_topic = &request.entries[2][1];
 		}
 	}
+	request.status = treated;
 }
 
 void Channel::part(Request& request)
@@ -158,5 +160,6 @@ void Channel::part(Request& request)
 		_onlineUsers -= 1;
 		request.target.insert(request.target.end(), _users.begin(), _users.end());
 		request.response = user + " leaves #" + this->getName() + reason + '\n';
+		request.status = treated;
 	}
 }
