@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 08:59:19 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/03 09:45:55 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ class Channel
 		void join(Request& request);
 		void invite(Request& request);
 		void topic(Request& request);
+		void part(Request& request);
 		
 		/* CHAN INFO CHECKERS */
 		bool isInChanList(string const &user, vector<string>& list);

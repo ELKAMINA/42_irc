@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 09:27:27 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/03 10:23:03 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void Channel::topic(Request& request)
 	string user = request._origin->getNickName();
 
 	if (size > 3)
-		errNeedMoreParams(0, request._command);
+		errInCmd(request, errNeedMoreParams(0, request._command));
 	else if (size == 2)
 	{
 		if (this->_topic.size() > 0)
@@ -128,9 +128,34 @@ void Channel::topic(Request& request)
 		else
 		{
 			if (request.entries[2][0] != ':')
-				errNeedMoreParams(0, request._command);
+				errInCmd(request, errNeedMoreParams(0, request._command));
 			else
 				this->_topic = &request.entries[2][1];
 		}
+	}
+}
+
+void Channel::part(Request& request)
+{
+	string user = request._origin->getNickName();
+	string reason = "";
+	vector<string>::iterator it;
+
+	if (!isInChanList(user, this->_users))
+		errInCmd(request, errNotOnChannel(user, this->getName()));
+	else
+	{
+		if ((*(request.entries.end()-1))[0] != '#')
+		{
+			if ((*(request.entries.end()-1))[0] == ':')
+				reason = " " + (*(request.entries.end()-1));
+			else
+				return (errInCmd(request, errNeedMoreParams(0, request._command)));
+		}
+		_users.erase(it = find(_users.begin(), _users.end(), user));
+		_operators.erase(it = find(_users.begin(), _users.end(), user));
+		_onlineUsers -= 1;
+		request.target.insert(request.target.end(), _users.begin(), _users.end());
+		request.response = user + " leaves " + this->getName() + reason + '\n';
 	}
 }
