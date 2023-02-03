@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 10:23:03 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/03 10:26:12 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,6 @@ void Channel::part(Request& request)
 		_operators.erase(it = find(_users.begin(), _users.end(), user));
 		_onlineUsers -= 1;
 		request.target.insert(request.target.end(), _users.begin(), _users.end());
-		request.response = user + " leaves " + this->getName() + reason + '\n';
+		request.response = user + " leaves #" + this->getName() + reason + '\n';
 	}
 }
