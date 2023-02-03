@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 08:49:06 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/03 09:27:27 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ void Channel::cmd_lexer(Request& request)
 	vector<cmds>cmds;
 	cmds.push_back(&Channel::join);
 	cmds.push_back(&Channel::invite);
-	string cmd_name[] = {"JOIN", "INVITE"};
+	cmds.push_back(&Channel::topic);
+	string cmd_name[] = {"JOIN", "INVITE", "TOPIC"};
 	for (size_t i = 0; i< cmds.size(); i++){
 		if (request._command == cmd_name[i])
 			(this->*(cmds[i]))(request);
@@ -88,6 +89,8 @@ void Channel::invite(Request& request)
 	vector<string>::iterator it;
 	if (request.entries.size() < 2)
 		return (errInCmd(request, errNeedMoreParams(0, request._command)));
+	if (!isInServ(request.entries[1], this->_allUsers))
+		return (errInCmd(request, errNoSuchNick(user, request.entries[1])));
 	if (_mods['l'] && _onlineUsers == _maxUsers)
 		return (errInCmd(request, errChannelIsFull(0, this->getName())));
 	if (_mods['i'] == true)
@@ -100,4 +103,34 @@ void Channel::invite(Request& request)
 	request.target.push_back(request.entries[1]);
 	request.response += request._origin->setPrefix() + " INVITE " + request.entries[1] + " #" + this->getName() + '\n';
 	request.reply = rpl_inviting(request.entries[1], this->getName());
+}
+
+void Channel::topic(Request& request)
+{
+	size_t size = request.entries.size();
+	string user = request._origin->getNickName();
+
+	if (size > 3)
+		errNeedMoreParams(0, request._command);
+	else if (size == 2)
+	{
+		if (this->_topic.size() > 0)
+			request.reply = rpl_topic(this->getName(), this->getTopic());
+		else
+			request.reply = rpl_notopic(this->getName(), this->getTopic());
+	}
+	else if (!isInChanList(user, _operators))
+		errInCmd(request, errChanPrivsNeeded(0, this->getName()));
+	else // new topic and user is operator
+	{
+		if (request.entries[2] == ":")
+			this->_topic = "";
+		else
+		{
+			if (request.entries[2][0] != ':')
+				errNeedMoreParams(0, request._command);
+			else
+				this->_topic = &request.entries[2][1];
+		}
+	}
 }

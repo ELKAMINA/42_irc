@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/30 16:48:34 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/03 08:59:34 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,17 @@ void Channel::initModes()
 	_mods.insert(make_pair('p', false));
 	_mods.insert(make_pair('s', false));
 	_mods.insert(make_pair('t', false));
+}
+
+bool Channel::isInServ(string const& user, vector<Client *>&users)
+{
+	vector<Client *>::iterator it;
+
+	for (size_t i = 0; i < users.size(); i++){
+		if (users[i]->getNickName() == user)
+			return true;
+	}
+	return false;
 }
 
 /* ****************************** */
