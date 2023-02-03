@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 10:26:12 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/03 10:34:40 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ void Channel::cmd_lexer(Request& request)
 	cmds.push_back(&Channel::join);
 	cmds.push_back(&Channel::invite);
 	cmds.push_back(&Channel::topic);
-	string cmd_name[] = {"JOIN", "INVITE", "TOPIC"};
+	cmds.push_back(&Channel::part);
+	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART"};
 	for (size_t i = 0; i< cmds.size(); i++){
 		if (request._command == cmd_name[i])
 			(this->*(cmds[i]))(request);
