@@ -1,10 +1,18 @@
 #include "Client.hpp"
 
 
-Client::Client(): _clientFd(0), _nickName("UNDEFINED"), _userName("UNDEFINED"), _pass("UNDEFINED"), _host("IRC with love"), _id(){};
+Client::Client(): _clientFd(0), _nickName("UNDEFINED"), _userName("UNDEFINED"), _pass("UNDEFINED"),
+_host("IRC with love"), _id()
+{
+	initModes();
+}
 
 
-Client::Client(int fd): _clientFd(fd), _nickName("UNDEFINED"), _userName("UNDEFINED"), _pass("UNDEFINED"), _host("IRC with love"), _id(){};
+Client::Client(int fd): _clientFd(fd), _nickName("UNDEFINED"), _userName("UNDEFINED"), _pass("UNDEFINED"),
+_host("IRC with love"), _id()
+{
+	initModes();
+}
 
 Client::Client( const Client& x ): _host(x._host) { *this = x; };
 
@@ -18,6 +26,7 @@ Client & Client::operator=( const Client& rhs )
 		this->_userName = rhs._userName;
 		this->_pass = rhs._pass;
 		this->_id = rhs._id;
+		this->_mode = rhs._mode;
 	}
 	return *this;
 };
@@ -42,9 +51,24 @@ std::string Client::getRealName() const
 	return this->_realName;
 }
 
-int Client::getmode() const
+std::string Client::getmode() const
 {
-	return this->_mode;
+	std::map<char, bool>::const_iterator it;
+	std::string ret = "";
+	for (it = _mode.begin(); it != _mode.end(); it++){
+		if (it->second == true)
+			ret += it->first;
+	}
+	return ret;
+}
+
+bool Client::checkMode(char mode) const
+{
+	map<char, bool>::const_iterator it;
+	it = _mode.find(mode);
+	if (it != _mode.end())
+		return true;
+	return false;
 }
 
 std::string Client::getHost() const
@@ -77,9 +101,9 @@ void Client::setRealname(std::string name)
 	this->_realName = name;
 }
 
-void Client::setMode(int mode)
+void Client::setMode(char mode, bool state)
 {
-	this->_mode = mode;
+	this->_mode[mode] = state;
 }
 
 void Client::setPwd(std::string pwd)
@@ -96,4 +120,14 @@ std::string Client::setPrefix()
 	return (var);
 }
 
-Client::~Client() {};
+void Client::initModes()
+{
+	this->_mode['i'] = false;
+	this->_mode['a'] = false;
+}
+
+Client::~Client()
+{
+	this->_mode.clear();
+	this->all_req.clear();
+}

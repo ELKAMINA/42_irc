@@ -32,7 +32,7 @@ class Client
 		std::string 	getNickName() const;
 		std::string 	getUserName() const;
 		std::string 	getRealName() const;
-		int 			getmode() const;
+		std::string		getmode() const;
 		std::string 	getPwd() const;
 		std::string		getHost() const;
 
@@ -42,23 +42,25 @@ class Client
 		void			setNickname(std::string name);
 		void			setUsername(std::string name);
 		void			setRealname(std::string name);
-		void			setMode(int mode);
+		void			setMode(char mode, bool state);
 		// void			setId(std::string);
 
 	/* METHODS */
+		bool			checkMode(char mode) const;
 		// void receiveMessage(Message& message);
 	
 	private:
 
-		int									                _clientFd;
-		std::string							                _nickName; //rfc: MAX 9 caracteres
-		std::string							                _userName;
-		std::string							                _realName;
-        std::string                                         _pass;
-		const std::string					                _host;
-		std::string							                _id;
-		int													_mode;
-		std::map<int, Request>								all_req;	
+		void						initModes();
+		int				            _clientFd;
+		std::string					_nickName; //rfc: MAX 9 caracteres
+		std::string					_userName;
+		std::string					_realName;
+        std::string					_pass;
+		const std::string			_host;
+		std::string					_id;
+		std::map<char, bool>		_mode;
+		std::map<int, Request>		all_req;	
 
 
 
