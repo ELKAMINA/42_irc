@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 17:48:06 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/02 14:40:30 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/03 08:47:31 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ std::string	rpl_topic(std::string channel, std::string topic ) // Modifier "unre
 {
 	// (void)topic;
 	std::ostringstream oss;
-	oss << channel << " :" << topic << "\n";
+	oss << "#" << channel << " :" << topic << "\n";
 	std::string var = oss.str();
 	return (var);
 }
@@ -46,7 +46,7 @@ std::string	rpl_notopic(std::string channel, std::string topic ) // Modifier "un
 {
 	(void)topic;
 	std::ostringstream oss;
-	oss << channel << " :No topic is set" << "\n";
+	oss << "#" << channel << " :No topic is set" << "\n";
 	std::string var = oss.str();
 	return (var);
 }
@@ -78,10 +78,10 @@ std::string	rpl_endofnames(std::string channel, std::string op ) // Modifier "un
 	return (reply);
 }
 
-std::string	rpl_inviting(std::string sender, string target, std::string channel) // Modifier "unregistered client par le vrai client user"
+std::string	rpl_inviting(std::string nickName, std::string channel) // Modifier "unregistered client par le vrai client user"
 {
 	string reply;
-	reply = sender + " INVITE " + target + " #" + channel + '\n';
+	reply = "#" + channel + " " + nickName + '\n';
 	return (reply);
 }
 
