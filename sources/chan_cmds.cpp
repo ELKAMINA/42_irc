@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/06 12:32:42 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/06 14:49:15 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@ void Channel::cmd_lexer(Request& request)
 	cmds.push_back(&Channel::invite);
 	cmds.push_back(&Channel::topic);
 	cmds.push_back(&Channel::part);
-	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART"};
+	cmds.push_back(&Channel::privmsg);
+	cmds.push_back(&Channel::kick);
+	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK"};
 	for (size_t i = 0; i< cmds.size(); i++){
 		if (request._command == cmd_name[i])
 			(this->*(cmds[i]))(request);
@@ -154,6 +156,20 @@ void Channel::part(Request& request)
 		request.response = user + " leaves #" + this->getName() + " " + request.message + '\n';
 		request.status = treated;
 	}
+}
+
+void Channel::privmsg(Request& request)
+{
+	string user = request._origin->getNickName();
+	vector<string>::iterator it;
+
+	if (!isInChanList(user, _users))
+		return (errInCmd(request, errNotOnChannel(user, this->getName())));
+	request.response += ":" + request._origin->setPrefix() + " PRIVMSG "
+	+ request.entries[0] + " " + request.entries[1] + '\n';
+	request.target.insert(request.target.begin(), _users.begin(), _users.end());
+	request.target.erase(it=find(request.target.begin(), request.target.end(), user));
+	request.status = treated;
 }
 
 void Channel::mode(Request& request)

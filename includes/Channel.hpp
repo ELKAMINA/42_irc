@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/06 12:06:29 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/06 14:20:46 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ class Channel
 		void invite(Request& request);
 		void topic(Request& request);
 		void part(Request& request);
+		void privmsg(Request& request);
 		void mode(Request& request);
 		void kick(Request& request);
 		
