@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 17:33:19 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 08:42:37 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/05 09:55:10 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ string				errInviteOnlyChan(string nickName, string channel);
 string				errBannedFromChan(string nickName, string channel);
 string				errBadChannelKey(string nickName, string channel);
 string				errChanPrivsNeeded(string nickName, string channel);
+string				errUModeUnknownFlag(string nickName, string channel);
 string				errUsersDontMatch(string nickName, string message);
 
 #endif

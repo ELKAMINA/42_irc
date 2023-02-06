@@ -46,6 +46,7 @@ class Client
 		// void			setId(std::string);
 
 	/* METHODS */
+		void			errInCmd(Request& request, string err);
 		bool			checkMode(char mode) const;
 		// void receiveMessage(Message& message);
 	

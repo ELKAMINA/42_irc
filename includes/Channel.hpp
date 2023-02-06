@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 09:45:55 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/06 12:06:29 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ class Channel
 		void changeChanMode(Request& request, pair<string, string> command);
 		void changeUserMode(Request& request, pair<string, string> command,vector<string>& target);
 		int addMode(Request& request, vector<string>params);
-		void modeBan(Request& request, pair<string, string> command);
+		// void modeBan(Request& request, pair<string, string> command);
 		void modeLimite(Request& request, pair<string, string> command);
 
 		/* COMMUNICATION*/
@@ -62,20 +62,24 @@ class Channel
 		void invite(Request& request);
 		void topic(Request& request);
 		void part(Request& request);
+		void mode(Request& request);
+		void kick(Request& request);
 		
 		/* CHAN INFO CHECKERS */
 		bool isInChanList(string const &user, vector<string>& list);
 		bool isInServ(string const& user, vector<Client *>&users);
 
 		/* CHAN MODE CHECKER */
+		void errInCmd(Request& request, string err);
 		bool activeMode(char mode);
 		void initModes();
 		/* COMMAND MANAGER */
 		// void treatAndReturn(Request &request);
 
 	/* ACCESSORS */
-		string getName() const;
-		string getTopic() const;
+		string	getName() const;
+		string	getTopic() const;
+		int		getOnlineCount() const;
 			
 	private:
 
@@ -88,7 +92,7 @@ class Channel
 		vector<string>		_users;
 		vector<string>		_operators; // separated from users or duplicated ?
 		vector<string>		_vocal;
-		vector<string>		_banned;
+		// vector<string>		_banned;
 		vector<string>		_invited;
 		vector<Client*>&	_allUsers;
 		map<char, bool>		_mods; //a définir

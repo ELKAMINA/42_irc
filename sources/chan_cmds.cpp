@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 14:37:34 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/06 12:32:42 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 typedef std::string	(*err)(string, string);
 typedef void		(Channel::*cmds)(Request&);
 
-void errInCmd(Request& request, string err)
+void Channel::errInCmd(Request& request, string err)
 {
 	request.reply = err;
 	request.status = treated;
@@ -66,8 +66,8 @@ void Channel::join(Request &request)
 	vector<string>::iterator it;
 	if (isInChanList(user, _users))
 		return (errInCmd(request, errUserOnChannel(user,0)));
-	if (isInChanList(user, _banned))
-		return (errInCmd(request, errBannedFromChan(0, this->getName())));
+	// if (isInChanList(user, _banned))
+	// 	return (errInCmd(request, errBannedFromChan(0, this->getName())));
 	if (_mods['l'] && _onlineUsers == _maxUsers)
 		return (errInCmd(request, errChannelIsFull(0, this->getName())));
 	if (_mods['i'] == true)
@@ -125,14 +125,14 @@ void Channel::topic(Request& request)
 		errInCmd(request, errChanPrivsNeeded(0, this->getName()));
 	else // new topic and user is operator
 	{
-		if (request.entries[2] == ":")
+		if (request.entries[2].size() == 1)
 			this->_topic = "";
 		else
 		{
 			if (request.entries[2][0] != ':')
 				errInCmd(request, errNeedMoreParams(0, request._command));
 			else
-				this->_topic = &request.entries[2][1];
+				this->_topic = request.entries[2];
 		}
 	}
 	request.status = treated;
@@ -141,25 +141,43 @@ void Channel::topic(Request& request)
 void Channel::part(Request& request)
 {
 	string user = request._origin->getNickName();
-	string reason = "";
 	vector<string>::iterator it;
 
 	if (!isInChanList(user, this->_users))
 		errInCmd(request, errNotOnChannel(user, this->getName()));
 	else
 	{
-		if ((*(request.entries.end()-1))[0] != '#')
-		{
-			if ((*(request.entries.end()-1))[0] == ':')
-				reason = " " + (*(request.entries.end()-1));
-			else
-				return (errInCmd(request, errNeedMoreParams(0, request._command)));
-		}
 		_users.erase(it = find(_users.begin(), _users.end(), user));
 		_operators.erase(it = find(_users.begin(), _users.end(), user));
 		_onlineUsers -= 1;
 		request.target.insert(request.target.end(), _users.begin(), _users.end());
-		request.response = user + " leaves #" + this->getName() + reason + '\n';
+		request.response = user + " leaves #" + this->getName() + " " + request.message + '\n';
 		request.status = treated;
 	}
+}
+
+void Channel::mode(Request& request)
+{
+	string user = request._origin->getNickName();
+	if (!isInChanList(user, this->_operators))
+		return(errInCmd(request, errChanPrivsNeeded(user, this->getName())));
+	addMode(request, request.entries);
+}
+
+void Channel::kick(Request& request)
+{
+	string user = request._origin->getNickName();
+	vector<string>::iterator it;
+
+	if (!isInChanList(user, _users))
+		return (errInCmd(request, errNotOnChannel(user, this->getName())));
+	if (!isInChanList(user, _operators))
+		return(errInCmd(request, errChanPrivsNeeded(user, this->getName())));
+	_users.erase(it = find(_users.begin(), _users.end(), request.entries[2]));
+	_operators.erase(it = find(_users.begin(), _users.end(), request.entries[2]));
+	_vocal.erase(it = find(_users.begin(), _users.end(), request.entries[2]));
+	_onlineUsers -= 1;
+	request.response += request._origin->setPrefix() + " KICK " + this->getName() + " "
+	+ request.entries[2] + " " + request.message + '\n';
+	request.status = treated;
 }

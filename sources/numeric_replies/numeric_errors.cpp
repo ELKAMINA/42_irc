@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 14:34:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/02 12:32:08 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/05 09:47:20 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,15 @@ string errChanPrivsNeeded(string nickName, string channel)
 	(void)nickName;
 	string reply;
 	reply = channel + " 482 * :You're not channel operator\n";
+	return (reply);
+}
+
+string errUModeUnknownFlag(string nickName, string channel)
+{
+	(void)nickName;
+	(void)channel;
+	string reply;
+	reply = "501 * :Unknown MODE flag";
 	return (reply);
 }
 

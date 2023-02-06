@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 08:59:34 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/06 12:06:58 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ Channel& Channel::operator=(const Channel& rhs)
 		this->_users = rhs._users;
 		this->_operators = rhs._operators;
 		this->_vocal = rhs._vocal;
-		this->_banned = rhs._banned;
+		// this->_banned = rhs._banned;
 		this->_mods = rhs._mods;
 	}
 	return *this;
@@ -70,7 +70,7 @@ Channel::~Channel()
 	this->_users.clear();
 	this->_operators.clear();
 	this->_vocal.clear();
-	this->_banned.clear();
+	// this->_banned.clear();
 	this->_invited.clear();
 	this->_mods.clear();
 }
@@ -133,4 +133,9 @@ string Channel::getName() const
 string Channel::getTopic() const
 {
 	return this->_topic;
+}
+
+int Channel::getOnlineCount() const
+{
+	return this->_onlineUsers;
 }
