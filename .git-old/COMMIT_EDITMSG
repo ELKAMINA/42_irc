@@ -1,0 +1,18 @@
+Gros segfault pour JOIN pour plusieurs Channels et des keys
+# Veuillez saisir le message de validation pour vos modifications. Les lignes
+# commençant par '#' seront ignorées, et un message vide abandonne la validation.
+#
+# Sur la branche handling_requests
+# Votre branche est en avance sur 'origin/handling_requests' de 2 commits.
+#   (utilisez "git push" pour publier vos commits locaux)
+#
+# Modifications qui seront validées :
+#	modifié :         includes/Channel.hpp
+#	modifié :         includes/Request.hpp
+#	modifié :         sources/Channel.cpp
+#	modifié :         sources/Request.cpp
+#	modifié :         sources/Server.cpp
+#
+# Fichiers non suivis:
+#	ircserv
+#

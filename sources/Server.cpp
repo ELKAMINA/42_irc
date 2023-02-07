@@ -222,11 +222,7 @@ void Server::read_client_req(Client *cli, int *i)
 		_online_clients--;
 	}
 	else
-	{
-
-		// std::cout << read_buffer << std::endl;
 		handle_request(read_buffer, i, cli);
-	}
 	memset(&read_buffer, 0, 30000); /* Pour reset les saisies Clients*/
 }
 
@@ -306,11 +302,14 @@ void Server::check_req_validity(Request **r)
 		return;
 	}
 	if (req->_raw_req[0] == ' ' || !req->_raw_req[0])
+	{
 		req->req_validity = invalid_req;
+	}
 	for (size_t i = 0; i < req->entries[0].size() - 1; i++)
 	{
 		if (isupper(req->entries[0][i]) == 0)
 		{
+			// std::cout << "ici 1 " << std::endl;
 			req->req_validity = invalid_req;
 			return;
 		}
@@ -322,15 +321,18 @@ void Server::check_req_validity(Request **r)
 			req->req_validity = invalid_body;
 			return;
 		}
+
 	}
-	if (req->entries.size() == 1)
-		req->entries[0].resize(req->entries[0].size() - 1); /* Take off the \n*/
+	// if (req->entries.size() == 1)
+	// 	req->entries[0].resize(req->entries[0].size() - 1); /* Take off the \n*/
+	req->removing_backslash(req->entries);
+	// std::cout << "req entries 0 " << req->entries[0] << " size " << req->entries[0].size() << std::endl;
 	req->_command = req->entries[0];
 	std::vector<std::string>::iterator it = req->entries.begin();
 	req->entries.erase(it);
-	// std::cout << "req entries 0 " << req->entries[0] << " size " << req->entries[0].size() << std::endl;
-	// std::cout << "size of req entries 0 " << req->entries[0].size() << std::endl;
-}
+	// req->finding_comas(req->entries[0], this, &(req.entries));
+	// std::cout << "size of req entries 0 " << r)eq->entries[0].size() << std::endl;
+};
 
 void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req_per_client)
 {
@@ -339,7 +341,6 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req
 	/* Verifier si c'est le même client */
 	_req_per_id.insert(pairing); // insert Client associated to the client
 
-	/* PASS COMMAND */
 	if (req->_command.compare("PASS") == 0)
 		req->_pass(cli, this);
 	if (req->_command.compare("NICK") == 0)
@@ -350,6 +351,14 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req
 		req->_privmsg(cli, this);
 	if (req->_command.compare("JOIN") == 0)
 		req->_join(cli, this);
+	if (req->_command.compare("PART") == 0)
+		req->_part(cli, this);
+	if (req->_command.compare("KICK") == 0)
+		req->_kick(cli, this);
+	if (req->_command.compare("TOPIC") == 0)
+		req->_topic(cli, this);
+	if (req->_command.compare("MODE") == 0)
+		req->_mode(cli, this);
 }
 
 void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
@@ -363,14 +372,9 @@ void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
 			return (perror("Problem in sending from server ")); // a t on le droit ??
 	}
 	size_t i = 0;
-	std::cout << "target siiiiize " << req->target.size() << std::endl;
+	// std::cout << "target siiiiize " << req->target.size() << std::endl;
 	while (i < req->target.size())
 	{
-		// if (req->req_validity == joining_chan)
-		// {
-		// req->response = "Ok u joined\n";
-		// std::cout 
-		// }
 		Client* tmp = req->find(req->target[i], this);
 		if	(tmp != NULL)	
 		{

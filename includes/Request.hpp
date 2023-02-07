@@ -59,6 +59,7 @@ class Request
 		int							_id;
 		std::string					_raw_req;
 		std::vector<std::string>	entries; // Params + Commands (entries[0] Max 512 caracteres (including the CR-LF)
+		std::vector<std::string>	eph;
 		char						_prefix; // Optional : ":" used by servers to indicate the true origin of the message
 		std::string					_command;
 		enum cmd					_cmd_types;
@@ -71,8 +72,11 @@ class Request
 		enum valid_req				req_validity; //Valid request or not
 		std::string					response;
 		std::string					reply; /* Errors or Replies */
+		std::string					msg;
 		// ajouter une reply pour lexpediteur en cas de commande ou lexpediteur attend une réponse 
 		std::vector<std::string>	target;
+		size_t						jo_nb_chan;
+		size_t							jo_nb_keys;
 		// int							type;
 
 	public:
@@ -90,6 +94,10 @@ class Request
 		void		_user(Client* cli, Server *serv);
 		int			_privmsg(Client* cli, Server *serv);
 		int			_join(Client* cli, Server *serv);
+		int			_part(Client* cli, Server *serv);
+		int			_kick(Client* cli, Server *serv);
+		int			_topic(Client* cli, Server *serv);
+		int			_mode(Client* cli, Server *serv);
 
 		/* Utils for commands*/
 		void		msg_to_user(Client* cli, Server *serv);
@@ -99,5 +107,8 @@ class Request
 		void		oneChan(Client* cli, Server *serv);
 		void		multiChan(Client* cli, Server *serv);
 		Channel*	existing_chan(std::string chan_name, Server *serv);
-
+		int			beginning_with_diez(std::vector<string> entries);
+		void 		resizing_chan(std::vector<std::string> entries);
+		void		counting_keys(std::vector<std::string> entries);
+		void		removing_backslash(std::vector<std::string> entries);
 };
