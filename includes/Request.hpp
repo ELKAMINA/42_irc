@@ -67,9 +67,7 @@ class Request
 		std::string					_command;
 		enum cmd					_cmd_types;
 		std::string					_body;
-		// std::string					_origin;
-		// std::string					_nickname_cli;
-		Client*						_origin; // a remplacer ac le nickname du client
+		Client*						_origin;
 		std::string					serv_origin;
 		enum state					status;
 		enum valid_req				req_validity; //Valid request or not
@@ -79,7 +77,7 @@ class Request
 		// ajouter une reply pour lexpediteur en cas de commande ou lexpediteur attend une réponse 
 		std::vector<std::string>	target;
 		size_t						jo_nb_chan;
-		size_t							jo_nb_keys;
+		size_t						jo_nb_keys;
 		// int							type;
 
 	public:

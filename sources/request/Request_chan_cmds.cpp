@@ -103,6 +103,7 @@ int	Request::_part(Client *cli, Server *serv)
 	if (reply == "UNDEFINED")
 	{
 		// std::cout << "NUMBEEERS of chnanan " << jo_nb_chan << " msg = " << msg  << std::endl;
+		
 		while (i < jo_nb_chan)
 		{
 			Channel* tmp = existing_chan(&entries[i][1], serv);

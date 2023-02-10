@@ -352,9 +352,8 @@ void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
 	(void)cli;
 	if (req->reply != "UNDEFINED")
 	{
-		// std::cout << "replyyyyyy " << req->reply << std::endl;
 		if (send(req->_origin->getFdClient(), req->reply.c_str(), req->reply.length(), 0) == -1)
-			return (perror("Problem in sending from server ")); // a t on le droit ??
+			return (perror("Problem in sending from server "));
 	}
 	size_t i = 0;
 	// std::cout << "target siiiiize " << req->target.size() << std::endl;
@@ -365,8 +364,8 @@ void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
 		{
 			if (send(tmp->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
 				return (perror("Problem in sending from server ")); // a t on le droit ?
-			_test = true;
 		}
+		_test = true;
 		i++;
 	}
 }

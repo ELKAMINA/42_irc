@@ -40,7 +40,7 @@ Client* Request::_find(std::string dest, Server *serv)
 			return it->first;
 		it++;
 	}
-	return serv->_req_per_id.end()->first; // returning the end of the tree
+	return NULL; // returning the end of the tree
 }
 
 int Request::wrong_nickname()
