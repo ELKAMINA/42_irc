@@ -359,12 +359,8 @@ void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
 	// std::cout << "target siiiiize " << req->target.size() << std::endl;
 	while (i < req->target.size())
 	{
-		Client* tmp = req->_find(req->target[i], this);
-		if	(tmp != NULL)	
-		{
-			if (send(tmp->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
+		if (send(req->target[i]->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
 				return (perror("Problem in sending from server ")); // a t on le droit ?
-		}
 		_test = true;
 		i++;
 	}

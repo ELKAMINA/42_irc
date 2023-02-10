@@ -75,7 +75,7 @@ class Request
 		std::string					reply; /* Errors or Replies */
 		std::string					message;
 		// ajouter une reply pour lexpediteur en cas de commande ou lexpediteur attend une réponse 
-		std::vector<std::string>	target;
+		std::vector<Client*>		target;
 		size_t						jo_nb_chan;
 		size_t						jo_nb_keys;
 		// int							type;
