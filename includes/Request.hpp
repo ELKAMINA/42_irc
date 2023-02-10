@@ -105,6 +105,8 @@ class Request
 		std::string	removing_backslash(std::vector<std::string> entries);
 		void		oneChan(Client* cli, Server *serv);
 		void		multiChan(Client* cli, Server *serv);
+		void		_mode_for_chans(Client* cli, Server* serv);
+		void		_mode_for_clis(Client* cli, Server* serv);
 
 	private:
 		/* Server Commands */

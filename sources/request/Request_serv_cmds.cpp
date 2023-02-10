@@ -182,7 +182,7 @@ int Request::_privmsg(Client *cli, Server *serv)
 				}
 				tmp->cmd_lexer(*this);
 			}
-			serv->_chan_requests(cli, this, tmp);
+			serv->_chan_requests(this);
 			return 2;
 		}
 	}

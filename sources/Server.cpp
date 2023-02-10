@@ -346,10 +346,8 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req
 	req->requestLexer(cli, this);
 }
 
-void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
+void	Server::_chan_requests(Request *req)
 {
-	(void)chan;
-	(void)cli;
 	if (req->reply != "UNDEFINED")
 	{
 		if (send(req->_origin->getFdClient(), req->reply.c_str(), req->reply.length(), 0) == -1)

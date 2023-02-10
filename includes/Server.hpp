@@ -89,7 +89,7 @@ public:
 	void			handle_request(char *buf, int *i, Client *cli);
 	void			check_req_validity(Request **req);
 	void			_parsing(Client *cli, Request *req, std::vector<Request*>);
-	void			_chan_requests(Client *cli, Request *req, Channel *chan);
+	void			_chan_requests(Request *req);
 
 	cinfo					global;
 	std::string				name; // limited to 63 characters

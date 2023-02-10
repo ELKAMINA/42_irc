@@ -127,7 +127,7 @@ void Request::oneChan(Client* cli, Server *serv)
 			status = ongoing;
 			tmp->cmd_lexer(*this);
 		}
-		serv->_chan_requests(cli, this, tmp);
+		serv->_chan_requests(this);
 	}
 	else
 	{
@@ -138,7 +138,7 @@ void Request::oneChan(Client* cli, Server *serv)
 			to_add = new Channel((serv->_all_clients), entries[0], entries[1], *cli);
 		serv->_all_chanels.push_back(to_add);
 		to_add->cmd_lexer(*this);
-		serv->_chan_requests(cli, this, to_add);
+		serv->_chan_requests(this);
 	}	 
 }
 
@@ -180,7 +180,7 @@ void Request::multiChan(Client* cli,Server *serv)
 			serv->_all_chanels.push_back(to_add);
 			status =  ongoing;
 			to_add->cmd_lexer(*this);
-			serv->_chan_requests(cli, this, to_add);
+			serv->_chan_requests(this);
 			// std::cout << "jarrive a la fin " << (*(serv->_all_chanels.begin() + i))->getName() << std::endl;
 		}
 		else
@@ -222,10 +222,39 @@ void Request::multiChan(Client* cli,Server *serv)
 					tmp->cmd_lexer(*this);
 				}
 			}
-			serv->_chan_requests(cli, this, tmp);
+			serv->_chan_requests(this);
 			this->target.clear();
 		}
 		i++;
 	}
 	
+}
+
+void Request::_mode_for_chans(Client* cli, Server* serv)
+{
+	Channel *tmp = existing_chan(entries[1], serv);
+	if (tmp)
+		tmp->cmd_lexer(*this);
+	else
+	{
+		reply = errNoSuchChannel(cli->getNickName(), "No such channel");
+		serv->_test = true;
+	}
+	serv->_chan_requests(this);
+}
+
+void Request::_mode_for_clis(Client* cli, Server* serv)
+{
+	Client* tmp = _find(cli->getNickName(), serv);
+	if (tmp != NULL)
+	{
+		for(size_t i = 0; i < entries.size(); i++)
+		{
+			for(size_t j = 0; j < entries[i].size(); j++)
+			{
+				if (entries[i][j])
+					std::cout << "hehe " << std::endl;
+			}
+		}
+	}
 }
