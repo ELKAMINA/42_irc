@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 17:48:06 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/03 08:47:31 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/08 13:17:08 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ std::string	rpl_topic(std::string channel, std::string topic ) // Modifier "unre
 {
 	// (void)topic;
 	std::ostringstream oss;
-	oss << "#" << channel << " :" << topic << "\n";
+	oss << "#" << channel << " " << topic << "\n";
 	std::string var = oss.str();
 	return (var);
 }
@@ -86,6 +86,14 @@ std::string	rpl_inviting(std::string nickName, std::string channel) // Modifier 
 }
 
 std::string	rpl_away(std::string nickname, std::string message ) // Modifier "unregistered client par le vrai client user"
+{
+	/* Résultat attendu : <nick>:<away> */
+	string reply;
+	reply = nickname + " :" + message + '\n';
+	return (reply);
+}
+
+std::string	rpl_unaway(std::string nickname, std::string message ) // Modifier "unregistered client par le vrai client user"
 {
 	/* Résultat attendu : <nick>:<away> */
 	string reply;

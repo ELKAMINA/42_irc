@@ -31,6 +31,7 @@ std::string         rpl_namereply(std::string message, std::string option);
 std::string         rpl_endofnames(std::string message, std::string option);
 std::string         rpl_inviting(std::string nickName, std::string channel);
 std::string         rpl_away(std::string channel, std::string away);
+std::string         rpl_unaway(std::string channel, std::string away);
 std::string         rpl_list(std::string message, std::string away);
 std::string	        rpl_listend(std::string message , std::string op );
 

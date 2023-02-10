@@ -37,12 +37,14 @@ class Client
 		std::string		getHost() const;
 
 	/* SETTERS */
-		std::string		setPrefix();
-		void			setPwd(std::string passwd);
-		void			setNickname(std::string name);
-		void			setUsername(std::string name);
-		void			setRealname(std::string name);
-		void			setMode(char mode, bool state);
+		std::string			setPrefix();
+		void				setPwd(std::string passwd);
+		void				setNickname(std::string name);
+		void				setUsername(std::string name);
+		void				setRealname(std::string name);
+		void				setMode(char mode, bool state);
+		void				setAwayMessage(std::string message);
+		std::string			getAwayMessage() const;
 		// void			setId(std::string);
 
 	/* METHODS */
@@ -59,6 +61,7 @@ class Client
 		std::string					_realName;
         std::string					_pass;
 		const std::string			_host;
+		std::string					_away_msg;
 		std::string					_id;
 		std::map<char, bool>		_mode;
 		std::map<int, Request>		all_req;	

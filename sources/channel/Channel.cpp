@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/07 18:31:31 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/10 11:29:23 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ bool Channel::activeMode(char mode)
 	map<char, bool>::iterator it;
 	it = _mods.find(mode);
 	if (it != _mods.end())
-		return true;
+		return it->second;
 	return false;
 }
 
@@ -138,4 +138,9 @@ string Channel::getTopic() const
 int Channel::getOnlineCount() const
 {
 	return this->_onlineUsers;
+}
+
+std::string Channel::getKey() const
+{
+	return this->_key;
 }

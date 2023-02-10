@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/07 18:31:15 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/10 11:28:30 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,10 @@ class Channel
 		// void treatAndReturn(Request &request);
 
 	/* ACCESSORS */
-		string	getName() const;
-		string	getTopic() const;
-		int		getOnlineCount() const;
+		string		getName() const;
+		string		getTopic() const;
+		int			getOnlineCount() const;
+		std::string	getKey() const;
 			
 	private:
 

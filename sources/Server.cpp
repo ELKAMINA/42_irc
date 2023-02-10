@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/01 20:54:16 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/10 11:31:47 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,9 +213,10 @@ void Server::read_client_req(Client *cli, int *i)
 	if (n_ci <= 0)
 	{
 		if (n_ci == 0)
-			std::cout << "The client which fd is " << cli->getFdClient() << " sent an empty request " << std::endl;
+			std::cout << "The client which fd is " << cli->getFdClient() << " sent an empty_req request " << std::endl;
 		else
 			perror("Baaaad");
+		// potential cause of irssi fail
 		close(_client_events[*i].fd);
 		// if nothing received, we need to delete the user
 		_client_events[*i] = _client_events[_online_clients - 1];
@@ -242,7 +243,7 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 		_parsing(cli, req, all_req_per_client);
 	}
 	if (req->req_validity == invalid_req)
-		req->reply = "Invalid entry\n";
+		req->reply = errUnknownCommand("Unknown", req->_command);
 	else if (req->req_validity == invalid_body)
 		req->reply = "Invalid message\n";
 	else if (req->req_validity == notEnough_params)
@@ -253,6 +254,8 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 		req->reply = errAlreadyRegistered(cli->getNickName(),cli->getNickName());
 	else if (req->req_validity == omitted_cmd)
 		req->reply = "Please enter the password or Nickname first\n";
+	else if (req->req_validity == invisible_man)
+		req->reply = "To Invisible man, you can't send message!\n";
 	// else if (req->req_validity == erroneous_nickname)
 	// 	req->response = errErroneusNickname(cli, req);
 	else if (req->req_validity == nickname_exists)
@@ -267,7 +270,7 @@ void Server::handle_request(char *buf, int *i, Client *cli)
 		std::string var = oss.str();
 		req->reply = var;
 	}
-	else if (req->req_validity == empty)
+	else if (req->req_validity == empty_req)
 	{
 	} /* DO nothing */
 	if (_test == false && _client_events[*i].fd != req->_origin->getFdClient())
@@ -296,9 +299,9 @@ void Server::check_req_validity(Request **r)
 {
 	Request *req = *r;
 
-	if (req->_raw_req.length() == 1 && req->_raw_req[0] == '\n') /* Empty entry */
+	if (req->_raw_req.length() == 1 && req->_raw_req[0] == '\n') /* Empty_req entry */
 	{
-		req->req_validity = empty;
+		req->req_validity = empty_req;
 		return;
 	}
 	if (req->_raw_req[0] == ' ' || !req->_raw_req[0])
@@ -325,12 +328,12 @@ void Server::check_req_validity(Request **r)
 	}
 	// if (req->entries.size() == 1)
 	// 	req->entries[0].resize(req->entries[0].size() - 1); /* Take off the \n*/
-	req->removing_backslash(req->entries);
+	req->entries[req->entries.size() - 1] = req->removing_backslash(req->entries);
 	// std::cout << "req entries 0 " << req->entries[0] << " size " << req->entries[0].size() << std::endl;
 	req->_command = req->entries[0];
 	std::vector<std::string>::iterator it = req->entries.begin();
 	req->entries.erase(it);
-	// req->finding_comas(req->entries[0], this, &(req.entries));
+	// req->_finding_comas(req->entries[0], this, &(req.entries));
 	// std::cout << "size of req entries 0 " << r)eq->entries[0].size() << std::endl;
 };
 
@@ -340,25 +343,7 @@ void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req
 	std::pair<Client *, std::vector<Request *> >pairing = std::make_pair(cli, _all_req_per_client);
 	/* Verifier si c'est le même client */
 	_req_per_id.insert(pairing); // insert Client associated to the client
-
-	if (req->_command.compare("PASS") == 0)
-		req->_pass(cli, this);
-	if (req->_command.compare("NICK") == 0)
-		req->_nick(cli, this);
-	if (req->_command.compare("USER") == 0)
-		req->_user(cli, this);
-	if (req->_command.compare("PRIVMSG") == 0)
-		req->_privmsg(cli, this);
-	if (req->_command.compare("JOIN") == 0)
-		req->_join(cli, this);
-	if (req->_command.compare("PART") == 0)
-		req->_part(cli, this);
-	if (req->_command.compare("KICK") == 0)
-		req->_kick(cli, this);
-	if (req->_command.compare("TOPIC") == 0)
-		req->_topic(cli, this);
-	if (req->_command.compare("MODE") == 0)
-		req->_mode(cli, this);
+	req->requestLexer(cli, this);
 }
 
 void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
@@ -375,7 +360,7 @@ void	Server::_chan_requests(Client *cli, Request *req, Channel* chan)
 	// std::cout << "target siiiiize " << req->target.size() << std::endl;
 	while (i < req->target.size())
 	{
-		Client* tmp = req->find(req->target[i], this);
+		Client* tmp = req->_find(req->target[i], this);
 		if	(tmp != NULL)	
 		{
 			if (send(tmp->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)

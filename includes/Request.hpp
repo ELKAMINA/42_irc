@@ -38,7 +38,8 @@ enum valid_req
 	privmsg_one,
 	welcome_msg,
 	joining_chan,
-	empty,
+	invisible_man,
+	empty_req,
 };
 
 enum cmd
@@ -52,6 +53,8 @@ enum cmd
 
 class Client;
 class Server;
+
+typedef int	(Request::*requ_cmds)(Client*, Server*);
 
 class Request
 {
@@ -72,7 +75,7 @@ class Request
 		enum valid_req				req_validity; //Valid request or not
 		std::string					response;
 		std::string					reply; /* Errors or Replies */
-		std::string					msg;
+		std::string					message;
 		// ajouter une reply pour lexpediteur en cas de commande ou lexpediteur attend une réponse 
 		std::vector<std::string>	target;
 		size_t						jo_nb_chan;
@@ -88,27 +91,39 @@ class Request
 		/* Getters */
 		std::string getEntries(size_t i) const;
 
-		/* Commands */
-		void		_pass(Client* cli, Server *serv);
-		void		_nick(Client* cli, Server *serv);
-		void		_user(Client* cli, Server *serv);
+		/* Methods */
+		void requestLexer(Client *cli, Server* serv);
+		void initLexer();
+
+		/* Utils for commands*/
+		void		msg_to_user(Client* cli, Server *serv);
+		int			user_existence(std::string dest, Server *serv);
+		Client*		_find(std::string dest, Server *serv);
+		int			wrong_nickname();
+		Channel*	existing_chan(std::string chan_name, Server *serv);
+		int			beginning_with_diez(std::vector<string> entries);
+		void 		resizing_chan(std::vector<std::string> entries);
+		void		counting_keys(std::vector<std::string> entries);
+		std::string	removing_backslash(std::vector<std::string> entries);
+		void		oneChan(Client* cli, Server *serv);
+		void		multiChan(Client* cli, Server *serv);
+
+	private:
+		/* Server Commands */
+		int			_pass(Client* cli, Server *serv);
+		int			_nick(Client* cli, Server *serv);
+		int			_user(Client* cli, Server *serv);
 		int			_privmsg(Client* cli, Server *serv);
+		int			_away(Client* cli, Server *serv);
+		int			_list(Client* cli, Server* serv);
+
+		/* Channel commands */
 		int			_join(Client* cli, Server *serv);
 		int			_part(Client* cli, Server *serv);
 		int			_kick(Client* cli, Server *serv);
 		int			_topic(Client* cli, Server *serv);
 		int			_mode(Client* cli, Server *serv);
 
-		/* Utils for commands*/
-		void		msg_to_user(Client* cli, Server *serv);
-		int			user_existence(std::string dest, Server *serv);
-		Client*		find(std::string dest, Server *serv);
-		int			wrong_nickname();
-		void		oneChan(Client* cli, Server *serv);
-		void		multiChan(Client* cli, Server *serv);
-		Channel*	existing_chan(std::string chan_name, Server *serv);
-		int			beginning_with_diez(std::vector<string> entries);
-		void 		resizing_chan(std::vector<std::string> entries);
-		void		counting_keys(std::vector<std::string> entries);
-		void		removing_backslash(std::vector<std::string> entries);
+		vector<requ_cmds>	_request_cmds;
+
 };

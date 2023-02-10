@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/06 14:49:15 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/08 14:36:08 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ void Channel::reply_joining(Request& request)
 
 	if (this->_topic.size() > 0)
 		rep += rpl_topic(this->getName(), this->getTopic());
-	else
-		rep += rpl_notopic(this->getName(), this->getTopic());
 	for (size_t i = 0; i < this->_users.size(); i++){
 		if ((it=find(_operators.begin(), _operators.end(), _users[i])) != _operators.end())
 			rep +="@";
@@ -60,22 +58,34 @@ void Channel::reply_joining(Request& request)
 	}
 	rep += '\n';
 	request.reply = rep;
+	rep.clear();
 }
 
 void Channel::join(Request &request)
 {
 	string user = request._origin->getNickName();
 	vector<string>::iterator it;
+	// int matching_param;
+	
 	if (isInChanList(user, _users))
-		return (errInCmd(request, errUserOnChannel(user,0)));
-	// if (isInChanList(user, _banned))
-	// 	return (errInCmd(request, errBannedFromChan(0, this->getName())));
+		return (errInCmd(request, errUserOnChannel(user,this->getName())));
+	// if (_mods['k'] == true)
+	// {
+	// 	for (size_t i = 0; i < request.entries.size(); i++){
+	// 		if (request.entries[i] == _name)
+	// 		{
+	// 			matching_param = i;
+	// 			break;
+	// 		}
+	// 	}
+	// 	// will need position in protected chan list to snipe good key
+	// }
 	if (_mods['l'] && _onlineUsers == _maxUsers)
-		return (errInCmd(request, errChannelIsFull(0, this->getName())));
+		return (errInCmd(request, errChannelIsFull(user, this->getName())));
 	if (_mods['i'] == true)
 	{
 		if (!isInChanList(user, _invited))
-			return (errInCmd(request, errInviteOnlyChan(0, this->getName())));
+			return (errInCmd(request, errInviteOnlyChan(user, this->getName())));
 		_invited.erase(it=find(_invited.begin(), _invited.end(), user));
 	}
 	_onlineUsers += 1;
@@ -91,15 +101,15 @@ void Channel::invite(Request& request)
 	string user = request._origin->getNickName();
 	vector<string>::iterator it;
 	if (request.entries.size() < 2)
-		return (errInCmd(request, errNeedMoreParams(0, request._command)));
+		return (errInCmd(request, errNeedMoreParams(user, request._command)));
 	if (!isInServ(request.entries[1], this->_allUsers))
 		return (errInCmd(request, errNoSuchNick(user, request.entries[1])));
 	if (_mods['l'] && _onlineUsers == _maxUsers)
-		return (errInCmd(request, errChannelIsFull(0, this->getName())));
+		return (errInCmd(request, errChannelIsFull(user, this->getName())));
 	if (_mods['i'] == true)
 	{
 		if (!isInChanList(user, _operators))
-			return (errInCmd(request, errChanPrivsNeeded(0, this->getName())));
+			return (errInCmd(request, errChanPrivsNeeded(user, this->getName())));
 		request.response = "@";
 	}
 	_invited.push_back(request.entries[1]);
@@ -114,9 +124,7 @@ void Channel::topic(Request& request)
 	size_t size = request.entries.size();
 	string user = request._origin->getNickName();
 
-	if (size > 3)
-		errInCmd(request, errNeedMoreParams(0, request._command));
-	else if (size == 2)
+	if (size == 1)
 	{
 		if (this->_topic.size() > 0)
 			request.reply = rpl_topic(this->getName(), this->getTopic());
@@ -124,17 +132,22 @@ void Channel::topic(Request& request)
 			request.reply = rpl_notopic(this->getName(), this->getTopic());
 	}
 	else if (!isInChanList(user, _operators))
-		errInCmd(request, errChanPrivsNeeded(0, this->getName()));
+		errInCmd(request, errChanPrivsNeeded(user, this->getName()));
 	else // new topic and user is operator
 	{
-		if (request.entries[2].size() == 1)
+		if (request.entries[1].size() == 1)
 			this->_topic = "";
 		else
 		{
-			if (request.entries[2][0] != ':')
-				errInCmd(request, errNeedMoreParams(0, request._command));
+			if (request.entries[1][0] != ':')
+				errInCmd(request, errNeedMoreParams(user, request._command));
 			else
-				this->_topic = request.entries[2];
+			{
+				this->_topic = request.entries[1];
+				for (size_t i = 2; i < request.entries.size(); i++){
+					this->_topic += " " + request.entries[i];
+				}
+			}
 		}
 	}
 	request.status = treated;
@@ -150,7 +163,10 @@ void Channel::part(Request& request)
 	else
 	{
 		_users.erase(it = find(_users.begin(), _users.end(), user));
-		_operators.erase(it = find(_users.begin(), _users.end(), user));
+		if ((it = find(_operators.begin(), _operators.end(), user)) != _operators.end())
+			_operators.erase(it);
+		if ((it = find(_vocal.begin(), _vocal.end(), user)) != _vocal.end())
+			_vocal.erase(it);
 		_onlineUsers -= 1;
 		request.target.insert(request.target.end(), _users.begin(), _users.end());
 		request.response = user + " leaves #" + this->getName() + " " + request.message + '\n';
@@ -165,8 +181,8 @@ void Channel::privmsg(Request& request)
 
 	if (!isInChanList(user, _users))
 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
-	request.response += ":" + request._origin->setPrefix() + " PRIVMSG "
-	+ request.entries[0] + " " + request.entries[1] + '\n';
+	request.response = ":" + request._origin->setPrefix() + " PRIVMSG "
+	+  " " + request.message + '\n';
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
 	request.target.erase(it=find(request.target.begin(), request.target.end(), user));
 	request.status = treated;

@@ -5,6 +5,7 @@ Client::Client(): _clientFd(0), _nickName("UNDEFINED"), _userName("UNDEFINED"), 
 _host("IRC with love"), _id()
 {
 	initModes();
+	_away_msg = "";
 }
 
 
@@ -67,7 +68,7 @@ bool Client::checkMode(char mode) const
 	map<char, bool>::const_iterator it;
 	it = _mode.find(mode);
 	if (it != _mode.end())
-		return true;
+		return it->second;
 	return false;
 }
 
@@ -130,4 +131,15 @@ Client::~Client()
 {
 	this->_mode.clear();
 	this->all_req.clear();
+}
+
+void Client::setAwayMessage(std::string message)
+{
+	this->_away_msg = message;
+}
+
+
+std::string Client::getAwayMessage() const
+{
+	return this->_away_msg;
 }
