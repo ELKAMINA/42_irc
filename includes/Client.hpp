@@ -15,6 +15,16 @@
 
 class Request;
 
+enum valid_modes
+{
+	away = 'a',
+	invisible = 'i',
+	wallops = 'w',
+	restricted = 'r',
+	op = 'o',
+	localOp = 'O',
+};
+
 class Client
 {
 	public:
@@ -63,6 +73,7 @@ class Client
 		const std::string			_host;
 		std::string					_away_msg;
 		std::string					_id;
+		valid_modes					_all_modes;
 		std::map<char, bool>		_mode;
 		std::map<int, Request>		all_req;	
 

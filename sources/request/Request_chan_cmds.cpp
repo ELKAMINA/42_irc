@@ -225,7 +225,9 @@ int	Request::_mode(Client* cli, Server *serv)
 	beginning_with_diez(entries);
 	if(jo_nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&') && entries.size() > 3)
 		_mode_for_chans(cli, serv);
-	else if (jo_nb_chan == 0 && entries.size() > 3)
+	else if (jo_nb_chan == 0 && entries.size() == 3)
 		_mode_for_clis(cli, serv);
+	else
+		req_validity = invalid_req;
 	return 1;
 }

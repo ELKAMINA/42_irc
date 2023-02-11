@@ -107,6 +107,7 @@ class Request
 		void		multiChan(Client* cli, Server *serv);
 		void		_mode_for_chans(Client* cli, Server* serv);
 		void		_mode_for_clis(Client* cli, Server* serv);
+		int			mode_validity(void);
 
 	private:
 		/* Server Commands */

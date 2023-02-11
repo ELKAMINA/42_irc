@@ -28,7 +28,7 @@ std::string	rpl_umodeis(std::string prefix, std::string req ) // Modifier "unreg
 {
 	(void)req;
 	std::ostringstream oss;
-	oss << prefix << "\n";
+	oss << ":" << prefix << " " << "221" << " " << "user mode change for " << req[1] << "\n";
 	std::string var = oss.str();
 	return (var);
 }

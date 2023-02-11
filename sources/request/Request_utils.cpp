@@ -245,16 +245,36 @@ void Request::_mode_for_chans(Client* cli, Server* serv)
 
 void Request::_mode_for_clis(Client* cli, Server* serv)
 {
-	Client* tmp = _find(cli->getNickName(), serv);
+	Client* tmp = _find(entries[0], serv);
 	if (tmp != NULL)
 	{
-		for(size_t i = 0; i < entries.size(); i++)
+		if (mode_validity() == 0)
+			reply = errUModeUnknownFlag(cli->getNickName(), ":Unknown MODE flag\n");
+		if (entries[1][0] == '+')
 		{
-			for(size_t j = 0; j < entries[i].size(); j++)
-			{
-				if (entries[i][j])
-					std::cout << "hehe " << std::endl;
-			}
+			if (entries[1][1] == 'o')
+				return ;
+			tmp->setMode(entries[1][1], true);
 		}
+		else if (entries[1][0] == '-')
+		{
+			if (entries[1][1] == 'r')
+				return ;
+			tmp->setMode(entries[1][1], false);
+		}
+		reply = rpl_umodeis(tmp->getNickName(), entries[1]);
 	}
+	else
+		reply = errUsersDontMatch(cli->getNickName(), ":Cannot change mode for other users\n");
+	serv->_test = true;
+}
+
+int Request::mode_validity()
+{
+	char c = entries[1][1];
+	if (entries[1].size() != 2 || entries[1][0] != '+' || entries[1][0] != '-')
+		return 0;
+	if (c != away && c != invisible && c != localOp && c != restricted && c != op && c != wallops)
+		return 0;
+	return 1;
 }
