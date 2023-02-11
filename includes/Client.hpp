@@ -34,6 +34,7 @@ class Client
 		Client( int fd );
 		Client( const Client & x );
 		~Client();
+		int	_isInChan;
 	
 	/* OPERATOR OVERLOADS */
 		Client & operator= ( const Client & rhs );
