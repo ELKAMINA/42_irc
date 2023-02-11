@@ -275,8 +275,7 @@ void Request::_mode_for_clis(Client* cli, Server* serv)
 				return ;
 			tmp->setMode(entries[1][1], false);
 		}
-		retrieve_cliModes(tmp);
-		reply = rpl_umodeis(prefix, tmp->getNickName());
+		reply = rpl_umodeis(retrieve_cliModes(tmp), tmp->getNickName());
 	}
 	else
 		reply = errUsersDontMatch(cli->getNickName(), ":Cannot change mode for other users\n");
