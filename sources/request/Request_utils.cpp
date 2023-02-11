@@ -126,6 +126,7 @@ void Request::oneChan(Client* cli, Server *serv)
 		{
 			status = ongoing;
 			tmp->cmd_lexer(*this);
+			cli->_isInChan++;
 		}
 		serv->_chan_requests(this);
 	}
@@ -136,6 +137,7 @@ void Request::oneChan(Client* cli, Server *serv)
 			to_add = new Channel((serv->_all_clients), entries[0],  *cli);
 		else
 			to_add = new Channel((serv->_all_clients), entries[0], entries[1], *cli);
+		cli->_isInChan++;
 		serv->_all_chanels.push_back(to_add);
 		to_add->cmd_lexer(*this);
 		serv->_chan_requests(this);
@@ -169,6 +171,7 @@ void Request::multiChan(Client* cli,Server *serv)
 			{
 				// std::cout << "mdp " << (entries[i + jo_nb_chan]) << std::endl;
 				to_add = new Channel((serv->_all_clients), entries[i], ((entries[i + jo_nb_chan])), *cli);
+				cli->_isInChan++;
 				jo_nb_keys--;
 				// i++;
 			}
@@ -176,6 +179,7 @@ void Request::multiChan(Client* cli,Server *serv)
 			{
 				// std::cout << " pas de mdp " << std::endl;
 				to_add = new Channel((serv->_all_clients), entries[i], *cli);
+				cli->_isInChan++;
 			}
 			serv->_all_chanels.push_back(to_add);
 			status =  ongoing;
@@ -195,6 +199,7 @@ void Request::multiChan(Client* cli,Server *serv)
 						jo_nb_keys--;
 						status = ongoing;
 						tmp->cmd_lexer(*this);
+						cli->_isInChan++;
 					}
 					else
 					{
@@ -220,6 +225,7 @@ void Request::multiChan(Client* cli,Server *serv)
 				{
 					status = ongoing;
 					tmp->cmd_lexer(*this);
+					cli->_isInChan++;
 				}
 			}
 			serv->_chan_requests(this);

@@ -118,7 +118,8 @@ class Request
 		int			_privmsg(Client* cli, Server *serv);
 		int			_away(Client* cli, Server *serv);
 		int			_list(Client* cli, Server* serv);
-		int			_oper(Client* cli, Server* serv);
+		// int			_oper(Client* cli, Server* serv);
+		int			_names(Client* cli, Server* serv);
 
 		/* Channel commands */
 		int			_join(Client* cli, Server *serv);

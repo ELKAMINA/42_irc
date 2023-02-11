@@ -235,12 +235,44 @@ int Request::_list(Client* cli, Server* serv)
 	return 0;
 }
 
-int	Request::_oper(Client* cli, Server *serv)
-{
-	if (entries.size() != 2)
-		reply = errNeedMoreParams(cli->getNickName(), _command);
-	else
-	{
+// int	Request::_oper(Client* cli, Server *serv) /* For later */
+// {
+// 	if (entries.size() != 2)
+// 		reply = errNeedMoreParams(cli->getNickName(), _command);
+// 	else
+// 	{
 		
+// 		cli->_oper.insert(std::make_pair(entries[0], entries[1]))
+// 	}
+// }
+
+int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
+{
+	if (entries.size() < 1)
+		reply = errNeedMoreParams(cli->getNickName(), _command);
+	size_t i = 0;
+	std::string users;
+	while (i < entries.size())
+	{
+		Channel* tmp = existing_chan(entries[i], serv);
+		if (!tmp)
+		{
+			tmp->cmd_lexer(*this);
+			serv->_chan_requests(this);
+			/* Demander à Mitch pour cette partie */
+		}
+		else
+		{
+			std::vector<Client*>::iterator it = serv->_all_clients.begin();
+			while ( it != serv->_all_clients.end())
+			{
+				users += (*it)->getNickName();
+				users += " ";
+				users += " * ";
+				it++;
+			}
+			reply = 
+		}
+
 	}
 }
