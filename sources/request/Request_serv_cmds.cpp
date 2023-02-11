@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:20:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 14:03:09 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/12 14:05:03 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,5 +277,37 @@ int	Request::_oper(Client* cli, Server *serv)
 	else
 	{
 		
+// 		cli->_oper.insert(std::make_pair(entries[0], entries[1]))
+// 	}
+// }
+
+int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
+{
+	if (entries.size() < 1)
+		reply = errNeedMoreParams(cli->getNickName(), _command);
+	size_t i = 0;
+	std::string users;
+	while (i < entries.size())
+	{
+		Channel* tmp = existing_chan(entries[i], serv);
+		if (!tmp)
+		{
+			tmp->cmd_lexer(*this);
+			serv->_chan_requests(this);
+			/* Demander à Mitch pour cette partie */
+		}
+		else
+		{
+			std::vector<Client*>::iterator it = serv->_all_clients.begin();
+			while ( it != serv->_all_clients.end())
+			{
+				users += (*it)->getNickName();
+				users += " ";
+				users += " * ";
+				it++;
+			}
+			reply = 
+		}
+
 	}
 }
