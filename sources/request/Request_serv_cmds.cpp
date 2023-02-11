@@ -234,3 +234,13 @@ int Request::_list(Client* cli, Server* serv)
 	this->reply = rep;
 	return 0;
 }
+
+int	Request::_oper(Client* cli, Server *serv)
+{
+	if (entries.size() != 2)
+		reply = errNeedMoreParams(cli->getNickName(), _command);
+	else
+	{
+		
+	}
+}
