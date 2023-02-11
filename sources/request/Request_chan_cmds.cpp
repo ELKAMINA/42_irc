@@ -121,7 +121,10 @@ int	Request::_part(Client *cli, Server *serv)
 				{
 					for (size_t j = 0; j < serv->_all_chanels.size(); j++){
 						if (serv->_all_chanels[i]->getName() == tmp->getName())
+						{
 							serv->_all_chanels.erase(serv->_all_chanels.begin() + i);
+							cli->_isInChan--; /* To get nb of chan, the client is in : for NAMES*/
+						}
 					}
 					// serv->_all_chanels.erase(it = find(serv->_all_chanels.begin(), serv->_all_chanels.end(), tmp)); //doesn't work
 				}
@@ -189,7 +192,7 @@ int	Request::_kick(Client *cli, Server *serv)
 			{
 				status = ongoing;
 				tmp->cmd_lexer(*this);
-
+				cli->_isInChan--;
 			}
 			serv->_chan_requests(this);
 			i++;
