@@ -243,6 +243,19 @@ void Request::_mode_for_chans(Client* cli, Server* serv)
 	serv->_chan_requests(this);
 }
 
+std::string		Request::retrieve_cliModes(Client* tmp)
+{
+	std::map<char, bool>::iterator it = tmp->get_rbtModes().begin();
+	while (it != tmp->get_rbtModes().end())
+	{
+		tmp->setAllModes((*it).first);
+		tmp->setAllModes(' ');
+		it++;
+	}
+	std::string prefix;
+	prefix = tmp->getNickName() + " " + tmp->getAllModes() + "\n";
+}
+
 void Request::_mode_for_clis(Client* cli, Server* serv)
 {
 	Client* tmp = _find(entries[0], serv);
@@ -262,7 +275,8 @@ void Request::_mode_for_clis(Client* cli, Server* serv)
 				return ;
 			tmp->setMode(entries[1][1], false);
 		}
-		reply = rpl_umodeis(tmp->getNickName(), entries[1]);
+		retrieve_cliModes(tmp);
+		reply = rpl_umodeis(prefix, tmp->getNickName());
 	}
 	else
 		reply = errUsersDontMatch(cli->getNickName(), ":Cannot change mode for other users\n");

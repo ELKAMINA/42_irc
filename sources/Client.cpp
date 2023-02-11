@@ -6,6 +6,7 @@ _host("IRC with love"), _id()
 {
 	initModes();
 	_away_msg = "";
+	_all_modes = "";
 }
 
 
@@ -121,6 +122,11 @@ std::string Client::setPrefix()
 	return (var);
 }
 
+void			Client::setAllModes(char mode)
+{
+	_all_modes += mode;
+}
+
 void Client::initModes()
 {
 	this->_mode['i'] = false;
@@ -142,4 +148,14 @@ void Client::setAwayMessage(std::string message)
 std::string Client::getAwayMessage() const
 {
 	return this->_away_msg;
+}
+
+std::map<char,bool>	Client::get_rbtModes() const
+{
+	return _mode;
+}
+
+std::string			Client::getAllModes() const
+{
+	return _all_modes;
 }
