@@ -235,6 +235,11 @@ int Request::_list(Client* cli, Server* serv)
 	return 0;
 }
 
+int Request::_cap(Client* cli, Server* serv)
+{
+	return;
+}
+
 // int	Request::_oper(Client* cli, Server *serv) /* For later */
 // {
 // 	if (entries.size() != 2)
