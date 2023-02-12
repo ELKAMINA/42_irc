@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 10:24:10 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/12 10:45:50 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include "numeric_replies.hpp"
 
 typedef std::string	(*err)(string, string);
-typedef void		(Channel::*cmds)(Request&);
 
 void Channel::errInCmd(Request& request, string err)
 {
@@ -26,17 +25,10 @@ void Channel::errInCmd(Request& request, string err)
 
 void Channel::cmd_lexer(Request& request)
 {
-	vector<cmds>cmds;
-	cmds.push_back(&Channel::join);
-	cmds.push_back(&Channel::invite);
-	cmds.push_back(&Channel::topic);
-	cmds.push_back(&Channel::part);
-	cmds.push_back(&Channel::privmsg);
-	cmds.push_back(&Channel::kick);
-	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK"};
-	for (size_t i = 0; i< cmds.size(); i++){
+	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK", "NAMES"};
+	for (size_t i = 0; i< _cmds.size(); i++){
 		if (request._command == cmd_name[i])
-			(this->*(cmds[i]))(request);
+			(this->*(_cmds[i]))(request);
 	}
 }
 
@@ -189,6 +181,7 @@ void Channel::privmsg(Request& request)
 	request.status = treated;
 }
 
+// work in progress
 void Channel::mode(Request& request)
 {
 	string user = request._origin->getNickName();
@@ -218,4 +211,22 @@ void Channel::kick(Request& request)
 	request.response += request._origin->setPrefix() + " KICK " + this->getName() + " "
 	+ request.entries[1] + " " + request.message + '\n';
 	request.status = treated;
+}
+
+void Channel::names(Request& request)
+{
+	vector<Client*>::iterator it;
+
+	request.reply += "#" + this->getName() + ":\n";
+	for (it = _users.begin(); it != _users.end(); it++){
+		if ((*it)->checkMode('i') != false)
+		{
+			if (find(_operators.begin(), _operators.end(), (*it)) != _operators.end())
+				request.reply += '@';
+			else
+				request.reply += ':';
+			request.reply += (*it)->getNickName() + ", ";
+		}
+	}
+	request.reply.replace(request.reply.size() -2, 2, "\n");
 }
