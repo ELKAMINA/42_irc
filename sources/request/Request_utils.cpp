@@ -6,11 +6,16 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:14:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/09 15:40:06 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/12 13:21:24 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+
+static bool sortClients(Client* a, Client* b)
+{
+	return a->_isInChan < b->_isInChan;
+}
 
 int Request::user_existence(std::string dest, Server *serv)
 {

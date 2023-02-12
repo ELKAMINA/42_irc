@@ -133,8 +133,3 @@ class Request
 		vector<requ_cmds>	_request_cmds;
 
 };
-
-static bool sortClients(Client& a, Client& b)
-{
-	return a._isInChan < b._isInChan;
-};
