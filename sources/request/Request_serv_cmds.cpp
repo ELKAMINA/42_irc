@@ -248,11 +248,13 @@ int Request::_list(Client* cli, Server* serv)
 
 int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 {
-	if (entries.size() < 1)
-		reply = errNeedMoreParams(cli->getNickName(), _command);
-	else
+	beginning_with_diez(entries);
+	if (entries.size() == 0 && jo_nb_chan == 0)
 	{
-		beginning_with_diez(entries);
+		sort(serv->_all_clients.begin(), serv->_all_clients.end(), serv->sortClients);
+	}
+	else if (entries.size() > 1)
+	{
 		size_t i = 0;
 		std::string users;
 		while (i < entries.size() && jo_nb_chan != 0)
