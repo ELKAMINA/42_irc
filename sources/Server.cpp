@@ -363,8 +363,3 @@ void	Server::_chan_requests(Request *req)
 		i++;
 	}
 }
-
-int Server::sortClients(Client& a, Client& b)
-{
-	return a._isInChan < b._isInChan;
-}

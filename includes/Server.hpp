@@ -35,6 +35,7 @@ class Client;
 class Request;
 class Channel;
 
+
 struct cinfo
 {
 	int fd;
@@ -83,8 +84,7 @@ public:
 	
 	/* Utils */
 	int				is_charset(char c);
-	int 			sortClients(Client** a, Client**b);
-	int				sortClients(Client& a, Client& b);
+	bool			sortClients(Client& a, Client& b);
 
 	/* Receiving and handling request */
 	void			handle_request(char *buf, int *i, Client *cli);

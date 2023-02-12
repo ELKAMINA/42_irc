@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:20:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 14:05:03 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/12 14:05:50 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,10 +248,12 @@ int Request::_list(Client* cli, Server* serv)
 
 int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 {
+	(void)cli;
 	beginning_with_diez(entries);
 	if (entries.size() == 0 && jo_nb_chan == 0)
 	{
-		sort(serv->_all_clients.begin(), serv->_all_clients.end(), serv->sortClients);
+		chan_names(serv);
+		noChan_names(serv);
 	}
 	else if (entries.size() > 1)
 	{
