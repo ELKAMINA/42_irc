@@ -266,6 +266,7 @@ int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 			std::vector<Client*>::iterator it = serv->_all_clients.begin();
 			while ( it != serv->_all_clients.end())
 			{
+				if((*it)->getmode())
 				users += (*it)->getNickName();
 				users += " ";
 				users += " * ";
