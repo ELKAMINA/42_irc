@@ -109,6 +109,8 @@ class Request
 		void		_mode_for_clis(Client* cli, Server* serv);
 		int			mode_validity(void);
 		std::string	retrieve_cliModes(Client* tmp);
+		void		chan_names(Server* serv);
+		void		noChan_names(Server* serv);
 
 	private:
 		/* Server Commands */
@@ -129,4 +131,9 @@ class Request
 
 		vector<requ_cmds>	_request_cmds;
 
+};
+
+static bool sortClients(Client& a, Client& b)
+{
+	return a._isInChan < b._isInChan;
 };

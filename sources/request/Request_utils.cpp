@@ -253,6 +253,7 @@ std::string		Request::retrieve_cliModes(Client* tmp)
 {
 	std::string prefix;
 	prefix = tmp->getNickName() + " " + tmp->getmode() + "\n";
+	return prefix;
 }
 
 void Request::_mode_for_clis(Client* cli, Server* serv)
@@ -289,4 +290,38 @@ int Request::mode_validity()
 	if (c != away && c != invisible && c != localOp && c != restricted && c != op && c != wallops)
 		return 0;
 	return 1;
+}
+
+void Request::chan_names(Server* serv)
+{
+	std::vector<Channel*>::iterator it = serv->_all_chanels.begin();
+
+	while (it != serv->_all_chanels.end())
+	{
+		if ((*it)->activeMode('s') == false)
+			(*it)->cmd_lexer(*this);
+		it++;
+	}
+}
+
+void Request::noChan_names(Server* serv)
+{
+	sort((serv->_all_clients.begin()), (serv->_all_clients.end()), sortClients);
+	std::string rep;
+	if (serv->_all_clients[0]->_isInChan == 0)
+	{
+		reply += "*: \n";
+		size_t i = 0;
+		while(i < serv->_all_clients.size() && serv->_all_clients[i]->_isInChan == 0)
+		{
+			if (serv->_all_clients[i]->checkMode('i') == false)
+			{
+				rep.clear();
+				rep = serv->_all_clients[i]->getNickName() + ", ";
+				reply += rep;
+			}
+			i++;
+		}
+		reply.replace(reply.size() - 2, 2, "\n");
+	}
 }
