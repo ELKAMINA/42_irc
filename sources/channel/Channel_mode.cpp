@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 12:17:09 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/05 10:06:25 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/10 15:47:29 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,23 +85,25 @@ void Channel::changeChanMode(Request& request, pair<string, string> command)
 	}
 }
 //modif to do
-void Channel::changeUserMode(Request& request, pair<string, string> command, vector<string>& target)
+void Channel::changeUserMode(Request& request, pair<string, string> command, vector<Client*>& target)
 {
 	string user = request._origin->getNickName();
-	vector<string>::iterator it;
+	Client* to_add = found(request.entries[2], _users);
+	vector<Client*>::iterator it;
+	
 	if(command.first.size() != 2)
 		return (errInCmd(request, errUModeUnknownFlag(user, this->getName())));
 	else
 	{
-		it = find(_users.begin(), _users.end(), command.second);
+		it = find(_users.begin(), _users.end(), to_add);
 		if (command.first[0] == '+')
 		{
-			if (find(target.begin(), target.end(), command.second) == target.end())
+			if (find(target.begin(), target.end(), to_add) == target.end())
 				target.push_back(*it);
 		}
 		else
 		{
-			it = find(target.begin(), target.end(), command.second);
+			it = find(target.begin(), target.end(), to_add);
 			target.erase(it);
 		}
 	}

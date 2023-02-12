@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/10 11:29:23 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/10 15:50:33 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ Channel::Channel( vector<Client*>& allUsers, string channelName, Client& owner )
 _name(channelName), _allUsers(allUsers)
 {
 	initModes();
-	_operators.push_back(owner.getNickName()); // Client doesn't has a nickName getter yet
+	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
 	// _users.push_back(owner.getNickName()); 
 	_onlineUsers = 1;
 	_maxUsers = -1;
@@ -34,7 +34,7 @@ Channel::Channel( vector<Client*>& allUsers, string channelName, string channelK
 _name(channelName), _key(channelKey), _allUsers(allUsers)
 {
 	initModes();
-	_operators.push_back(owner.getNickName()); // Client doesn't has a nickName getter yet
+	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
 	// _users.push_back(owner.getNickName());
 	_onlineUsers = 1;
 	_maxUsers = -1;
@@ -85,6 +85,31 @@ void Channel::initModes()
 	_mods.insert(make_pair('t', false));
 }
 
+
+/* ****************************** */
+/* *** CHAN INFO CHECKERS ******* */
+/* ****************************** */
+
+bool Channel::isInChanList(Client const *user, vector<Client*>& list)
+{
+	vector<Client*>::iterator it;
+
+	it = find(list.begin(), list.end(), user);
+	return (it != list.end());
+}
+
+Client* Channel::found(string nickname, vector<Client*>&list)
+{
+	vector<Client*>::iterator it = list.begin();
+	while (it != list.end())
+	{
+		if	((*it)->getNickName() == nickname)
+			return *(it);
+		it++;
+	}
+	return NULL;
+}
+
 bool Channel::isInServ(string const& user, vector<Client *>&users)
 {
 	vector<Client *>::iterator it;
@@ -94,18 +119,6 @@ bool Channel::isInServ(string const& user, vector<Client *>&users)
 			return true;
 	}
 	return false;
-}
-
-/* ****************************** */
-/* *** CHAN INFO CHECKERS ******* */
-/* ****************************** */
-
-bool Channel::isInChanList(string const &user, vector<string>& list)
-{
-	vector<string>::iterator it;
-
-	it = find(list.begin(), list.end(), user);
-	return (it != list.end());
 }
 
 /* ****************************** */

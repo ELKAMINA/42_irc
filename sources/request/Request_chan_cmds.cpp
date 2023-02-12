@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:23:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/08 18:24:19 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/10 15:39:42 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ int	Request::_kick(Client *cli, Server *serv)
 		// std::cout << "NUMBEEERS of chnanan " << jo_nb_chan << " msg = " << msg  << std::endl;
 		while (i < jo_nb_chan)
 		{
-			Channel* tmp = existing_chan(entries[i], serv);
+			Channel* tmp = existing_chan(&entries[i][1], serv);
 			if (!tmp)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), "No such Channel");
