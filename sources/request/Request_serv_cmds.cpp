@@ -255,7 +255,7 @@ int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 		chan_names(serv);
 		noChan_names(serv);
 	}
-	else if (entries.size() > 1)
+	else if (entries.size() >= 1)
 	{
 		size_t i = 0;
 		std::string users;

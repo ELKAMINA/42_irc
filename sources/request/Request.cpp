@@ -98,7 +98,7 @@ void Request::initLexer()
 void Request::requestLexer(Client* cli, Server* serv)
 {
 	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN",
-					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "OPER", "NAMES"};
+					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES"};
 	size_t i = 0;
 	for (; i < _request_cmds.size(); i++){
 		if (this->_command == cmds[i])
