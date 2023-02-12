@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 10:48:57 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/12 14:08:31 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@ using namespace std;
 class Request;
 class Client;
 
-typedef void	(Channel::*cmds)(Request&);
 
 class Channel
 {
 	public:
+	typedef void	(Channel::*cmds)(Request&);
 
 	/* CONSTRUCTORS */
 		Channel( vector<Client*>& allUsers, string channelName, Client& owner );

@@ -91,9 +91,8 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::_mode);
 	_request_cmds.push_back(&Request::_away);
 	_request_cmds.push_back(&Request::_list);
-	_request_cmds.push_back(&Request::_oper);
-	_request_cmds.push_back(&Request::_names);
 	// _request_cmds.push_back(&Request::_oper);
+	_request_cmds.push_back(&Request::_names);
 }
 
 void Request::requestLexer(Client* cli, Server* serv)

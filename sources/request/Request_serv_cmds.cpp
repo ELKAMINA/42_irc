@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:20:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 14:05:50 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/12 14:09:49 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,43 +248,6 @@ int Request::_list(Client* cli, Server* serv)
 
 int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 {
-	(void)cli;
-	beginning_with_diez(entries);
-	if (entries.size() == 0 && jo_nb_chan == 0)
-	{
-		chan_names(serv);
-		noChan_names(serv);
-	}
-	else if (entries.size() > 1)
-	{
-		size_t i = 0;
-		std::string users;
-		while (i < entries.size() && jo_nb_chan != 0)
-		{
-			Channel* tmp = existing_chan(entries[i], serv);
-			if (!tmp)
-			{
-				if (tmp->activeMode('s') == false)
-					tmp->cmd_lexer(*this);
-				/* Demander à Mitch pour cette partie */
-			}
-
-		}
-	}
-	serv->_chan_requests(this);
-int	Request::_oper(Client* cli, Server *serv)
-{
-	if (entries.size() != 2)
-		reply = errNeedMoreParams(cli->getNickName(), _command);
-	else
-	{
-		
-// 		cli->_oper.insert(std::make_pair(entries[0], entries[1]))
-// 	}
-// }
-
-int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
-{
 	if (entries.size() < 1)
 		reply = errNeedMoreParams(cli->getNickName(), _command);
 	else
@@ -305,4 +268,5 @@ int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 		}
 	}
 	serv->_chan_requests(this);
+	return 0;
 }
