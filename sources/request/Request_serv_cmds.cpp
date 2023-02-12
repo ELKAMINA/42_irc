@@ -285,30 +285,22 @@ int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 {
 	if (entries.size() < 1)
 		reply = errNeedMoreParams(cli->getNickName(), _command);
-	size_t i = 0;
-	std::string users;
-	while (i < entries.size())
+	else
 	{
-		Channel* tmp = existing_chan(entries[i], serv);
-		if (!tmp)
+		beginning_with_diez(entries);
+		size_t i = 0;
+		std::string users;
+		while (i < entries.size() && jo_nb_chan != 0)
 		{
-			tmp->cmd_lexer(*this);
-			serv->_chan_requests(this);
-			/* Demander à Mitch pour cette partie */
-		}
-		else
-		{
-			std::vector<Client*>::iterator it = serv->_all_clients.begin();
-			while ( it != serv->_all_clients.end())
+			Channel* tmp = existing_chan(entries[i], serv);
+			if (!tmp)
 			{
-				if((*it)->getmode())
-				users += (*it)->getNickName();
-				users += " ";
-				users += " * ";
-				it++;
+				if (tmp->activeMode('s') == false)
+					tmp->cmd_lexer(*this);
+				/* Demander à Mitch pour cette partie */
 			}
-			reply = 
-		}
 
+		}
 	}
+	serv->_chan_requests(this);
 }
