@@ -54,10 +54,7 @@ class Client
 		void				setRealname(std::string name);
 		void				setMode(char mode, bool state);
 		void				setAwayMessage(std::string message);
-		void				setAllModes(char mode);
 		std::string			getAwayMessage() const;
-		std::map<char,bool>	get_rbtModes() const;
-		std::string			getAllModes() const;
 
 	/* METHODS */
 		void			errInCmd(Request& request, string err);
@@ -76,7 +73,6 @@ class Client
 		std::string					_away_msg;
 		std::string					_id;
 		std::map<char, bool>		_mode;
-		std::string					_all_modes;
 		std::map<int, Request>		all_req;
 
 
