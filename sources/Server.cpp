@@ -359,7 +359,7 @@ void	Server::_chan_requests(Request *req)
 	{
 		if (send(req->target[i]->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
 				return (perror("Problem in sending from server ")); // a t on le droit ?
-		_test = true;
 		i++;
 	}
+	_test = true;
 }

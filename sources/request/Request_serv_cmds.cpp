@@ -250,25 +250,30 @@ int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 {
 	(void)cli;
 	beginning_with_diez(entries);
-	if (entries.size() == 0 && jo_nb_chan == 0)
+	// std::cout << "nb of channels " << jo_nb_chan << "entries.size() " << entries.size() << std::endl;
+	if (reply == "UNDEFINED")
 	{
-		chan_names(serv);
-		noChan_names(serv);
-	}
-	else if (entries.size() >= 1)
-	{
-		size_t i = 0;
-		std::string users;
-		while (i < entries.size() && jo_nb_chan != 0)
+		reply.clear();
+		if (entries.size() == 0 && jo_nb_chan == 0)
 		{
-			Channel* tmp = existing_chan(entries[i], serv);
-			if (!tmp)
+			// std::cout << "je rentre ici " << std::endl;
+			chan_names(serv);
+			noChan_names(serv);
+		}
+		else if (entries.size() >= 1)
+		{
+			size_t i = 0;
+			while (i < entries.size() && jo_nb_chan != 0)
 			{
-				if (tmp->activeMode('s') == false)
-					tmp->cmd_lexer(*this);
-				/* Demander à Mitch pour cette partie */
+				Channel* tmp = existing_chan(&entries[i][1], serv);
+				if (tmp)
+				{
+					if (tmp->activeMode('s') == false)
+						tmp->cmd_lexer(*this);
+					/* Demander à Mitch pour cette partie */
+				}
+				i++;
 			}
-
 		}
 	}
 	serv->_chan_requests(this);

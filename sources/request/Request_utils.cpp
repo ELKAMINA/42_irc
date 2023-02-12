@@ -300,7 +300,6 @@ int Request::mode_validity()
 void Request::chan_names(Server* serv)
 {
 	std::vector<Channel*>::iterator it = serv->_all_chanels.begin();
-
 	while (it != serv->_all_chanels.end())
 	{
 		if ((*it)->activeMode('s') == false)

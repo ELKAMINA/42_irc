@@ -15,7 +15,7 @@ Request::Request(char* buffer, Client* cli) : _origin(cli)
 	char * token = strtok(buffer, " ");
 	while( token != NULL ) {
 		entries.push_back(token);
-		std::cout << "token " << token << std::endl;
+		// std::cout << "token " << token << std::endl;
 		token = strtok(NULL, " ");
 	}
 	std::string new_token;
