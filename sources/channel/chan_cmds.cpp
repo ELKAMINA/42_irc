@@ -219,7 +219,7 @@ void Channel::names(Request& request)
 
 	request.reply += "#" + this->getName() + ":\n";
 	for (it = _users.begin(); it != _users.end(); it++){
-		if ((*it)->checkMode('i') != false)
+		if ((*it)->checkMode('i') == false)
 		{
 			if (find(_operators.begin(), _operators.end(), (*it)) != _operators.end())
 				request.reply += '@';
