@@ -140,7 +140,7 @@ int Request::_privmsg(Client *cli, Server *serv)
 				else
 				{
 
-					if (entries.size() >= 2)
+					if (entries.size() >= 1)
 					{
 						size_t i = 0;
 						while (i < entries.size())
@@ -152,7 +152,7 @@ int Request::_privmsg(Client *cli, Server *serv)
 					}
 				}
 				std::ostringstream oss;
-				oss << ":" << cli->getNickName() << "!" << cli->getNickName() << "@" << cli->getRealName() << " PRIVMSG " << dest << " " << message;
+				oss << ":" << cli->getNickName() << "!" << cli->getNickName() << "@" << cli->getRealName() << " PRIVMSG " << cli->getNickName() << " " << message << "\n";
 				std::string var = oss.str();
 				if (send(_find(dest, serv)->getFdClient(), var.c_str(), var.length(), 0) == -1)
 					return (-1);
@@ -166,6 +166,81 @@ int Request::_privmsg(Client *cli, Server *serv)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[0]);
 				serv->_test = true;
+			}
+			else
+			{
+				if (message == "")
+				{
+					message.clear();
+					size_t i = jo_nb_chan;
+					while(i < entries.size())
+					{
+						message += entries[i];
+						message += ' ';
+						i++;
+					}
+				}
+				tmp->cmd_lexer(*this);
+			}
+			serv->_chan_requests(this);
+			return 2;
+		}
+	}
+	return 5;
+}
+
+int Request::_notice(Client *cli, Server *serv)
+{
+	(void)cli;
+	(void)serv;
+	if(entries.size() < 2)
+	{
+		req_validity = notEnough_params;
+		return 1;
+	}
+	else if (entries.size() >= 2)
+	{
+		if	(entries[0][0] != '&' && entries[0][0] != '#')
+		{
+			std::vector<std::string>::iterator it = entries.begin();
+			std::string dest;
+			dest =  entries[0];
+			std::string message;
+			entries.erase(it);
+			if (_find(dest, serv) != serv->_req_per_id.end()->first)
+			{
+				if ((_find(dest, serv))->checkMode('a') == 1)
+					return 0;
+				else if ((_find(dest, serv))->checkMode('i') == 1)
+					return 0;
+				else
+				{
+
+					if (entries.size() >= 1)
+					{
+						size_t i = 0;
+						while (i < entries.size())
+						{
+							message.append(entries[i]);
+							message.append(" ");
+							i++;
+						}
+					}
+				}
+				std::ostringstream oss;
+				oss << ":" << cli->getNickName() << "!" << cli->getNickName() << "@" << cli->getRealName() << " NOTICE " << cli->getNickName() << " " << message << "\n";
+				std::string var = oss.str();
+				if (send(_find(dest, serv)->getFdClient(), var.c_str(), var.length(), 0) == -1)
+					return (-1);
+			}
+			return 0;
+		}
+		if (entries[0][0] == '&' || entries[0][0] == '#')
+		{
+			Channel *tmp = existing_chan(&entries[0][1], serv);
+			if (!tmp)
+			{
+				return 0;
 			}
 			else
 			{
@@ -267,6 +342,7 @@ int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 		}
 		else if (entries.size() >= 1)
 		{
+			// std::cout << "je rentre ici ? " << std::endl;
 			size_t i = 0;
 			while (i < entries.size() && jo_nb_chan != 0)
 			{
@@ -275,6 +351,7 @@ int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 				{
 					if (tmp->activeMode('s') == false)
 						tmp->cmd_lexer(*this);
+					reply += rpl_endofnames(tmp->getName(), "option");
 					/* Demander à Mitch pour cette partie */
 				}
 				i++;
@@ -282,5 +359,85 @@ int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 		}
 	}
 	serv->_chan_requests(this);
+	return 0;
+}
+
+int	Request::_invite(Client* cli, Server *serv)
+{
+	if (entries.size() != 3)
+		reply = errNeedMoreParams(cli->getNickName(), _command);
+	else
+	{
+		Channel* tmp = existing_chan(&entries[1][1], serv);
+		if (tmp)
+			tmp->cmd_lexer(*this);
+	}
+	serv->_chan_requests(this);
+	return 0;
+}
+
+int	Request::_oper(Client* cli, Server *serv) /* For later */
+{
+	if (entries.size() != 2)
+		reply = errNeedMoreParams(cli->getNickName(), _command);
+	else if (serv->_opers.find(entries[0]) != serv->_opers.end())
+	{
+		if (serv->_opers[entries[0]] == entries[1])
+		{
+			reply = rpl_youreoper(":You are now an IRC operator\n", "op");
+			cli->setMode('o', true);
+		}
+		else
+			reply = errPasswMismatch(cli->getNickName(), ":Password incorrect\n");
+	}
+	else
+		reply = errNoOperHost(":No O-lines for your host\n", "op");
+	serv->_chan_requests(this);
+	return 0;
+}
+
+int Request::_wallops(Client* cli, Server *serv)
+{
+	if (entries.size() < 2)
+		reply = errNeedMoreParams(cli->getNickName(), _command);
+	else
+	{
+		std::vector<Client*>::iterator it = serv->_all_clients.begin();
+		while (it != serv->_all_clients.end())
+		{
+			if ((*it)->checkMode('w') == true)
+			{
+				for(size_t i = 0; i < entries.size(); i++)
+				{
+					reply += entries[i];
+					reply += " ";
+				}
+				serv->_chan_requests(this);
+			}
+			it++;
+		}
+	}
+	return 0;
+}
+
+int Request::_kill(Client* cli, Server* serv)
+{
+	if (entries.size() < 2)
+		reply = errNeedMoreParams(cli->getNickName(), _command);
+	else if(cli->checkMode('o') == false)
+		reply = errNoPrivileges(":Permission Denied= You're not an IRC operator\n", "opti");
+	else
+	{
+		Client* tmp = _find(entries[0], serv);
+		if(!tmp)
+			reply = errNoSuchNick(entries[0], entries[0]);
+		else
+		{
+			std::string message = " :You are getting killed by " + cli->getNickName();
+			if	(send(tmp->getFdClient(), message.c_str(), message.length(), 0) == -1)
+				perror("Big time for welcoming_ Bravo");
+			/* Supprimer le user from Chan et de toutes leslistes dans lesquelles il existe !!! */
+		}
+	}
 	return 0;
 }

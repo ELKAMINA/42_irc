@@ -34,6 +34,7 @@ std::string         rpl_away(std::string channel, std::string away);
 std::string         rpl_unaway(std::string channel, std::string away);
 std::string         rpl_list(std::string message, std::string away);
 std::string	        rpl_listend(std::string message , std::string op );
+std::string	        rpl_youreoper(std::string message , std::string op );
 
 string	            errNoSuchNick(string nickName, string message);
 string	            errNoSuchChannel(string senderNick, string message);
@@ -56,5 +57,7 @@ string				errBadChannelKey(string nickName, string channel);
 string				errChanPrivsNeeded(string nickName, string channel);
 string				errUModeUnknownFlag(string nickName, string channel);
 string				errUsersDontMatch(string nickName, string message);
+string				errNoOperHost(string message, string me);
+string				errNoPrivileges(string message, string me);
 
 #endif

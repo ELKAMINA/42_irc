@@ -118,3 +118,11 @@ std::string	rpl_listend(std::string message , std::string op ) // Modifier "unre
 	reply = ":End of list\n";
 	return (reply);
 }
+
+std::string	rpl_youreoper(std::string message , std::string op ) // Modifier "unregistered client par le vrai client user"
+{
+	/* Résultat attendu : <channel> <#visible>:<topic> */
+	(void)op;
+	// (void)message;
+	return (message);
+}

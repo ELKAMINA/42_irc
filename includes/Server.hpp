@@ -62,52 +62,54 @@ public:
 	Server& operator=(const Server& rhs);
 
 	/* GETTERS */
-	struct sockaddr_in			get_address() const;
-	const int&					get_socket() const;
-	const int&					get_domain() const;
-	const int&					get_service() const;
-	const int&					get_protocol() const;
-	const int&					get_port() const;
-	const u_long&				get_interface() const;
-	const std::string&			get_name() const;
-	const std::string&			get_pass() const;
+	struct sockaddr_in							get_address() const;
+	const int&									get_socket() const;
+	const int&									get_domain() const;
+	const int&									get_service() const;
+	const int&									get_protocol() const;
+	const int&									get_port() const;
+	const u_long&								get_interface() const;
+	const std::string&							get_name() const;
+	const std::string&							get_pass() const;
 
-/* EXCEPTIONS ????*/
+/* EXCEPTIONS ????*/				
 
-	/* METHODS */
-	void 			start_server();
-	int				routine();
-	void			new_client();
-	void			read_client_req(Client* cli, int *i);
-	void			write_to_client(struct pollfd client);
-	std::string		welcoming_newClients();
-	
-	/* Utils */
-	int				is_charset(char c);
-	bool			sortClients(Client& a, Client& b);
+	/* METHODS */				
+	void 										start_server();
+	int											routine();
+	void										new_client();
+	void										read_client_req(Client* cli, int *i);
+	void										write_to_client(struct pollfd client);
+	std::string									welcoming_newClients();
 
-	/* Receiving and handling request */
-	void			handle_request(char *buf, int *i, Client *cli);
-	void			check_req_validity(Request **req);
-	void			_parsing(Client *cli, Request *req, std::vector<Request*>);
-	void			_chan_requests(Request *req);
+	/* Utils */							
+	int											is_charset(char c);
+	bool										sortClients(Client& a, Client& b);
 
-	cinfo					global;
-	std::string				name; // limited to 63 characters
-	ServerSocket*			server_socket;
+	/* Receiving and handling re				quest */
+	void										handle_request(char *buf, int *i, Client *cli);
+	void										check_req_validity(Request **req);
+	void										_parsing(Client *cli, Request *req, std::vector<Request*>);
+	void										_chan_requests(Request *req);
+	void										_killing_cli(Client* cli);
 
-	struct pollfd*			_client_events;
-	struct pollfd*			_server_events;
-	int 					nb_client_events; // aka nfds
-	char 					read_buffer[30000 + 1];
-	int n_ci;
-	int fd_ci;
-	std::string 				client_welcoming;
-	std::vector<Client *> 		_all_clients;
-	// std::map<Client*, Request*>	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
+	cinfo										global;
+	std::string									name; // limited to 63 characters
+	ServerSocket*								server_socket;
+
+	struct pollfd*								_client_events;
+	struct pollfd*								_server_events;
+	int 										nb_client_events; // aka nfds
+	char 										read_buffer[30000 + 1];
+	int n_ci;				
+	int fd_ci;				
+	std::string 								client_welcoming;
+	std::vector<Client *> 						_all_clients;
 	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
-	std::vector<Channel*>		_all_chanels; //list of all existing channels
-	bool						_test;
+	std::vector<Channel*>						_all_chanels; //list of all existing channels
+	bool										_test;
+	std::map<std::string, std::string>			_opers; /* Configure the usernmae and pwd for operators*/
+
 
 	
 private:

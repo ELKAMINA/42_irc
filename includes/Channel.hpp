@@ -78,6 +78,7 @@ class Channel
 		
 		bool activeMode(char mode);
 
+
 	/* ACCESSORS */
 		int			getOnlineCount() const;
 		string		getTopic() const;

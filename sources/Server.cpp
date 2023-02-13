@@ -30,7 +30,8 @@ Server::Server(int domain, int service, int protocol, int port, u_long interface
 	global.n = 0;
 	global.state = 0;
 	_test = false;
-	// nb_client_events = 1;
+	std::pair<std::string, std::string> pair("oper", "pwdoper");
+	_opers.insert(pair);
 }
 
 Server::Server(const Server &rhs)
@@ -230,6 +231,9 @@ void Server::read_client_req(Client *cli, int *i)
 void Server::handle_request(char *buf, int *i, Client *cli)
 {
 	/* Creating the request and the client associated */
+	// if (read_buffer[0] == '\0')
+	std::cout << "BUFFER " << read_buffer << std::endl;
+
 	std::vector<Request *> all_req_per_client;
 	Request *req = new Request(buf, cli);
 	_test  =false;
@@ -362,4 +366,22 @@ void	Server::_chan_requests(Request *req)
 		i++;
 	}
 	_test = true;
+}
+
+void Server::_killing_cli(Client* cli)
+{
+	if (close(cli->getFdClient()) < 0)
+		std::cout << "Socket couldn't be closed" << std::endl;
+	if (cli->_isInChan > 0)
+	{
+		std::vector<Channel*>::iterator it = _all_chanels.begin();
+		while (it != _all_chanels.end())
+		{
+			if ((*it)->isInChanList(cli, _all_clients) == true)
+				std::cout << " Ok trouvé" << std::endl;
+			it++;
+
+			/* A voir avec Mitch car demande modif dans Channel pr rajouter fctions liées au remove du client */
+		}
+	}
 }

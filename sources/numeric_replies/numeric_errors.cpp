@@ -184,3 +184,19 @@ string errUsersDontMatch(string nickName, string message)
 	reply = "502 * :Cannot change mode for other users\n";
 	return (reply);
 }
+
+string		errNoOperHost(string message, string me)
+{
+	(void)me;
+	string reply;
+	reply =  " 491 * " + message;
+	return (reply);
+}
+
+string		errNoPrivileges(string message, string me)
+{
+	(void)me;
+	string reply;
+	reply =  " 481 * " + message;
+	return (reply);
+}

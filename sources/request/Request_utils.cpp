@@ -302,8 +302,12 @@ void Request::chan_names(Server* serv)
 	std::vector<Channel*>::iterator it = serv->_all_chanels.begin();
 	while (it != serv->_all_chanels.end())
 	{
+		// std::cout << "je rentre ici 2 " << std::endl;
 		if ((*it)->activeMode('s') == false)
+		{
 			(*it)->cmd_lexer(*this);
+			reply += rpl_endofnames((*it)->getName(), "option");
+		}
 		it++;
 	}
 }
@@ -327,5 +331,6 @@ void Request::noChan_names(Server* serv)
 			i++;
 		}
 		reply.replace(reply.size() - 2, 2, "\n");
+		reply += rpl_endofnames("*", "option");
 	}
 }

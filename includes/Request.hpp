@@ -118,10 +118,14 @@ class Request
 		int			_nick(Client* cli, Server *serv);
 		int			_user(Client* cli, Server *serv);
 		int			_privmsg(Client* cli, Server *serv);
+		int			_notice(Client* cli, Server *serv);
 		int			_away(Client* cli, Server *serv);
 		int			_list(Client* cli, Server* serv);
 		int			_names(Client* cli, Server* serv);
 		int			_cap(Client* cli, Server* serv);
+		int			_oper(Client* cli, Server* serv);
+		int			_wallops(Client* cli, Server* serv);
+		int			_kill(Client* cli, Server* serv);
 
 		/* Channel commands */
 		int			_join(Client* cli, Server *serv);
@@ -129,6 +133,7 @@ class Request
 		int			_kick(Client* cli, Server *serv);
 		int			_topic(Client* cli, Server *serv);
 		int			_mode(Client* cli, Server *serv);
+		int			_invite(Client* cli, Server *serv);
 
 		vector<requ_cmds>	_request_cmds;
 
