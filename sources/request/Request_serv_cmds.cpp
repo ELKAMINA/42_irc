@@ -312,7 +312,9 @@ int Request::_list(Client* cli, Server* serv)
 
 int Request::_cap(Client* cli, Server* serv)
 {
-	return;
+	(void)cli;
+	(void)serv;
+	return 0;
 }
 
 // int	Request::_oper(Client* cli, Server *serv) /* For later */
