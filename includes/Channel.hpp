@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 16:30:56 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 19:25:20 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ class Channel
 	/* ACCESSORS */
 		int			getOnlineCount() const;
 		string		getTopic() const;
+		string		getModes() const;
 		string		getName() const;
 		std::string	getKey() const;
 			

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:23:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 18:14:52 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 19:21:40 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,7 +226,7 @@ int	Request::_topic(Client *cli, Server *serv)
 int	Request::_mode(Client* cli, Server *serv)
 {
 	beginning_with_diez(entries);
-	if(jo_nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&') && entries.size() > 1)
+	if(jo_nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&'))
 		_mode_for_chans(cli, serv);
 	else if (jo_nb_chan == 0 && entries.size() == 3)
 		_mode_for_clis(cli, serv);

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 12:17:09 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 18:18:59 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 19:37:41 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,18 +181,22 @@ int Channel::addMode(Request& request, vector<string>params)
 	uint countParams;
 	map<string, string>modes;
 
-	countParams = checkModes(params[1]);
-	cout << "on pass ici"<<endl;
-	if (countParams != params.size() - 2)
-		return (request.response = errNeedMoreParams(request._origin->getNickName(), request._command), 1);
-	modes = splitModes(params);
-	for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){
-		if (it->first[1] == 'o')
-			changeUserMode(request, *it, _operators);
-		else if (it->first[1] == 'v')
-			changeUserMode(request, *it, _vocal);
-		else
-			changeChanMode(request, *it);
+	if (params.size() == 1)
+		request.reply = '#' + this->getName() + ": " + this->getModes() + '\n';
+	else
+	{
+		countParams = checkModes(params[1]);
+		if (countParams != params.size() - 2)
+			return (request.response = errNeedMoreParams(request._origin->getNickName(), request._command), 1);
+		modes = splitModes(params);
+		for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){
+			if (it->first[1] == 'o')
+				changeUserMode(request, *it, _operators);
+			else if (it->first[1] == 'v')
+				changeUserMode(request, *it, _vocal);
+			else
+				changeChanMode(request, *it);
+		}
 	}
 	request.status = treated;
 	return 0;
