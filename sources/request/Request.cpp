@@ -93,10 +93,7 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::_away);
 	_request_cmds.push_back(&Request::_list);
 	_request_cmds.push_back(&Request::_names);
-<<<<<<< HEAD
 	_request_cmds.push_back(&Request::_cap);
-=======
->>>>>>> Amina_OtherCommands
 	_request_cmds.push_back(&Request::_invite);
 	_request_cmds.push_back(&Request::_oper);
 	_request_cmds.push_back(&Request::_wallops);
@@ -106,11 +103,7 @@ void Request::initLexer()
 void Request::requestLexer(Client* cli, Server* serv)
 {
 	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "NOTICE", "JOIN",
-<<<<<<< HEAD
 					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "KILL"};
-=======
-					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "INVITE", "OPER", "WALLOPS", "KILL"};
->>>>>>> Amina_OtherCommands
 	size_t i = 0;
 	for (; i < _request_cmds.size(); i++){
 		if (this->_command == cmds[i])
