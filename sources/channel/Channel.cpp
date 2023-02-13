@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 10:54:16 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 11:17:31 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ _name(channelName), _allUsers(allUsers)
 	initLexer();
 	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
 	// _users.push_back(owner.getNickName()); 
-	_onlineUsers = 1;
+	_onlineUsers = 0;
 	_maxUsers = -1;
 	_topic = "";
 	_key = "";
@@ -38,7 +38,7 @@ _name(channelName), _key(channelKey), _allUsers(allUsers)
 	initLexer();
 	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
 	// _users.push_back(owner.getNickName());
-	_onlineUsers = 1;
+	_onlineUsers = 0;
 	_maxUsers = -1;
 	_mods['k'] = true;
 	_topic = "";
