@@ -6,7 +6,7 @@ _host("IRC with love"), _id()
 {
 	initModes();
 	_away_msg = "";
-	_isInChan = 0;
+	// _isInChan = 0;
 }
 
 
@@ -14,7 +14,7 @@ Client::Client(int fd): _clientFd(fd), _nickName("UNDEFINED"), _userName("UNDEFI
 _host("IRC with love"), _id()
 {
 	initModes();
-	_isInChan = 0;
+	// _isInChan = 0;
 }
 
 Client::Client( const Client& x ): _host(x._host) { *this = x; };
@@ -84,6 +84,10 @@ std::string Client::getPwd() const
 	return this->_pass;
 }
 
+size_t Client::getChanNbr() const
+{
+	return this->_chans.size();
+}
 void Client::setFdClient(int fd)
 {
 	_clientFd = fd;
@@ -133,6 +137,7 @@ Client::~Client()
 {
 	this->_mode.clear();
 	this->all_req.clear();
+	this->_chans.clear();
 }
 
 void Client::setAwayMessage(std::string message)
@@ -144,4 +149,14 @@ void Client::setAwayMessage(std::string message)
 std::string Client::getAwayMessage() const
 {
 	return this->_away_msg;
+}
+
+void Client::addChanToList(Channel * chan)
+{
+	this->_chans.insert(chan);
+}
+
+void Client::removeChanFromList(Channel * chan)
+{
+	this->_chans.erase(chan);
 }

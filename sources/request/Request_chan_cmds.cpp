@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:23:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/10 15:39:42 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 10:15:09 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ int	Request::_part(Client *cli, Server *serv)
 						if (serv->_all_chanels[i]->getName() == tmp->getName())
 						{
 							serv->_all_chanels.erase(serv->_all_chanels.begin() + i);
-							cli->_isInChan--; /* To get nb of chan, the client is in : for NAMES*/
+							// cli->_isInChan--; /* To get nb of chan, the client is in : for NAMES*/
 						}
 					}
 					// serv->_all_chanels.erase(it = find(serv->_all_chanels.begin(), serv->_all_chanels.end(), tmp)); //doesn't work
@@ -192,7 +192,7 @@ int	Request::_kick(Client *cli, Server *serv)
 			{
 				status = ongoing;
 				tmp->cmd_lexer(*this);
-				cli->_isInChan--;
+				// cli->_isInChan--;
 			}
 			serv->_chan_requests(this);
 			i++;

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 10:45:50 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 10:21:48 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ void Channel::join(Request &request)
 	request.response = ":" + request._origin->setPrefix() + " has join #" + this->getName() + '\n';
 	reply_joining(request);
 	_users.push_back(request._origin);
+	request._origin->addChanToList(this);
 	request.status = treated;
 }
 
@@ -163,6 +164,7 @@ void Channel::part(Request& request)
 		_onlineUsers -= 1;
 		request.target.insert(request.target.end(), _users.begin(), _users.end());
 		request.response = user + " leaves #" + this->getName() + " " + request.message + '\n';
+		request._origin->removeChanFromList(this);
 		request.status = treated;
 	}
 }
@@ -210,6 +212,7 @@ void Channel::kick(Request& request)
 	_onlineUsers -= 1;
 	request.response += request._origin->setPrefix() + " KICK " + this->getName() + " "
 	+ request.entries[1] + " " + request.message + '\n';
+	to_kick->removeChanFromList(this);
 	request.status = treated;
 }
 

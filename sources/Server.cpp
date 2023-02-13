@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/10 11:31:47 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 10:23:11 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -372,7 +372,7 @@ void Server::_killing_cli(Client* cli)
 {
 	if (close(cli->getFdClient()) < 0)
 		std::cout << "Socket couldn't be closed" << std::endl;
-	if (cli->_isInChan > 0)
+	if (cli->getChanNbr() > 0)
 	{
 		std::vector<Channel*>::iterator it = _all_chanels.begin();
 		while (it != _all_chanels.end())

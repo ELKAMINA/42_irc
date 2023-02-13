@@ -9,11 +9,13 @@
 # include <poll.h>
 # include "ServerSocket.hpp"
 # include <map>
+# include <set>
 // # include "Channels.hpp"
 # include "Request.hpp"
 # include "./numeric_replies/numeric_replies.hpp"
 
 class Request;
+class Channel;
 
 enum valid_modes
 {
@@ -34,7 +36,7 @@ class Client
 		Client( int fd );
 		Client( const Client & x );
 		~Client();
-		int	_isInChan;
+		// int	_isInChan;
 	
 	/* OPERATOR OVERLOADS */
 		Client & operator= ( const Client & rhs );
@@ -46,6 +48,7 @@ class Client
 		std::string		getmode() const;
 		std::string 	getPwd() const;
 		std::string		getHost() const;
+		size_t			getChanNbr() const;
 
 	/* SETTERS */
 		std::string			setPrefix();
@@ -60,6 +63,8 @@ class Client
 	/* METHODS */
 		void			errInCmd(Request& request, string err);
 		bool			checkMode(char mode) const;
+		void			addChanToList(Channel * chan);
+		void			removeChanFromList(Channel * chan);
 		// void receiveMessage(Message& message);
 	
 	private:
@@ -74,6 +79,7 @@ class Client
 		std::string					_away_msg;
 		std::string					_id;
 		std::map<char, bool>		_mode;
+		set<Channel *>				_chans;
 		std::map<int, Request>		all_req;
 
 

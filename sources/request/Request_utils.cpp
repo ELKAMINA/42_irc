@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:14:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 13:21:24 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 10:05:59 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static bool sortClients(Client* a, Client* b)
 {
-	return a->_isInChan < b->_isInChan;
+	return a->getChanNbr() < b->getChanNbr();
 }
 
 int Request::user_existence(std::string dest, Server *serv)
@@ -131,7 +131,7 @@ void Request::oneChan(Client* cli, Server *serv)
 		{
 			status = ongoing;
 			tmp->cmd_lexer(*this);
-			cli->_isInChan++;
+			cli->addChanToList(tmp);
 		}
 		serv->_chan_requests(this);
 	}
@@ -142,7 +142,7 @@ void Request::oneChan(Client* cli, Server *serv)
 			to_add = new Channel((serv->_all_clients), entries[0],  *cli);
 		else
 			to_add = new Channel((serv->_all_clients), entries[0], entries[1], *cli);
-		cli->_isInChan++;
+		cli->addChanToList(to_add);
 		serv->_all_chanels.push_back(to_add);
 		to_add->cmd_lexer(*this);
 		serv->_chan_requests(this);
@@ -176,7 +176,7 @@ void Request::multiChan(Client* cli,Server *serv)
 			{
 				// std::cout << "mdp " << (entries[i + jo_nb_chan]) << std::endl;
 				to_add = new Channel((serv->_all_clients), entries[i], ((entries[i + jo_nb_chan])), *cli);
-				cli->_isInChan++;
+				cli->addChanToList(to_add);
 				jo_nb_keys--;
 				// i++;
 			}
@@ -184,7 +184,7 @@ void Request::multiChan(Client* cli,Server *serv)
 			{
 				// std::cout << " pas de mdp " << std::endl;
 				to_add = new Channel((serv->_all_clients), entries[i], *cli);
-				cli->_isInChan++;
+				cli->addChanToList(to_add);
 			}
 			serv->_all_chanels.push_back(to_add);
 			status =  ongoing;
@@ -204,7 +204,7 @@ void Request::multiChan(Client* cli,Server *serv)
 						jo_nb_keys--;
 						status = ongoing;
 						tmp->cmd_lexer(*this);
-						cli->_isInChan++;
+						cli->addChanToList(tmp);
 					}
 					else
 					{
@@ -230,7 +230,7 @@ void Request::multiChan(Client* cli,Server *serv)
 				{
 					status = ongoing;
 					tmp->cmd_lexer(*this);
-					cli->_isInChan++;
+					cli->addChanToList(tmp);
 				}
 			}
 			serv->_chan_requests(this);
@@ -316,11 +316,11 @@ void Request::noChan_names(Server* serv)
 {
 	sort((serv->_all_clients.begin()), (serv->_all_clients.end()), sortClients);
 	std::string rep;
-	if (serv->_all_clients[0]->_isInChan == 0)
+	if (serv->_all_clients[0]->getChanNbr() == 0)
 	{
 		reply += "*: \n";
 		size_t i = 0;
-		while(i < serv->_all_clients.size() && serv->_all_clients[i]->_isInChan == 0)
+		while(i < serv->_all_clients.size() && serv->_all_clients[i]->getChanNbr() == 0)
 		{
 			if (serv->_all_clients[i]->checkMode('i') == false)
 			{
