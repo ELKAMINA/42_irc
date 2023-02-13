@@ -131,6 +131,10 @@ void Client::initModes()
 {
 	this->_mode['i'] = false;
 	this->_mode['a'] = false;
+	this->_mode['w'] = false;
+	this->_mode['r'] = false;
+	this->_mode['o'] = false;
+	this->_mode['O'] = false;
 }
 
 Client::~Client()

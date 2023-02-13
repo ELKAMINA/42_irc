@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 10:21:48 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 11:44:08 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,21 +57,22 @@ void Channel::join(Request &request)
 {
 	string user = request._origin->getNickName();
 	vector<Client *>::iterator it;
-	// int matching_param;
+	int matching_param;
 	
 	if (isInChanList((request._origin), _users))
 		return (errInCmd(request, errUserOnChannel(user,this->getName())));
-	// if (_mods['k'] == true)
-	// {
-	// 	for (size_t i = 0; i < request.entries.size(); i++){
-	// 		if (request.entries[i] == _name)
-	// 		{
-	// 			matching_param = i;
-	// 			break;
-	// 		}
-	// 	}
-	// 	// will need position in protected chan list to snipe good key
-	// }
+	if (_mods['k'] == true)
+	{
+		for (size_t i = 0; i < request.entries.size(); i++){
+			if (request.entries[i] == _name)
+			{
+				matching_param = i;
+				break;
+			}
+		}
+		if (request.entries[matching_param + request.jo_nb_chan] != this->getKey())
+			return (errInCmd(request, errPasswMismatch(user, "wrong pwd")));
+	}
 	if (_mods['l'] && _onlineUsers == _maxUsers)
 		return (errInCmd(request, errChannelIsFull(user, this->getName())));
 	if (_mods['i'] == true)
