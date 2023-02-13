@@ -164,3 +164,11 @@ void Client::removeChanFromList(Channel * chan)
 {
 	this->_chans.erase(chan);
 }
+
+void Client::leaveAllChans()
+{
+	set<Channel *>::iterator it = _chans.begin();
+	for (; it != _chans.end(); it++){
+		(*it)->removeUser(this);
+	}
+}

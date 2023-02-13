@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 11:44:08 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 19:02:28 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,22 @@ void Channel::errInCmd(Request& request, string err)
 	request.status = treated;
 }
 
+void Channel::removeUser(Client * client)
+{
+	vector<Client *>::iterator it;
+
+	_users.erase(it = find(_users.begin(), _users.end(), client));
+		if ((it = find(_operators.begin(), _operators.end(), client)) != _operators.end())
+			_operators.erase(it);
+		if ((it = find(_vocal.begin(), _vocal.end(), client)) != _vocal.end())
+			_vocal.erase(it);
+		_onlineUsers -= 1;
+
+}
+
 void Channel::cmd_lexer(Request& request)
 {
-	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK", "NAMES"};
+	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK", "NAMES", "MODE"};
 	for (size_t i = 0; i< _cmds.size(); i++){
 		if (request._command == cmd_name[i])
 			(this->*(_cmds[i]))(request);
@@ -94,7 +107,7 @@ void Channel::invite(Request& request)
 {
 	string user = request._origin->getNickName();
 	vector<string>::iterator it;
-	Client* to_add =found(request.entries[1], _invited);
+	Client* to_add = found(request.entries[1], _allUsers);
 	if (request.entries.size() < 2)
 		return (errInCmd(request, errNeedMoreParams(user, request._command)));
 	if (!isInServ(request.entries[1], this->_allUsers))
@@ -103,11 +116,12 @@ void Channel::invite(Request& request)
 		return (errInCmd(request, errChannelIsFull(user, this->getName())));
 	if (_mods['i'] == true)
 	{
-		if (!isInChanList((to_add), _operators))
+		if (!isInChanList(request._origin, _operators))
 			return (errInCmd(request, errChanPrivsNeeded(user, this->getName())));
 		request.response = "@";
 	}
-	_invited.push_back(to_add);
+	if (!isInChanList(to_add, _invited))
+		_invited.push_back(to_add);
 	request.target.push_back(to_add);
 	request.response += request._origin->setPrefix() + " INVITE " + request.entries[1] + " #" + this->getName() + '\n';
 	request.reply = rpl_inviting(request.entries[1], this->getName());
@@ -157,12 +171,7 @@ void Channel::part(Request& request)
 		errInCmd(request, errNotOnChannel(user, this->getName()));
 	else
 	{
-		_users.erase(it = find(_users.begin(), _users.end(), request._origin));
-		if ((it = find(_operators.begin(), _operators.end(), request._origin)) != _operators.end())
-			_operators.erase(it);
-		if ((it = find(_vocal.begin(), _vocal.end(), request._origin)) != _vocal.end())
-			_vocal.erase(it);
-		_onlineUsers -= 1;
+		removeUser(request._origin);
 		request.target.insert(request.target.end(), _users.begin(), _users.end());
 		request.response = user + " leaves #" + this->getName() + " " + request.message + '\n';
 		request._origin->removeChanFromList(this);
@@ -204,13 +213,8 @@ void Channel::kick(Request& request)
 	if (!isInChanList((request._origin), _operators))
 		return(errInCmd(request, errChanPrivsNeeded(user, this->getName())));
 	if ((it = find(_users.begin(), _users.end(), to_kick)) == _users.end())
-		return(errInCmd(request, errNoSuchNick(user, request.entries[2])));
-	_users.erase(it = find(_users.begin(), _users.end(), to_kick));
-	if ((it = find(_operators.begin(), _operators.end(), to_kick)) != _operators.end())
-		_operators.erase(it);
-	if ((it = find(_vocal.begin(), _vocal.end(), to_kick)) != _vocal.end())
-		_vocal.erase(it);
-	_onlineUsers -= 1;
+		return(errInCmd(request, errNoSuchNick(user, request.entries[1])));
+	removeUser(to_kick);
 	request.response += request._origin->setPrefix() + " KICK " + this->getName() + " "
 	+ request.entries[1] + " " + request.message + '\n';
 	to_kick->removeChanFromList(this);

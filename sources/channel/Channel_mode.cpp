@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 12:17:09 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/10 15:47:29 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 18:18:59 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,11 +127,11 @@ static uint checkModes(string params)
 	if ((params[0] != '-' && params[0] != '+') || params.size() < 2)
 		return 0;
 	for (uint i = 1; i < params.size(); i++){
-		if (!isInSet(params[i], "iklopstv"))
+		if (!isInSet(params[i], "biklopstv"))
 			return 0;
 		else if (!isInSet(params[i], found))
 		{
-			if ((params[i] == 'o' || params[i] == 'v') && !chanMode)
+			if ((params[i] == 'b' || params[i] == 'o' || params[i] == 'v') && !chanMode)
 			{
 				count = 1;
 				userMode = true;
@@ -159,7 +159,7 @@ static map<string, string> splitModes(vector<string>params)
 		string mode = "";
 		mode += params[1][0];
 		mode += params[1][i];
-		if (params[1][i] == 'o' || params[1][i] == 'v')
+		if (params[1][i] == 'b' || params[1][i] == 'o' || params[1][i] == 'v')
 			modes.insert(make_pair(mode, params[2]));
 		else
 		{
@@ -182,6 +182,7 @@ int Channel::addMode(Request& request, vector<string>params)
 	map<string, string>modes;
 
 	countParams = checkModes(params[1]);
+	cout << "on pass ici"<<endl;
 	if (countParams != params.size() - 2)
 		return (request.response = errNeedMoreParams(request._origin->getNickName(), request._command), 1);
 	modes = splitModes(params);

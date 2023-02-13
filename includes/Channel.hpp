@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 14:08:31 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 16:30:56 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ class Channel
 		/* COMMANDS */
 		void errInCmd(Request& request, string err);
 		void reply_joining(Request& request);
+		void removeUser(Client * client);
 		void cmd_lexer(Request& request);
 		void privmsg(Request& request);
 		void invite(Request& request);
@@ -98,7 +99,7 @@ class Channel
 		vector<Client *>	_invited;
 		vector<Client *>	_users;
 		vector<Client *>	_vocal;
-		// vector<Client *>	_banned;
+		vector<Client *>	_banned;
 
 		vector<Client *>&	_allUsers;
 		map<char, bool>		_mods;

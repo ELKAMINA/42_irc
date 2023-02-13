@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 11:17:31 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 18:23:26 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ _name(channelName), _allUsers(allUsers)
 	initModes();
 	initLexer();
 	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
-	// _users.push_back(owner.getNickName()); 
 	_onlineUsers = 0;
 	_maxUsers = -1;
 	_topic = "";
@@ -37,7 +36,6 @@ _name(channelName), _key(channelKey), _allUsers(allUsers)
 	initModes();
 	initLexer();
 	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
-	// _users.push_back(owner.getNickName());
 	_onlineUsers = 0;
 	_maxUsers = -1;
 	_mods['k'] = true;
@@ -61,7 +59,7 @@ Channel& Channel::operator=(const Channel& rhs)
 		this->_users = rhs._users;
 		this->_operators = rhs._operators;
 		this->_vocal = rhs._vocal;
-		// this->_banned = rhs._banned;
+		this->_banned = rhs._banned;
 		this->_mods = rhs._mods;
 	}
 	return *this;
@@ -72,7 +70,7 @@ Channel::~Channel()
 	this->_users.clear();
 	this->_operators.clear();
 	this->_vocal.clear();
-	// this->_banned.clear();
+	this->_banned.clear();
 	this->_invited.clear();
 	this->_mods.clear();
 	this->_cmds.clear();
@@ -80,6 +78,7 @@ Channel::~Channel()
 
 void Channel::initModes()
 {
+	_mods.insert(make_pair('b', false));
 	_mods.insert(make_pair('i', false));
 	_mods.insert(make_pair('k', false));
 	_mods.insert(make_pair('l', false));
@@ -97,6 +96,7 @@ void Channel::initLexer()
 	_cmds.push_back(&Channel::privmsg);
 	_cmds.push_back(&Channel::kick);
 	_cmds.push_back(&Channel::names);
+	_cmds.push_back(&Channel::mode);
 }
 /* ****************************** */
 /* *** CHAN INFO CHECKERS ******* */

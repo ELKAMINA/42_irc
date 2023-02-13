@@ -65,6 +65,7 @@ class Client
 		bool			checkMode(char mode) const;
 		void			addChanToList(Channel * chan);
 		void			removeChanFromList(Channel * chan);
+		void			leaveAllChans();
 		// void receiveMessage(Message& message);
 	
 	private:

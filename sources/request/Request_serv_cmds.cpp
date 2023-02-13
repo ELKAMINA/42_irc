@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:20:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/12 14:09:49 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 18:37:37 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -366,13 +366,15 @@ int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 
 int	Request::_invite(Client* cli, Server *serv)
 {
-	if (entries.size() != 3)
+	if (entries.size() < 2)
 		reply = errNeedMoreParams(cli->getNickName(), _command);
 	else
 	{
-		Channel* tmp = existing_chan(&entries[1][1], serv);
+		Channel* tmp = existing_chan(&entries[0][1], serv);
 		if (tmp)
 			tmp->cmd_lexer(*this);
+		else
+			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
 	}
 	serv->_chan_requests(this);
 	return 0;

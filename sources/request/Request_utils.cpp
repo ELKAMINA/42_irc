@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:14:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 10:05:59 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/13 18:23:44 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,12 +243,12 @@ void Request::multiChan(Client* cli,Server *serv)
 
 void Request::_mode_for_chans(Client* cli, Server* serv)
 {
-	Channel *tmp = existing_chan(entries[1], serv);
+	Channel *tmp = existing_chan(&entries[0][1], serv);
 	if (tmp)
 		tmp->cmd_lexer(*this);
 	else
 	{
-		reply = errNoSuchChannel(cli->getNickName(), "No such channel");
+		reply = errNoSuchChannel(cli->getNickName(), entries[0]);
 		serv->_test = true;
 	}
 	serv->_chan_requests(this);
