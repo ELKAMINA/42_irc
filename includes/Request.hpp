@@ -42,6 +42,12 @@ enum valid_req
 	empty_req,
 };
 
+enum commas
+{
+	commas,
+	non_commas,
+};
+
 enum cmd
 {
 	PASS,
@@ -62,7 +68,8 @@ class Request
 		int							_id;
 		std::string					_raw_req;
 		std::vector<std::string>	entries; // Params + Commands (entries[0] Max 512 caracteres (including the CR-LF)
-		std::vector<std::string>	eph;
+		std::vector<std::string>	_channels;
+		std::vector<std::string>	_else;
 		char						_prefix; // Optional : ":" used by servers to indicate the true origin of the message
 		std::string					_command;
 		enum cmd					_cmd_types;
@@ -78,6 +85,8 @@ class Request
 		std::vector<Client*>		target;
 		size_t						jo_nb_chan;
 		size_t						jo_nb_keys;
+		bool						commas_c;
+		bool						commas_e;
 		// int							type;
 
 	public:
@@ -103,6 +112,7 @@ class Request
 		void 		resizing_chan(std::vector<std::string> entries);
 		void		counting_keys(std::vector<std::string> entries);
 		std::string	removing_backslash(std::vector<std::string> entries);
+		void		removing_sharp(std::vector<std::string>& entries);
 		void		oneChan(Client* cli, Server *serv);
 		void		multiChan(Client* cli, Server *serv);
 		void		_mode_for_chans(Client* cli, Server* serv);
@@ -111,6 +121,11 @@ class Request
 		std::string	retrieve_cliModes(Client* tmp);
 		void		chan_names(Server* serv);
 		void		noChan_names(Server* serv);
+		void		first_arg_for_entries(std::vector<std::string> entries);
+		void		second_arg_for_entries(std::vector<std::string> entries);
+		int			_check_lists();
+		int			_verifications();
+		int			_transformations();
 
 	private:
 		/* Server Commands */

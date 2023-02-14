@@ -295,18 +295,24 @@ int	Request::_away(Client* cli, Server *serv)
 
 int Request::_list(Client* cli, Server* serv)
 {
+
 	(void)cli;
-	string rep = "";
-	
-	for (size_t i = 0; i < serv->_all_chanels.size(); i++){
-		if (!serv->_all_chanels[i]->activeMode('s'))
-			rep += "#" + serv->_all_chanels[i]->getName() + ", ";
-	}
-	if (rep.size() != 0)
+	if (_check_lists() != 0)
 	{
-		rep.replace(rep.size() -2, 2, "\n");
+		string rep = "";
+		
+		for (size_t i = 0; i < serv->_all_chanels.size(); i++){
+			if (!serv->_all_chanels[i]->activeMode('s'))
+				rep += "#" + serv->_all_chanels[i]->getName() + ", ";
+		}
+		if (rep.size() != 0)
+		{
+			rep.replace(rep.size() -2, 2, "\n");
+		}
+		this->reply = rep;
 	}
-	this->reply = rep;
+	else
+		reply = "Invalid request \n";
 	return 0;
 }
 
@@ -317,48 +323,47 @@ int Request::_cap(Client* cli, Server* serv)
 	return 0;
 }
 
-// int	Request::_oper(Client* cli, Server *serv) /* For later */
-// {
-// 	if (entries.size() != 2)
-// 		reply = errNeedMoreParams(cli->getNickName(), _command);
-// 	else
-// 	{
-		
-// 		cli->_oper.insert(std::make_pair(entries[0], entries[1]))
-// 	}
-// }
-
 int	Request::_names(Client* cli, Server *serv) /* For later - A revoiiiiiiiir */
 {
 	(void)cli;
-	beginning_with_diez(entries);
+	// beginning_with_diez(entries);
 	// std::cout << "nb of channels " << jo_nb_chan << "entries.size() " << entries.size() << std::endl;
-	if (reply == "UNDEFINED")
+	if (_check_lists() != 0)
 	{
-		reply.clear();
-		if (entries.size() == 0 && jo_nb_chan == 0)
+		std::vector<std::string>::iterator it = entries.begin();
+		while (it != entries.end())
 		{
-			// std::cout << "je rentre ici " << std::endl;
-			chan_names(serv);
-			noChan_names(serv);
+			std::cout << "iiiit " << (*it) << std::endl;
+			it++;
 		}
-		else if (entries.size() >= 1)
+		if (reply == "UNDEFINED")
 		{
-			// std::cout << "je rentre ici ? " << std::endl;
-			size_t i = 0;
-			while (i < entries.size() && jo_nb_chan != 0)
+			removing_sharp(entries);
+			reply.clear();
+			if (entries.size() == 0 && jo_nb_chan == 0)
 			{
-				Channel* tmp = existing_chan(&entries[i][1], serv);
-				if (tmp)
+				// std::cout << "je rentre ici " << std::endl;
+				chan_names(serv);
+				noChan_names(serv);
+			}
+			else if (entries.size() >= 1)
+			{
+				// std::cout << "je rentre ici ? " << std::endl;
+				size_t i = 0;
+				while (i < entries.size() && jo_nb_chan != 0)
 				{
-					if (tmp->activeMode('s') == false)
-						tmp->cmd_lexer(*this);
-					reply += rpl_endofnames(tmp->getName(), "option");
-					/* Demander à Mitch pour cette partie */
+					Channel* tmp = existing_chan(entries[i], serv);
+					if (tmp)
+					{
+						if (tmp->activeMode('s') == false)
+							tmp->cmd_lexer(*this);
+						reply += rpl_endofnames(tmp->getName(), "option");
+					}
+					i++;
 				}
-				i++;
 			}
 		}
+		
 	}
 	serv->_chan_requests(this);
 	return 0;
@@ -376,26 +381,6 @@ int	Request::_invite(Client* cli, Server *serv)
 		else
 			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
 	}
-	serv->_chan_requests(this);
-	return 0;
-}
-
-int	Request::_oper(Client* cli, Server *serv) /* For later */
-{
-	if (entries.size() != 2)
-		reply = errNeedMoreParams(cli->getNickName(), _command);
-	else if (serv->_opers.find(entries[0]) != serv->_opers.end())
-	{
-		if (serv->_opers[entries[0]] == entries[1])
-		{
-			reply = rpl_youreoper(":You are now an IRC operator\n", "op");
-			cli->setMode('o', true);
-		}
-		else
-			reply = errPasswMismatch(cli->getNickName(), ":Password incorrect\n");
-	}
-	else
-		reply = errNoOperHost(":No O-lines for your host\n", "op");
 	serv->_chan_requests(this);
 	return 0;
 }
@@ -443,5 +428,25 @@ int Request::_kill(Client* cli, Server* serv)
 			/* Supprimer le user from Chan et de toutes leslistes dans lesquelles il existe !!! */
 		}
 	}
+	return 0;
+}
+
+int	Request::_oper(Client* cli, Server *serv) /* For later */
+{
+	if (entries.size() != 2)
+		reply = errNeedMoreParams(cli->getNickName(), _command);
+	else if (entries.size() == 2)
+	{
+		if (serv->_opers[entries[0]] == entries[1])
+		{
+			reply = rpl_youreoper(":You are now an IRC operator\n", "op");
+			cli->setMode('o', true);
+		}
+		else
+			reply = errPasswMismatch(cli->getNickName(), ":Password incorrect\n");
+	}
+	else
+		reply = errNoOperHost(":No O-lines for your host\n", "op");
+	serv->_chan_requests(this);
 	return 0;
 }

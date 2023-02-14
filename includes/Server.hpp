@@ -30,6 +30,7 @@
 # include "Request.hpp"
 # include "Channel.hpp"
 # include "./numeric_replies/numeric_replies.hpp"
+#include "sig.hpp"
 
 class Client;
 class Request;
@@ -87,7 +88,8 @@ public:
 	bool										sortClients(Client& a, Client& b);
 
 	/* Receiving and handling re				quest */
-	void										handle_request(char *buf, int *i, Client *cli);
+	bool										contld(char* buf, int nci);
+	void										handle_request(char *buf, int *i, Client *cli, int nci);
 	void										check_req_validity(Request **req);
 	void										_parsing(Client *cli, Request *req, std::vector<Request*>);
 	void										_chan_requests(Request *req);
@@ -101,8 +103,9 @@ public:
 	struct pollfd*								_server_events;
 	int 										nb_client_events; // aka nfds
 	char 										read_buffer[30000 + 1];
-	int n_ci;				
-	int fd_ci;				
+	std::string 								bif;
+	int 										n_ci;				
+	int 										fd_ci;				
 	std::string 								client_welcoming;
 	std::vector<Client *> 						_all_clients;
 	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/

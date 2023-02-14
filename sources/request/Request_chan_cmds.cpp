@@ -12,44 +12,32 @@
 
 #include "Request.hpp"
 
-
 int	Request::_join(Client *cli, Server *serv)
 {
-	/* _Find si chanel existe ou non 
-	1. s'il existe alors ajouter le client au chanel
-	2. s'il nexiste pas, creer un chanel et rajouter dans la liste des chanel existants et ajouter l'utilisateur à la liste de sutilisateurs du chanel.
-	*/
-	(void)serv;
 	(void)cli;
-
-	if (entries.size() < 1)
-		std::cout << "error " << std::endl;
-	// entries = _finding_comas(entries[1], serv);
-	// std::cout << "new entries " << entries[0] << std::endl;
-	beginning_with_diez(entries);
-	// std::vector<std::string>::iterator it = entries.end() - 1;
-	// it->erase(it->length() - 1, 1); //Removing the \n from the last index
-	// std::cout << "Nb of channels " << jo_nb_chan << std::endl;
-	if (jo_nb_chan != 0)
+	(void)serv;
+	// if (
+	if (_check_lists() != 0)
 	{
-		size_t k = jo_nb_chan;
-		size_t i = 0;
+		removing_sharp(entries);
 		// std::vector<std::string>::iterator it = entries.begin();
-		while (i < k)
-		{
-			entries[i].erase(0,1); // removing the character '#'
-			i++;
-		}
+		// while (it != entries.end())
+		// {
+		// 	std::cout << "iiiit " << (*it) << std::endl;
+		// 	it++;
+		// }
+		if (entries.size() < 1)
+			std::cout << "error " << std::endl;
+		else if (entries[0][0] == '0')
+		{}
+			/* Leave all channels */
+		if (jo_nb_chan > 1)
+			multiChan(cli, serv);
+		if ((jo_nb_chan == 1 && jo_nb_keys == 0 ) || (jo_nb_chan == 1 && jo_nb_keys == 1))
+			oneChan(cli, serv);
 	}
-	if (entries.size() > jo_nb_chan)
-		jo_nb_keys = entries.size() - jo_nb_chan;
-	if (jo_nb_chan > 1)
-		multiChan(cli, serv);
-	if ((jo_nb_chan == 1 && jo_nb_keys == 0 ) || (jo_nb_chan == 1 && jo_nb_keys == 1))
-	{
-		// std::cout << "one chan is OK " << std::endl;
-		oneChan(cli, serv);
-	}
+	else
+		reply = "Invalid request \n";
 	return 0;
 }
 
@@ -62,34 +50,14 @@ int	Request::_part(Client *cli, Server *serv)
 		req_validity = notEnough_params;
 		return 1;
 	}
-	beginning_with_diez(entries);
-	if (entries.size() > jo_nb_chan)
+	if (_check_lists() != 0)
 	{
-		jo_nb_keys = entries.size() - jo_nb_chan;
-		if (entries[jo_nb_chan][0] != ':' || (entries[jo_nb_chan][0] == ':' && (entries[jo_nb_chan][1] == ' ')))
+		if (entries.size() > jo_nb_chan)
 		{
-			reply = errUnknownCommand(cli->getNickName(), _command); /* on checke si larg apres les chan sil existe commence bien par : qui est le part message*/
-			serv->_test = true;
-		}
-		else
-		{
-			// std::vector<std::string>::iterator it = entries.end() - 1;
-			// std::cout << "Nb of channels " << jo_nb_chan << std::endl;
-			// if (jo_nb_chan != 0)
-			// {
-			// 	size_t k = jo_nb_chan;
-			// 	size_t i = 0;
-			// 	// std::vector<std::string>::iterator it = entries.begin();
-			// 	while (i < k)
-			// 	{
-			// 		entries[i].erase(0,1); // removing the character '#'
-			// 		i++;
-			// 	}
-			// }
-			size_t i = jo_nb_chan;
 			if (message == "")
 			{
 				message.clear();
+				size_t i = jo_nb_chan;
 				while(i < entries.size())
 				{
 					message += entries[i];
@@ -99,14 +67,18 @@ int	Request::_part(Client *cli, Server *serv)
 			}
 		}
 	}
+	else
+	{
+		reply = errUnknownCommand(cli->getNickName(), _command); /* on checke si larg apres les chan sil existe commence bien par : qui est le part message*/
+		serv->_test = true;
+	}
 	size_t i = 0;
 	if (reply == "UNDEFINED")
 	{
-		// std::cout << "NUMBEEERS of chnanan " << jo_nb_chan << " msg = " << msg  << std::endl;
-		
+		removing_sharp(entries);
 		while (i < jo_nb_chan)
 		{
-			Channel* tmp = existing_chan(&entries[i][1], serv);
+			Channel* tmp = existing_chan(entries[i], serv);
 			if (!tmp)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[i]);
@@ -117,6 +89,7 @@ int	Request::_part(Client *cli, Server *serv)
 				status = ongoing;
 				tmp->cmd_lexer(*this);
 				// temporary solution, need to improve it
+				// std::cout << "je rentre ici oui ouis " << "getOnlineCount()" << tmp->getOnlineCount() << std::endl;
 				if (tmp->getOnlineCount() == 0)
 				{
 					for (size_t j = 0; j < serv->_all_chanels.size(); j++){
@@ -141,62 +114,65 @@ int	Request::_part(Client *cli, Server *serv)
 
 int	Request::_kick(Client *cli, Server *serv)
 {
-	beginning_with_diez(entries);
-	if (reply == "UNDEFINED")
+	if (_check_lists() != 0)
 	{
-		size_t users_toKick = 0;
-		if (entries.size() > jo_nb_chan)
+		removing_sharp(entries);
+		if (reply == "UNDEFINED")
 		{
-			std::vector<std::string>::iterator it = entries.begin() + jo_nb_chan;
-			bool comment =  false;
-			size_t nb = 0;
-			while (it != entries.end())
+			size_t users_toKick = 0;
+			if (entries.size() > jo_nb_chan)
 			{
-				if ((*it)[0] == ':')
+				std::vector<std::string>::iterator it = entries.begin() + jo_nb_chan;
+				bool comment =  false;
+				size_t nb = 0;
+				while (it != entries.end())
 				{
-					if (isalnum((*it)[1]) == 0)
+					if ((*it)[0] == ':')
 					{
-						req_validity = invalid_req;
-						serv->_test = false;
-						return 1;
+						if (isalnum((*it)[1]) == 0)
+						{
+							req_validity = invalid_req;
+							serv->_test = false;
+							return 1;
+						}
+						
+						while (it != entries.end())
+						{
+							message.clear();
+							message += *it;
+							message += ' ';
+							it++;
+							comment = true;
+							nb++;
+						}	
 					}
-					
-					while (it != entries.end())
-					{
-						message.clear();
-						message += *it;
-						message += ' ';
+					if (comment == false)
 						it++;
-						comment = true;
-						nb++;
-					}	
 				}
-				if (comment == false)
-					it++;
+				users_toKick = entries.size() - jo_nb_chan - nb;
 			}
-			users_toKick = entries.size() - jo_nb_chan - nb;
-		}
-		if ((jo_nb_chan == 1 && !users_toKick) || (jo_nb_chan > 1 && users_toKick != jo_nb_chan))
-			reply = errNeedMoreParams(cli->getNickName(), _command);
-		size_t i = 0;
-		// std::cout << "NUMBEEERS of chnanan " << jo_nb_chan << " msg = " << msg  << std::endl;
-		while (i < jo_nb_chan)
-		{
-			Channel* tmp = existing_chan(&entries[i][1], serv);
-			if (!tmp)
+			if ((jo_nb_chan == 1 && !users_toKick) || (jo_nb_chan > 1 && users_toKick != jo_nb_chan))
+				reply = errNeedMoreParams(cli->getNickName(), _command);
+			size_t i = 0;
+			while (i < jo_nb_chan)
 			{
-				reply = errNoSuchChannel(cli->getNickName(), "No such Channel");
-				serv->_test = true;
+				Channel* tmp = existing_chan(&entries[i][1], serv);
+				if (!tmp)
+				{
+					reply = errNoSuchChannel(cli->getNickName(), "No such Channel");
+					serv->_test = true;
+				}
+				else
+				{
+					status = ongoing;
+					tmp->cmd_lexer(*this);
+					// cli->_isInChan--;
+				}
+				serv->_chan_requests(this);
+				i++;
 			}
-			else
-			{
-				status = ongoing;
-				tmp->cmd_lexer(*this);
-				// cli->_isInChan--;
-			}
-			serv->_chan_requests(this);
-			i++;
 		}
+
 	}
 	else
 		serv->_chan_requests(this);

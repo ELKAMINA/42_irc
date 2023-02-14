@@ -18,36 +18,14 @@ Request::Request(char* buffer, Client* cli) : _origin(cli)
 		// std::cout << "token " << token << std::endl;
 		token = strtok(NULL, " ");
 	}
-	std::string new_token;
-	size_t pos = 0;
-	for(size_t i = 0; i < entries.size(); i++)
-	{
-		// std::cout << " AVANT " <<  "entriiies i " << entries[i] << std::endl;
-		while((pos = entries[i].find(',')) != std::string::npos)
-		{
-		// std::cout << " APRES " << "entriiies i " << entries[i] << std::endl;
-
-			new_token = entries[i].substr(0, pos);
-			// std::cout << "new_token " << new_token << std::endl; //chan1
-			entries[i].erase(0, pos + 1);
-			std::vector<std::string>::iterator it = entries.begin();
-			entries.insert(it + i, new_token);
-			// std::cout << "apres insertion i = " << i << entries[i] << entries.size() << std::endl; //chan1
-			i++;
-		}
-	}
-	std::vector<std::string>::iterator it = entries.begin();
-	while (it != entries.end())
-	{
-		// std::cout << "entriiies i " << *it << std::endl;
-		it++;
-	}
 	req_validity = valid_req;
 	_cmd_types = UNKNOWN;
 	reply = "UNDEFINED";
 	jo_nb_chan = 0;
 	jo_nb_keys = 0;
 	message = "";
+	commas_c = true;
+	commas_e = true;
 	// _origin = cli;
 }
 
@@ -68,9 +46,72 @@ Request & Request::operator=( const Request& rhs )
 Request::~Request()
 {
 	this->entries.clear();
-	this->eph.clear();
+	// this->eph.clear();
 	this->target.clear();
 	this->_request_cmds.clear();
+}
+
+
+void Request::first_arg_for_entries(std::vector<std::string> entries)
+{
+	std::string new_token;
+	size_t sharp = 0;
+	if (entries[0][0] != '\0')
+	{
+		size_t entry_size = entries[0].size();
+		std::string eph = entries[0];
+		size_t count = 0; /* Combien on a consomme de eph*/
+		while (eph.size() != 0)
+		{
+			while ((sharp = eph.find(',')) != std::string::npos)
+			{
+				new_token = eph.substr(0, sharp);
+				_channels.push_back(new_token);
+				eph.erase(0, sharp + 1);
+				count += new_token.size() + 1;
+				commas_c = false;
+			}
+			if ((sharp = eph.find(',')) == std::string::npos)
+			{
+				// std::cout << " la ?????? " << std::endl;
+				if (count < entry_size)
+				{
+					_channels.push_back(eph);
+					count += eph.size();
+					break ;
+				}
+			}
+		}
+	}
+}
+
+void Request::second_arg_for_entries(std::vector<std::string> entries)
+{
+	std::string new_token;
+	size_t sharp = 0;
+	std::string eph = entries[1];
+	size_t entry_size = entries[1].size();
+	size_t count = 0; /* Combien on a consomme de eph*/
+	while (eph.size() != 0)
+	{
+		while ((sharp = eph.find(',')) != std::string::npos)
+		{
+			new_token = eph.substr(0, sharp);
+			_else.push_back(new_token);
+			eph.erase(0, sharp + 1);
+			count += new_token.size() + 1;
+			commas_e = false;
+		}
+		if ((sharp = eph.find(',')) == std::string::npos)
+		{
+			if (count < entry_size)
+			{
+				_else.push_back(eph);
+				count += eph.size();
+				break ;
+			}
+		}
+	}
 }
 
 std::string Request::getEntries(size_t i) const 

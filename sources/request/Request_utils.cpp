@@ -63,6 +63,7 @@ Channel* Request::existing_chan(std::string name, Server *serv)
 	std::vector<Channel *>::iterator it = serv->_all_chanels.begin();
 	while(it != serv->_all_chanels.end())
 	{
+		// std::cout << "nammmeees " << (*it)->getName() << "argg " << name << std::endl; 
 		if ((*it)->getName() == name)
 			return *it;
 		it++;
@@ -111,16 +112,29 @@ std::string Request::removing_backslash(std::vector<std::string> entries)
 	return(*it);
 }
 
+void Request::removing_sharp(std::vector<std::string>& en)
+{
+	size_t i = 0;
+	while (i < jo_nb_chan)
+	{
+		if ((en[i][0] == '#' || en[i][0] == '&') && (_command == "JOIN" || _command == "PART"))
+			en[i].erase(0,1);
+		i ++;
+	}
+}
+
 
 void Request::oneChan(Client* cli, Server *serv)
 {
 	Channel *tmp;
 	tmp = existing_chan(entries[0], serv);
+	// std::cout << "tmp " << tmp << std::endl;
 	this->status = ongoing;
 	if(jo_nb_keys > jo_nb_chan)
 		reply = errNeedMoreParams("bad value", this->_command);
 	if (tmp != NULL) /* Channel existe */
 	{
+		// std::cout << "jijou " << std::endl;
 		if ((tmp->activeMode('k') == true && entries.size() == 1)
 		|| (tmp->activeMode('k') == false && entries.size() > 1))
 		{
@@ -137,6 +151,7 @@ void Request::oneChan(Client* cli, Server *serv)
 	}
 	else
 	{
+		// removing_sharp(entries);
 		Channel *to_add;
 		if (entries.size() == 1)
 			to_add = new Channel((serv->_all_clients), entries[0],  *cli);
@@ -154,9 +169,6 @@ void Request::multiChan(Client* cli,Server *serv)
 	(void)serv;
 	(void)cli;
 	Channel* tmp;
-	// entries[0].erase(0, 1); // RÉCUPÉRATION UNIQUEMENT DU NOM DU CHANEL
-	// std::vector<std::string>::iterator it = entries.begin();
-	// std::cout << "MULTICHAN => " << "nb of keys " << jo_nb_keys << " && " << " Nb of chan " << jo_nb_chan << std::endl;
 	if(jo_nb_keys > jo_nb_chan)
 	{
 		reply = errNeedMoreParams("bad value", this->_command);
@@ -333,4 +345,65 @@ void Request::noChan_names(Server* serv)
 		reply.replace(reply.size() - 2, 2, "\n");
 		reply += rpl_endofnames("*", "option");
 	}
+}
+
+int Request::_check_lists()
+{
+	if (entries.size() >= 1)
+		first_arg_for_entries(entries);
+	if (entries.size() >= 2)
+		second_arg_for_entries(entries);
+	if (_verifications() == 0)
+		return 0;
+	return 1;
+}
+
+int Request::_verifications()
+{
+	if (_command == "JOIN" || _command == "PART" || _command == "NAMES" || _command == "LIST" || _command == "KICK")
+	{
+		if (_channels.size() >= 1)
+		{
+			// std::cout << "here " << std::endl;
+			beginning_with_diez(_channels);
+			if (jo_nb_chan != _channels.size())
+				return 0;
+			// removing_sharp(_channels);
+			
+		}
+		if (_else.size() >= 1)
+		{
+			jo_nb_keys = _else.size();
+			if (_command == "PART")
+			{
+				if (_else[0][0] != '\0' && (_else[0][0] != ':'))
+					return 0;
+			}
+			else
+			{
+				if (jo_nb_keys > jo_nb_chan)
+					return 0;
+			}
+		}
+	}
+
+	_transformations();
+	return 1;
+}
+
+int Request::_transformations()
+{
+	if (commas_c == false && commas_e == true)
+	{
+		entries.erase(entries.begin());
+		entries.insert(entries.begin(), _channels.begin(), _channels.end());
+	}
+	else if (commas_c == false && commas_e == false)
+	{
+		entries.erase(entries.begin());
+		entries.erase(entries.begin() + 1);
+		entries.insert(entries.begin(), _channels.begin(), _channels.end());
+		entries.insert(entries.begin() + _channels.size(), _else.begin(), _else.end());
+	}
+	return 1;
 }

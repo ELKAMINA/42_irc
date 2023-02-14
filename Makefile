@@ -29,6 +29,7 @@ SRCS 		= 			main.cpp \
 						ServerSocket.cpp \
 						Socket.cpp \
 						Client.cpp \
+						sig.cpp \
 						$(addprefix $(SRCS_REQU_PATH),	\
 						Request.cpp \
 						Request_serv_cmds.cpp \

@@ -13,6 +13,8 @@
 #include "numeric_replies.hpp"
 #include <unistd.h>
 
+int gstatus = 0;
+
 Server::Server(int domain, int service, int protocol, int port, u_long interface, int max_co, std::string name, std::string pass) : _domain(domain), _service(service), _protocol(protocol), _port(port), _interface(interface), _max_co(max_co), _name(name), _pass(pass)
 {
 	_online_clients = 0;
@@ -32,6 +34,7 @@ Server::Server(int domain, int service, int protocol, int port, u_long interface
 	_test = false;
 	std::pair<std::string, std::string> pair("oper", "pwdoper");
 	_opers.insert(pair);
+	bif = "";
 }
 
 Server::Server(const Server &rhs)
@@ -152,6 +155,7 @@ int Server::routine()
 			}
 			else
 			{
+				// std::cout << "lolilol " << std::endl;
 				if (_client_events[i].events & POLLIN) /*If the fd already exists and its an entry */
 				{
 
@@ -208,6 +212,7 @@ std::string Server::welcoming_newClients()
 	return (client_welcoming);
 }
 
+
 void Server::read_client_req(Client *cli, int *i)
 {
 	n_ci = recv(cli->getFdClient(), read_buffer, 30000, 0);
@@ -224,71 +229,94 @@ void Server::read_client_req(Client *cli, int *i)
 		_online_clients--;
 	}
 	else
-		handle_request(read_buffer, i, cli);
+	{
+		// contld(read_buffer, n_ci);
+		handle_request(read_buffer, i, cli, n_ci);
+	}
 	memset(&read_buffer, 0, 30000); /* Pour reset les saisies Clients*/
 }
 
-void Server::handle_request(char *buf, int *i, Client *cli)
+bool Server::contld(char* buf, int nci)
+{
+	// std::cout << "buf 2222 " << buf << strlen(buf) << std::endl;
+	int j = 0;
+	while (j < nci)
+	{
+		if (buf[j] == '\n')
+			return true;
+		j++;
+	}
+	return false;
+}
+
+void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 {
 	/* Creating the request and the client associated */
-	// if (read_buffer[0] == '\0')
-	std::cout << "BUFFER " << read_buffer << std::endl;
-
+	// std::cout << "TOTO" << nci << " -- ";
+	if (contld(buf, nci) == false)
+	{
+		bif += buf;
+		return ;
+	}
+	bif += buf;
+	// memset(&buf, 0, strlen(buf));
+	buf = &bif[0];
+	// std::cout << "buf[5]" << buf[4] << std::endl;
 	std::vector<Request *> all_req_per_client;
-	Request *req = new Request(buf, cli);
+	Request *req = new Request(buf , cli);
 	_test  =false;
 	global.id_requests++;
 	req->_id = global.id_requests;
 	// cli->setPwd(_pass);
-
-	check_req_validity(&req);
-	if (req->req_validity == valid_body || req->req_validity == valid_req)
-	{
-		_parsing(cli, req, all_req_per_client);
-	}
-	if (req->req_validity == invalid_req)
-		req->reply = errUnknownCommand("Unknown", req->_command);
-	else if (req->req_validity == invalid_body)
-		req->reply = "Invalid message\n";
-	else if (req->req_validity == notEnough_params)
-		req->reply = errNeedMoreParams(cli->getNickName(), req->_command);
-	else if (req->req_validity == incorrect_pwd)
-		req->reply = errPasswMismatch(cli->getNickName(),cli->getNickName());
-	else if (req->req_validity == already_registered)
-		req->reply = errAlreadyRegistered(cli->getNickName(),cli->getNickName());
-	else if (req->req_validity == omitted_cmd)
-		req->reply = "Please enter the password or Nickname first\n";
-	else if (req->req_validity == invisible_man)
-		req->reply = "To Invisible man, you can't send message!\n";
-	// else if (req->req_validity == erroneous_nickname)
-	// 	req->response = errErroneusNickname(cli, req);
-	else if (req->req_validity == nickname_exists)
-		req->reply = errNicknameInUse(cli->getNickName(), req->entries[1]);
-	else if (req->req_validity == welcome_msg)
-	{
-		std::ostringstream oss;
-		if (cli->getNickName().empty())
-			cli->setNickname("*");
-		oss << ":" << this->get_name() << " "
-			<< "001 " << cli->getNickName() << " " << cli->setPrefix() << "\n";
-		std::string var = oss.str();
-		req->reply = var;
-	}
-	else if (req->req_validity == empty_req)
-	{
-	} /* DO nothing */
-	if (_test == false && _client_events[*i].fd != req->_origin->getFdClient())
-	{
-		if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
-			return (perror("Problem in sending from server ")); // a t on le droit ??
-	}
-	else if (_test == false && _client_events[*i].fd == req->_origin->getFdClient())
-	{
-		if (req->reply != "UNDEFINED")
-			if (send(_client_events[*i].fd, req->reply.c_str(), req->reply.length(), 0) == -1)
-				return (perror("Problem in sending from server "));
-	}
-	// std::cout << " req response " << req.response << std::endl;
+		check_req_validity(&req);
+		if (req->req_validity == valid_body || req->req_validity == valid_req)
+		{
+			_parsing(cli, req, all_req_per_client);
+		}
+		if (req->req_validity == invalid_req)
+			req->reply = errUnknownCommand("Unknown", req->_command);
+		else if (req->req_validity == invalid_body)
+			req->reply = "Invalid message\n";
+		else if (req->req_validity == notEnough_params)
+			req->reply = errNeedMoreParams(cli->getNickName(), req->_command);
+		else if (req->req_validity == incorrect_pwd)
+			req->reply = errPasswMismatch(cli->getNickName(),cli->getNickName());
+		else if (req->req_validity == already_registered)
+			req->reply = errAlreadyRegistered(cli->getNickName(),cli->getNickName());
+		else if (req->req_validity == omitted_cmd)
+			req->reply = "Please enter the password or Nickname first\n";
+		else if (req->req_validity == invisible_man)
+			req->reply = "To Invisible man, you can't send message!\n";
+		// else if (req->req_validity == erroneous_nickname)
+		// 	req->response = errErroneusNickname(cli, req);
+		else if (req->req_validity == nickname_exists)
+			req->reply = errNicknameInUse(cli->getNickName(), req->entries[1]);
+		else if (req->req_validity == welcome_msg)
+		{
+			std::ostringstream oss;
+			if (cli->getNickName().empty())
+				cli->setNickname("*");
+			oss << ":" << this->get_name() << " "
+				<< "001 " << cli->getNickName() << " " << cli->setPrefix() << "\n";
+			std::string var = oss.str();
+			req->reply = var;
+		}
+		else if (req->req_validity == empty_req)
+		{
+		} /* DO nothing */
+		if (_test == false && _client_events[*i].fd != req->_origin->getFdClient())
+		{
+			if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
+				return (perror("Problem in sending from server ")); // a t on le droit ??
+		}
+		else if (_test == false && _client_events[*i].fd == req->_origin->getFdClient())
+		{
+			if (req->reply != "UNDEFINED")
+				if (send(_client_events[*i].fd, req->reply.c_str(), req->reply.length(), 0) == -1)
+					return (perror("Problem in sending from server "));
+		}
+		// std::cout << " req response " << req.response << std::endl;
+		bif.clear();
 }
 
 int Server::is_charset(char c)
@@ -330,15 +358,10 @@ void Server::check_req_validity(Request **r)
 		}
 
 	}
-	// if (req->entries.size() == 1)
-	// 	req->entries[0].resize(req->entries[0].size() - 1); /* Take off the \n*/
 	req->entries[req->entries.size() - 1] = req->removing_backslash(req->entries);
-	// std::cout << "req entries 0 " << req->entries[0] << " size " << req->entries[0].size() << std::endl;
 	req->_command = req->entries[0];
 	std::vector<std::string>::iterator it = req->entries.begin();
 	req->entries.erase(it);
-	// req->_finding_comas(req->entries[0], this, &(req.entries));
-	// std::cout << "size of req entries 0 " << r)eq->entries[0].size() << std::endl;
 };
 
 void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req_per_client)
@@ -378,7 +401,7 @@ void Server::_killing_cli(Client* cli)
 		while (it != _all_chanels.end())
 		{
 			if ((*it)->isInChanList(cli, _all_clients) == true)
-				std::cout << " Ok trouvé" << std::endl;
+				
 			it++;
 
 			/* A voir avec Mitch car demande modif dans Channel pr rajouter fctions liées au remove du client */

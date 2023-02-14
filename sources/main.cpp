@@ -15,6 +15,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "Server.hpp"
+#include "sig.hpp"
 
 
 int main(int ac, char *av[])
@@ -28,7 +29,7 @@ int main(int ac, char *av[])
 	std::cout << "port is " << port << ", name is " << myServ->get_name() << " and pass is " << myServ->get_pass() << std::endl;
 	myServ->start_server(); // initalise la socket server en ecoute
 	myServ->routine();
-
+	signal(SIGINT, handle_sig);
 	delete(myServ);
 	return 0;
 }
