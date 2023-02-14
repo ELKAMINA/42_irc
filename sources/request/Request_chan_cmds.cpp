@@ -20,6 +20,7 @@ int	Request::_join(Client *cli, Server *serv)
 	if (entries[0][0] == '0')
 	{
 		std::cout << "je rentre " << std::endl;
+		/* checker getOnlineCOunt pour chaque channel ATTENTIIIOON et supprimer si cetait le dernier user*/
 		cli->leaveAllChans();
 	}
 	else if (_check_lists() != 0)
