@@ -17,24 +17,30 @@ int	Request::_join(Client *cli, Server *serv)
 	(void)cli;
 	(void)serv;
 	// if (
-	if (_check_lists() != 0)
+	if (entries[0][0] == '0')
 	{
-		removing_sharp(entries);
-		// std::vector<std::string>::iterator it = entries.begin();
-		// while (it != entries.end())
-		// {
-		// 	std::cout << "iiiit " << (*it) << std::endl;
-		// 	it++;
-		// }
-		if (entries.size() < 1)
-			std::cout << "error " << std::endl;
-		else if (entries[0][0] == '0')
-		{}
-			/* Leave all channels */
-		if (jo_nb_chan > 1)
-			multiChan(cli, serv);
-		if ((jo_nb_chan == 1 && jo_nb_keys == 0 ) || (jo_nb_chan == 1 && jo_nb_keys == 1))
-			oneChan(cli, serv);
+		std::cout << "je rentre " << std::endl;
+		cli->leaveAllChans();
+	}
+	else if (_check_lists() != 0)
+	{
+
+			removing_sharp(entries);
+			// std::vector<std::string>::iterator it = entries.begin();
+			// while (it != entries.end())
+			// {
+			// 	std::cout << "iiiit " << (*it) << std::endl;
+			// 	it++;
+			// }
+			if (entries.size() < 1)
+				std::cout << "error " << std::endl;
+			else if (entries[0][0] == '0')
+			{}
+				/* Leave all channels */
+			if (jo_nb_chan > 1)
+				multiChan(cli, serv);
+			if ((jo_nb_chan == 1 && jo_nb_keys == 0 ) || (jo_nb_chan == 1 && jo_nb_keys == 1))
+				oneChan(cli, serv);
 	}
 	else
 		reply = "Invalid request \n";

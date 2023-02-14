@@ -128,7 +128,7 @@ void Request::oneChan(Client* cli, Server *serv)
 {
 	Channel *tmp;
 	tmp = existing_chan(entries[0], serv);
-	// std::cout << "tmp " << tmp << std::endl;
+	// std::cout << "tmp " << jo_nb_keys << std::endl;
 	this->status = ongoing;
 	if(jo_nb_keys > jo_nb_chan)
 		reply = errNeedMoreParams("bad value", this->_command);

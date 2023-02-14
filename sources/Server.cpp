@@ -261,6 +261,7 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 	bif += buf;
 	// memset(&buf, 0, strlen(buf));
 	buf = &bif[0];
+	std::cout << "buf  " << buf << std::endl;
 	// std::cout << "buf[5]" << buf[4] << std::endl;
 	std::vector<Request *> all_req_per_client;
 	Request *req = new Request(buf , cli);
