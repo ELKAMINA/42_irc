@@ -90,7 +90,7 @@ class Request
 		// int							type;
 
 	public:
-		Request		(char* buf, Client* cli);
+		Request		(const char* buf, Client* cli);
 		~Request	();
 		Request		( const Request &x );
 		Request & 	operator = ( const Request &rhs );

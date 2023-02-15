@@ -1,6 +1,6 @@
 #include "Request.hpp"
 
-Request::Request(char* buffer, Client* cli) : _origin(cli)
+Request::Request(const char* buffer, Client* cli) : _origin(cli)
 {
 	/* S'il faut gerer egalement les tabluations,ce code fait tres bien l'affaire. Il recupere les mots dans une phrase */
 		// std::string input = buffer;
@@ -12,7 +12,7 @@ Request::Request(char* buffer, Client* cli) : _origin(cli)
 	/* ********************************************* */
 	initLexer();
 	_raw_req = buffer;
-	char * token = strtok(buffer, " ");
+	char * token = strtok(const_cast<char *>(buffer) , " ");
 	while( token != NULL ) {
 		entries.push_back(token);
 		// std::cout << "token " << token << std::endl;

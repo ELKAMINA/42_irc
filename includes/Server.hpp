@@ -90,6 +90,7 @@ public:
 	/* Receiving and handling re				quest */
 	bool										contld(char* buf, int nci);
 	void										handle_request(char *buf, int *i, Client *cli, int nci);
+	void										_treating_req(Request *request, Client* cli, int* i);
 	void										check_req_validity(Request **req);
 	void										_parsing(Client *cli, Request *req, std::vector<Request*>);
 	void										_chan_requests(Request *req);
