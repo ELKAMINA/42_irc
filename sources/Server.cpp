@@ -109,7 +109,7 @@ void Server::start_server()
 {
 	this->server_socket = new ServerSocket(this->_domain, this->_service, this->_protocol,
 										   this->_port, this->_interface, this->_max_co);
-	_client_events[0].events = POLLIN;
+	_client_events[0].events = POLLIN | POLLOUT;
 	_client_events[0].fd = server_socket->get_sock(); /* On the file descriptor data.fd */
 }
 
@@ -118,6 +118,7 @@ int Server::routine()
 	while (1)
 	{
 		// std::cout << "=============== Waiting on poll() ==============" << std::endl;
+		std::cout << " je passe ici " << std::endl;
 		std::cout << std::endl;
 
 		int active_co = poll(_client_events, _online_clients, -1); // equivalent epoll_wait: attend qu'un fd devienne dispo
@@ -136,21 +137,22 @@ int Server::routine()
 			/*r_events is an attribute of pollfd structure that is filled by the kernel depending on what type of events we're waiting for*/
 			if (_client_events[i].revents == 0) /*revents = 0 means that client_events[i].fd is negative which mean that is not an open file so there isnt any event for now */
 				continue;
-			if (_client_events[i].revents != POLLIN) /* revent is not POLLIN so dont know what it is*/
-			{
-				perror("Not Pollin");
-				return 1;
-			}
+			// if (_client_events[i].revents != POLLIN) /* revent is not POLLIN so dont know what it is*/
+			// {
+			// 	perror("Not Pollin");
+			// 	return 1;
+			// }
 			if (_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
 			{
 				std::cout << "server socket " << server_socket->get_sock() << std::endl;
 				std::cout << "Client fd " << _client_events[i].fd << std::endl;
-				
 				new_client();
 				Client *cli = new Client(_client_events[_online_clients].fd);
 				// std::cout << " clients[online_client] " << _client_events[_online_clients].fd << std::endl;
+				std::cout << "i =  " << i << " online_client" << _online_clients << std::endl;
 				_online_clients++;
 				_all_clients.push_back(cli);
+				// read_client_req(cli, &i);
 			}
 			else
 			{
@@ -162,7 +164,11 @@ int Server::routine()
 					{
 						// std::cout << "here " << (*it)->getFdClient() << " " << _client_events[i].fd << std::endl;
 						if ((*it)->getFdClient() == _client_events[i].fd)
+						{
+							std::cout << "fd client " << (*it)->getFdClient() << std::endl;
 							read_client_req(*it, &i);
+
+						}
 						it++;
 					}
 				}
@@ -221,13 +227,13 @@ void Server::read_client_req(Client *cli, int *i)
 		else
 		{
 			perror("Baaaad");
+			close(_client_events[*i].fd);
+			std::cout << " TOTOTOTO  " << std::endl;
+			// potential cause of irssi fail
+			// if nothing received, we need to delete the user
+			_client_events[*i] = _client_events[_online_clients - 1];
+			_online_clients--;
 		}
-		close(_client_events[*i].fd);
-		std::cout << " TOTOTOTO  " << std::endl;
-		// potential cause of irssi fail
-		// if nothing received, we need to delete the user
-		_client_events[*i] = _client_events[_online_clients - 1];
-		_online_clients--;
 	}
 	else
 	{
@@ -255,11 +261,12 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 {
 	/* Creating the request and the client associated */
 	// std::cout << "TOTO" << nci << " -- ";
-	if (contld(buf, nci) == false)
-	{
-		bif += buf;
-		return ;
-	}
+	// if (contld(buf, nci) == false)
+	// {
+	// 	bif += buf;
+	// 	return ;
+	// }
+	(void)nci;
 	bif += buf;
 	// memset(&buf, 0, strlen(buf));
 	buf = &bif[0];
@@ -280,7 +287,7 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 		_treating_req(req, cli, i);
 		bif.erase(0, pos + 2);
 	}
-		// std::cout << " req response " << req.response << std::endl;
+	std::cout << " req response " << req->reply << std::endl;
 	bif.clear();
 }
 
@@ -338,6 +345,7 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 			if (send(_client_events[*i].fd, req->reply.c_str(), req->reply.length(), 0) == -1)
 				return (perror("Problem in sending from server "));
 	}
+	std::cout << " mOOOOOOOKKKKK " << std::endl;
 }
 
 int Server::is_charset(char c)
