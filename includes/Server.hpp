@@ -104,6 +104,7 @@ public:
 	struct pollfd*								_server_events;
 	int 										nb_client_events; // aka nfds
 	char 										read_buffer[30000 + 1];
+	int											max_c;
 	std::string 								bif;
 	int 										n_ci;				
 	int 										fd_ci;				

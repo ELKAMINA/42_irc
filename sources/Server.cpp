@@ -19,12 +19,7 @@ Server::Server(int domain, int service, int protocol, int port, u_long interface
 {
 	_online_clients = 0;
 	this->_client_events = new pollfd[max_co];
-	for (int i = 0; i < max_co; i++)
-	{
-		_client_events[i].events = 0;
-		_client_events[i].revents = 0;
-		_client_events[i].fd = 0;
-	}
+	max_c = max_co;
 	_online_clients++;
 	global.buf[0] = '\0';
 	global.fd = 0;
@@ -111,6 +106,11 @@ void Server::start_server()
 										   this->_port, this->_interface, this->_max_co);
 	_client_events[0].events = POLLIN | POLLOUT;
 	_client_events[0].fd = server_socket->get_sock(); /* On the file descriptor data.fd */
+	for (int i = 0; i < max_c; i++)
+	{
+		_client_events[i].events = POLLIN | POLLOUT;
+		_client_events[i].fd = server_socket->get_sock();
+	}
 }
 
 int Server::routine()
@@ -142,22 +142,19 @@ int Server::routine()
 			// 	perror("Not Pollin");
 			// 	return 1;
 			// }
-			if (_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
+			else if (_client_events[i].revents & POLLIN)
 			{
-				std::cout << "server socket " << server_socket->get_sock() << std::endl;
-				std::cout << "Client fd " << _client_events[i].fd << std::endl;
-				new_client();
-				Client *cli = new Client(_client_events[_online_clients].fd);
-				// std::cout << " clients[online_client] " << _client_events[_online_clients].fd << std::endl;
-				std::cout << "i =  " << i << " online_client" << _online_clients << std::endl;
-				_online_clients++;
-				_all_clients.push_back(cli);
-				// read_client_req(cli, &i);
-			}
-			else
-			{
-				// std::cout << "lolilol " << std::endl;
-				if (_client_events[i].events & POLLIN) /*If the fd already exists and its an entry */
+				if (_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
+				{
+					std::cout << "server socket " << server_socket->get_sock() << std::endl;
+					std::cout << "Client fd " << _client_events[i].fd << std::endl;
+					new_client();
+					// std::cout << " clients[online_client] " << _client_events[_online_clients].fd << std::endl;
+					std::cout << "i =  " << i << " online_client" << _online_clients << std::endl;
+					_online_clients++;
+					// read_client_req(cli, &i);
+				}
+				else
 				{
 					std::vector<Client *>::iterator it = _all_clients.begin();
 					while (it != _all_clients.end())
@@ -166,8 +163,9 @@ int Server::routine()
 						if ((*it)->getFdClient() == _client_events[i].fd)
 						{
 							std::cout << "fd client " << (*it)->getFdClient() << std::endl;
-							read_client_req(*it, &i);
-
+							// i += 1;
+							read_client_req(*it, &(i));
+							break ;
 						}
 						it++;
 					}
@@ -182,15 +180,19 @@ int Server::routine()
 void Server::new_client()
 {
 	int sock = 0;
+	struct sockaddr_in clientAddr;
+	socklen_t			client_len = sizeof(clientAddr);
 	std::cout << "=============== Listening socket is readable ==============" << std::endl;
 	std::cout << std::endl;
 
-	sock = accept(server_socket->get_sock(), NULL, NULL);
+	sock = accept(server_socket->get_sock(),(struct sockaddr *)&clientAddr, &client_len);
 	if (sock < 0)
 	{
 		perror("accept");
 		return;
 	}
+	Client *cli = new Client(sock);
+	_all_clients.push_back(cli);
 	_client_events[_online_clients].events = POLLIN;
 	_client_events[_online_clients].fd = sock; /*We need to assign to the new client a new fd for the socket it refers to and add it the clients events tab*/
 	// std::cout << " sock " << sock << "  online clients " << _online_clients << std::endl;
@@ -227,13 +229,13 @@ void Server::read_client_req(Client *cli, int *i)
 		else
 		{
 			perror("Baaaad");
-			close(_client_events[*i].fd);
-			std::cout << " TOTOTOTO  " << std::endl;
-			// potential cause of irssi fail
-			// if nothing received, we need to delete the user
-			_client_events[*i] = _client_events[_online_clients - 1];
-			_online_clients--;
 		}
+		close(_client_events[*i].fd);
+		std::cout << " TOTOTOTO  " << std::endl;
+		// potential cause of irssi fail
+		// if nothing received, we need to delete the user
+		_client_events[*i] = _client_events[_online_clients - 1];
+		_online_clients--;
 	}
 	else
 	{
@@ -289,6 +291,7 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 	}
 	std::cout << " req response " << req->reply << std::endl;
 	bif.clear();
+	return ;
 }
 
 void Server::_treating_req(Request* req, Client* cli, int* i)
