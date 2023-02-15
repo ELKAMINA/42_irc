@@ -135,10 +135,7 @@ int Server::routine()
 		{
 			/*r_events is an attribute of pollfd structure that is filled by the kernel depending on what type of events we're waiting for*/
 			if (_client_events[i].revents == 0) /*revents = 0 means that client_events[i].fd is negative which mean that is not an open file so there isnt any event for now */
-			{
-				// std::cout << "here " << std::endl;
 				continue;
-			}
 			if (_client_events[i].revents != POLLIN) /* revent is not POLLIN so dont know what it is*/
 			{
 				perror("Not Pollin");
@@ -146,23 +143,24 @@ int Server::routine()
 			}
 			if (_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
 			{
-				// std::cout << "server socket " << server_socket->get_sock() << std::endl;
+				std::cout << "server socket " << server_socket->get_sock() << std::endl;
+				std::cout << "Client fd " << _client_events[i].fd << std::endl;
+				
 				new_client();
 				Client *cli = new Client(_client_events[_online_clients].fd);
 				// std::cout << " clients[online_client] " << _client_events[_online_clients].fd << std::endl;
-				_all_clients.push_back(cli);
 				_online_clients++;
+				_all_clients.push_back(cli);
 			}
 			else
 			{
 				// std::cout << "lolilol " << std::endl;
 				if (_client_events[i].events & POLLIN) /*If the fd already exists and its an entry */
 				{
-
 					std::vector<Client *>::iterator it = _all_clients.begin();
 					while (it != _all_clients.end())
 					{
-						// std::cout << (*it)->getFdClient() << _client_events[i].fd << std::endl;
+						// std::cout << "here " << (*it)->getFdClient() << " " << _client_events[i].fd << std::endl;
 						if ((*it)->getFdClient() == _client_events[i].fd)
 							read_client_req(*it, &i);
 						it++;
@@ -171,6 +169,7 @@ int Server::routine()
 			}
 		}
 	}
+	// std::cout << "juuuure " << std::endl;
 	close(server_socket->get_sock());
 }
 
@@ -212,7 +211,6 @@ std::string Server::welcoming_newClients()
 	return (client_welcoming);
 }
 
-
 void Server::read_client_req(Client *cli, int *i)
 {
 	n_ci = recv(cli->getFdClient(), read_buffer, 30000, 0);
@@ -221,15 +219,19 @@ void Server::read_client_req(Client *cli, int *i)
 		if (n_ci == 0)
 			std::cout << "The client which fd is " << cli->getFdClient() << " sent an empty_req request " << std::endl;
 		else
+		{
 			perror("Baaaad");
-		// potential cause of irssi fail
+		}
 		close(_client_events[*i].fd);
+		std::cout << " TOTOTOTO  " << std::endl;
+		// potential cause of irssi fail
 		// if nothing received, we need to delete the user
 		_client_events[*i] = _client_events[_online_clients - 1];
 		_online_clients--;
 	}
 	else
 	{
+		std::cout << " heheheh  " << std::endl;
 		// contld(read_buffer, n_ci);
 		handle_request(read_buffer, i, cli, n_ci);
 	}
@@ -270,9 +272,9 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 	Request *req;
 	while ((pos = bif.find("\r\n")) != std::string::npos)
 	{
-		std::cout << "pos " << pos << std::endl;
-		std::cout << "bif " << bif << std::endl;
-		input = bif.substr(0, pos);
+		// std::cout << "pos " << pos << std::endl;
+		std::cout << "bif ==> " << bif << std::endl;
+		input = bif.substr(0, pos + 1); // recup de la cde ligne par ligne à la connexion
 		client = input.c_str();
 		req = new Request(client, cli);
 		_treating_req(req, cli, i);
@@ -350,8 +352,9 @@ void Server::check_req_validity(Request **r)
 {
 	Request *req = *r;
 
-	if (req->_raw_req.length() == 1 && req->_raw_req[0] == '\n') /* Empty_req entry */
+	if (req->_raw_req.length() == 1 && (req->_raw_req[0] == '\n' || req->_raw_req[0] == '\r')) /* Empty_req entry */
 	{
+		std::cout << " tooto " << std::endl;
 		req->req_validity = empty_req;
 		return;
 	}
@@ -380,6 +383,11 @@ void Server::check_req_validity(Request **r)
 	req->entries[req->entries.size() - 1] = req->removing_backslash(req->entries);
 	req->_command = req->entries[0];
 	std::vector<std::string>::iterator it = req->entries.begin();
+	// while (it != req->entries.end())
+	// {
+	// 	std::cout << "iiiitt " << (*it) << std::endl;
+	// 	it++;
+	// }
 	req->entries.erase(it);
 };
 

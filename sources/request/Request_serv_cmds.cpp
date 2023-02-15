@@ -34,6 +34,7 @@ int Request::_pass(Client *cli, Server *serv)
 		// entries[0].resize(entries[0].size() - 1); // take off the \n
 		if (entries[0] == serv->get_pass())
 		{
+			// std::cout << "PASS " << entries[0] << std::endl;
 			req_validity = valid_req; // A changer 
 			cli->setPwd(serv->get_pass());
 			return 1;
