@@ -17,23 +17,31 @@ int	Request::_join(Client *cli, Server *serv)
 	(void)cli;
 	(void)serv;
 	// if (
-	if (entries[0][0] == '0')
+	// if (entries[0][0] == '0')
+	// {
+	// 	cli->leaveAllChans();
+	// }
+	if (_check_lists() != 0)
 	{
-		cli->leaveAllChans();
-	}
-	else if (_check_lists() != 0)
-	{
-
 			removing_sharp(entries);
+			// std::vector<std::string>::iterator it = entries.begin();
+			// while (it != entries.end())
+			// {
+			// 	std::cout << "entriiiizzz " << (*it) << "nb of chans " << jo_nb_chan << std::endl;
+			// 	it++;
+			// }
 			if (entries.size() < 1)
-				std::cout << "error " << std::endl;
+				reply = errNeedMoreParams(cli->getNickName(), _command);
 			else if (entries[0][0] == '0')
 			{}
 				/* Leave all channels */
 			if (jo_nb_chan > 1)
 				multiChan(cli, serv);
 			if ((jo_nb_chan == 1 && jo_nb_keys == 0 ) || (jo_nb_chan == 1 && jo_nb_keys == 1))
+			{
+				std::cout << "nb of chans " << jo_nb_chan << "nb of keys " << jo_nb_keys << std::endl;
 				oneChan(cli, serv);
+			}
 	}
 	else
 		reply = "Invalid request \n";
@@ -199,6 +207,7 @@ int	Request::_topic(Client *cli, Server *serv)
 
 int	Request::_mode(Client* cli, Server *serv)
 {
+	std::cout << "je rentre ici ?" << std::endl;
 	beginning_with_diez(entries);
 	if(jo_nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&'))
 		_mode_for_chans(cli, serv);

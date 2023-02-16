@@ -127,21 +127,22 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::_oper);
 	_request_cmds.push_back(&Request::_wallops);
 	_request_cmds.push_back(&Request::_kill);
+	_request_cmds.push_back(&Request::_ping);
 }
 
 void Request::requestLexer(Client* cli, Server* serv)
 {
 	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "NOTICE", "JOIN",
-					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "KILL"};
+					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "KILL", "PING"};
 	size_t i = 0;
 	for (; i < _request_cmds.size(); i++){
 		if (this->_command == cmds[i])
 		{
-			if ((i > 2 && cli->loggedIn == true) || (i < 3 && cli->loggedIn == false))
-			{
 				(this->*(_request_cmds[i]))(cli, serv);
-				break ;
-			}
+				{
+					// std::cout << "je rentre ici " << cmds[i] << "\n" << std::endl;
+					break ;
+				}
 		}
 	}
 	if (i == _request_cmds.size())

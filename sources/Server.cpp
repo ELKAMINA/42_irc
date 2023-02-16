@@ -178,9 +178,12 @@ void Server::new_client()
 		return;
 	}
 	Client* cli = new Client(sock);
-	all_clients.push_back(cli);
 	_client_events[_online_clients].events = POLLIN;
 	_client_events[_online_clients].fd = sock; /*We need to assign to the new client a new fd for the socket it refers to and add it the clients events tab*/
+	// int i = 0;
+	// std::cout << "totoooo " << std::endl;
+	// read_client_req(cli, &(i));
+	all_clients.push_back(cli);
 	// std::cout << " sock " << sock << "  online clients " << _online_clients << std::endl;
 	// _online_clients++; /* incrementing the nb of connections */
 	//std::string homepage = welcoming_newClients();
@@ -254,8 +257,9 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 	// }
 	(void)nci;
 	client_buffer += buf;
+	// std::cout << "client_buffer " << client_buffer << std::endl;
 	// memset(&buf, 0, strlen(buf));
-	buf = &client_buffer[0];
+	// buf = &client_buffer[0];
 	size_t pos;
 	std::string input;
 	const char *client = NULL;
@@ -265,11 +269,13 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 		input = client_buffer.substr(0, pos + 1); // recup de la cde ligne par ligne à la connexion
 		client = input.c_str();
 		req = new Request(client, cli);
-		_treating_req(req, cli, i);
 		client = NULL;
+		// std::cout << "input " << input << std::endl;
+		_treating_req(req, cli, i);
 		client_buffer.erase(0, pos + 2);
 	}
 	client_buffer.clear();
+
 	return ;
 }
 
@@ -278,50 +284,59 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	replied = false;
 	// cli->setPwd(_pass);
 	check_req_validity(&req);
-	std::cout << "req_validity = " << req->req_validity << std::endl;
+	// std::cout << "req_validity = " << req->req_validity << std::endl;
 	if (req->req_validity == valid_body || req->req_validity == valid_req)
+	{
+		// std::cout << "PIPI" << std::endl;
 		req->requestLexer(cli, this);
-	else if (req->req_validity == invalid_req)
+	}
+	if (req->req_validity == invalid_req)
 		req->reply = errUnknownCommand("Unknown", req->_command);
-	else if (req->req_validity == invalid_body)
+	if (req->req_validity == invalid_body)
 		req->reply = "Invalid message\n";
-	else if (req->req_validity == notEnough_params)
+	if (req->req_validity == notEnough_params)
 		req->reply = errNeedMoreParams(cli->getNickName(), req->_command);
-	else if (req->req_validity == incorrect_pwd)
+	if (req->req_validity == incorrect_pwd)
 		req->reply = errPasswMismatch(cli->getNickName(),cli->getNickName());
-	else if (req->req_validity == already_registered)
+	if (req->req_validity == already_registered)
 		req->reply = errAlreadyRegistered(cli->getNickName(),cli->getNickName());
-	else if (req->req_validity == omitted_cmd)
+	if (req->req_validity == omitted_cmd)
 		req->reply = "Please enter the password or Nickname first\n";
-	else if (req->req_validity == invisible_man)
+	if (req->req_validity == invisible_man)
 		req->reply = "To Invisible man, you can't send message!\n";
 	// else if (req->req_validity == erroneous_nickname)
 	// 	req->response = errErroneusNickname(cli, req);
-	else if (req->req_validity == nickname_exists)
+	if (req->req_validity == nickname_exists)
+	{
+		// std::cout << " je rentre weshshhhh " << std::endl;
 		req->reply = errNicknameInUse(cli->getNickName(), req->entries[1]);
-	// else if (req->req_validity == welcome_msg)
-	// {
-	// 	std::ostringstream oss;
-	// 	if (cli->getNickName().empty())
-	// 		cli->setNickname("*");
-	// 	oss << ":" << this->get_name() << " "
-	// 		<< "001 " << cli->getNickName() << " " << cli->setPrefix() << "\n";
-	// 	std::string var = oss.str();
-	// 	req->reply = var;
-	// }
-	else if (req->req_validity == empty_req)
+	}
+	if (req->req_validity == welcome_msg)
+	{
+		// std::cout << "AAAH " << std::endl;
+		replied = false;
+		req->reply = "001 " + cli->getNickName() + " :Welcome to the Internet Relay Network " + cli->setPrefix() + "\r\n";
+		
+	}
+	if (req->req_validity == empty_req)
 	{
 	} /* DO nothing */
 	if (replied == false && _client_events[*i].fd != req->_origin->getFdClient())
 	{
+		// std::cout << "je rentre laaa laaalaaaa " << std::endl;
+
 		if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
 			return (perror("Problem in sending from server ")); // a t on le droit ??
 	}
-	else if (replied == false && _client_events[*i].fd == req->_origin->getFdClient())
+	if (replied == false && _client_events[*i].fd == req->_origin->getFdClient())
 	{
 		if (req->reply != "UNDEFINED")
-			if (send(_client_events[*i].fd, req->reply.c_str(), req->reply.length(), 0) == -1)
+		{
+			// std::cout << "je rentre laaa fd = " << _client_events[*i].fd << "reply = " <<  req->reply << std::endl;
+			if (send(req->_origin->getFdClient(), req->reply.c_str(), strlen(req->reply.c_str()), 0) == -1)
 				return (perror("Problem in sending from server "));
+
+		}
 	}
 }
 

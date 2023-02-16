@@ -41,7 +41,10 @@ void Channel::cmd_lexer(Request& request)
 	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK", "NAMES", "MODE"};
 	for (size_t i = 0; i< _cmds.size(); i++){
 		if (request._command == cmd_name[i])
+		{
+			// std::cout << "Commande " << cmd_name[i] << std::endl;
 			(this->*(_cmds[i]))(request);
+		}
 	}
 }
 
@@ -73,7 +76,9 @@ void Channel::join(Request &request)
 	int matching_param;
 	
 	if (isInChanList((request._origin), _users))
+	{
 		return (errInCmd(request, errUserOnChannel(user,this->getName())));
+	}
 	if (_mods['k'] == true)
 	{
 		for (size_t i = 0; i < request.entries.size(); i++){
@@ -87,7 +92,9 @@ void Channel::join(Request &request)
 			return (errInCmd(request, errPasswMismatch(user, "wrong pwd")));
 	}
 	if (_mods['l'] && _onlineUsers == _maxUsers)
+	{
 		return (errInCmd(request, errChannelIsFull(user, this->getName())));
+	}
 	if (_mods['i'] == true)
 	{
 		if (!isInChanList((request._origin), _invited))

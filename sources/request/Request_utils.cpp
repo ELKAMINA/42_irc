@@ -30,6 +30,19 @@ Client* Request::_find(std::string dest, Server *serv)
 	return *(serv->all_clients.end());
 }
 
+std::vector<Client* >::iterator Request::_findFd(int dest, Server *serv)
+{
+	std::vector<Client *>::iterator it = serv->all_clients.begin();
+
+	while (it != serv->all_clients.end())
+	{
+		if	((*it)->getFdClient() == dest)
+			return it;
+		it++;
+	}
+	return (serv->all_clients.end());
+}
+
 int Request::wrong_nickname()
 {
 	for (size_t i = 0; i < entries[0].size() - 1; i++)

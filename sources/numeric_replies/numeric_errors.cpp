@@ -50,8 +50,8 @@ string errUnknownCommand(string nickName, string command)
 	(void)nickName;
 	(void)command;
 	string reply;
-	reply = "zboub\n";
-	// reply = "421 * " + command + " :Unknown command\n";
+	// reply = "zboub\n";
+	reply = "421 * " + command + " :Unknown command\n";
 	return (reply);
 }
 

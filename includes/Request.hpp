@@ -104,6 +104,7 @@ class Request
 
 		/* Utils for commands*/
 		Client*		_find(std::string dest, Server *serv);
+		std::vector<Client* >::iterator _findFd(int dest, Server *serv);
 		int			wrong_nickname();
 		Channel*	existing_chan(std::string chan_name, Server *serv);
 		int			beginning_with_diez(std::vector<string> entries);
@@ -139,6 +140,7 @@ class Request
 		int			_oper(Client* cli, Server* serv);
 		int			_wallops(Client* cli, Server* serv);
 		int			_kill(Client* cli, Server* serv);
+		int			_ping(Client* cli, Server* serv);
 
 		/* Channel commands */
 		int			_join(Client* cli, Server *serv);
