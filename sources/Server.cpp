@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 13:34:46 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/16 15:35:27 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ int Server::routine()
 						if ((*it)->getFdClient() == _client_events[i].fd)
 						{
 							read_client_req(*it, &(i));
+
 							break ;
 						}
 						it++;
@@ -176,7 +177,7 @@ void Server::new_client()
 		perror("accept");
 		return;
 	}
-	Client *cli = new Client(sock);
+	Client* cli = new Client(sock);
 	all_clients.push_back(cli);
 	_client_events[_online_clients].events = POLLIN;
 	_client_events[_online_clients].fd = sock; /*We need to assign to the new client a new fd for the socket it refers to and add it the clients events tab*/
@@ -184,12 +185,13 @@ void Server::new_client()
 	// _online_clients++; /* incrementing the nb of connections */
 	//std::string homepage = welcoming_newClients();
 	// std::cout << " sock " << sock << homepage.length() << std::endl;
-	std::ostringstream oss;
-	if (cli->getNickName().empty() ||cli->getNickName() == "UNDEFINED")
-		cli->setNickname("*");
-	std::string message = "001 Welcome to the Internet Relay Network " + cli->setPrefix() + "\n";
-	if (send(sock, message.c_str(), message.size(), 0) == -1)
-		perror("Big time for welcoming_ Bravo");
+	// all_clients.push_back(cli);
+	// if (cli->getNickName().empty() ||cli->getNickName() == "UNDEFINED")
+	// 	cli->setNickname("*");
+	// std::string message = "001 Welcome to the Internet Relay Network " + cli->setPrefix() + "\n";
+	// std::cout << "Message == " << message << std::endl;
+	// if (send(sock, message.c_str(), message.size(), 0) == -1)
+	// 	perror("Big time for welcoming_ Bravo");
 }
 
 std::string Server::welcoming_newClients()
@@ -223,6 +225,7 @@ void Server::read_client_req(Client *cli, int *i)
 	}
 	else
 	{
+		std::cout << "client send: "<<read_buffer<<std::endl;
 		handle_request(read_buffer, i, cli, n_ci);
 	}
 	memset(&read_buffer, 0, 30000); /* Pour reset les saisies Clients*/
@@ -263,6 +266,7 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 		client = input.c_str();
 		req = new Request(client, cli);
 		_treating_req(req, cli, i);
+		client = NULL;
 		client_buffer.erase(0, pos + 2);
 	}
 	client_buffer.clear();
@@ -271,13 +275,13 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 
 void Server::_treating_req(Request* req, Client* cli, int* i)
 {
-	std::vector<Request *> all_req_per_client;
-	replied  =false;
+	replied = false;
 	// cli->setPwd(_pass);
 	check_req_validity(&req);
+	std::cout << "req_validity = " << req->req_validity << std::endl;
 	if (req->req_validity == valid_body || req->req_validity == valid_req)
 		req->requestLexer(cli, this);
-	if (req->req_validity == invalid_req)
+	else if (req->req_validity == invalid_req)
 		req->reply = errUnknownCommand("Unknown", req->_command);
 	else if (req->req_validity == invalid_body)
 		req->reply = "Invalid message\n";
@@ -295,16 +299,16 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	// 	req->response = errErroneusNickname(cli, req);
 	else if (req->req_validity == nickname_exists)
 		req->reply = errNicknameInUse(cli->getNickName(), req->entries[1]);
-	else if (req->req_validity == welcome_msg)
-	{
-		std::ostringstream oss;
-		if (cli->getNickName().empty())
-			cli->setNickname("*");
-		oss << ":" << this->get_name() << " "
-			<< "001 " << cli->getNickName() << " " << cli->setPrefix() << "\n";
-		std::string var = oss.str();
-		req->reply = var;
-	}
+	// else if (req->req_validity == welcome_msg)
+	// {
+	// 	std::ostringstream oss;
+	// 	if (cli->getNickName().empty())
+	// 		cli->setNickname("*");
+	// 	oss << ":" << this->get_name() << " "
+	// 		<< "001 " << cli->getNickName() << " " << cli->setPrefix() << "\n";
+	// 	std::string var = oss.str();
+	// 	req->reply = var;
+	// }
 	else if (req->req_validity == empty_req)
 	{
 	} /* DO nothing */

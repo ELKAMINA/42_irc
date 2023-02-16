@@ -67,7 +67,8 @@ class Client
 		void			removeChanFromList(Channel * chan);
 		void			leaveAllChans();
 		// void receiveMessage(Message& message);
-	
+
+		bool			loggedIn;
 	private:
 
 		void						initModes();

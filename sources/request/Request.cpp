@@ -137,8 +137,11 @@ void Request::requestLexer(Client* cli, Server* serv)
 	for (; i < _request_cmds.size(); i++){
 		if (this->_command == cmds[i])
 		{
-			(this->*(_request_cmds[i]))(cli, serv);
-			break ;
+			if ((i > 2 && cli->loggedIn == true) || (i < 3 && cli->loggedIn == false))
+			{
+				(this->*(_request_cmds[i]))(cli, serv);
+				break ;
+			}
 		}
 	}
 	if (i == _request_cmds.size())

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:20:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 13:23:44 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/16 15:51:56 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ int Request::_nick(Client *cli, Server *serv)
 		req_validity = erroneous_nickname;
 		return 1;
 	}
-	cli->setNickname(entries[0]);
+	else if (cli->loggedIn == false)
+		cli->setNickname(entries[0]);
 	return 0;
 }
 
@@ -77,16 +78,24 @@ int Request::_user(Client *cli, Server *serv)
 		req_validity = notEnough_params;
 		return 1;	
 	}
-	else if (cli->getPwd() == "UNDEFINED" && cli->getNickName() == "UNDEFINED" )
+	else if (cli->getPwd() == "UNDEFINED" && cli->getNickName() == "UNDEFINED" && cli->loggedIn == false)
 	{
 		req_validity = omitted_cmd;
 		return 1;
 	}
-	else
+	else if (cli->loggedIn == false)
 	{
 		cli->setUsername(entries[0]);
 		cli->setRealname(entries[3]);
-		req_validity = welcome_msg;
+		cli->loggedIn = true;
+		if (cli->getNickName().empty() ||cli->getNickName() == "UNDEFINED")
+			cli->setNickname("*");
+		std::string message = "001 Welcome to Internet relay " + '\"' + cli->getNickName() + "!" + cli->getUserName() + "@" + cli->getHost() + '\"';
+		// std::string message = "001 " + cli->getNickName() + " :Welcome to the Internet Relay Network" + cli->getNickName() + "!" + cli->getUserName() + "@localhost";
+		// std::cout << "Message == " << message << std::endl;
+		if (send(cli->getFdClient(), message.c_str(), message.size(), 0) == -1)
+			perror("Big time for welcoming_ Bravo");
+		message.clear();
 	}
 	return 0;
 }

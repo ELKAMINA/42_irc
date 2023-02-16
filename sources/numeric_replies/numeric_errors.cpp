@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 14:34:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/05 09:47:20 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/16 14:47:48 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,10 @@ string errTooManyTarget(string nickName, string target)
 string errUnknownCommand(string nickName, string command)
 {
 	(void)nickName;
+	(void)command;
 	string reply;
-	reply = "421 * " + command + " :Unknown command\n";
+	reply = "zboub\n";
+	// reply = "421 * " + command + " :Unknown command\n";
 	return (reply);
 }
 

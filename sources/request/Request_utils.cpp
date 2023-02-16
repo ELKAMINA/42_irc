@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:14:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 13:08:13 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/16 14:51:21 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,7 +259,7 @@ void Request::_mode_for_clis(Client* cli, Server* serv)
 	}
 	else
 		reply = errUsersDontMatch(cli->getNickName(), ":Cannot change mode for other users\n");
-	serv->replied = true;
+	// serv->replied = true;
 }
 
 int Request::mode_validity()

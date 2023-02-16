@@ -6,6 +6,7 @@ _host("IRC with love"), _id()
 {
 	initModes();
 	_away_msg = "";
+	loggedIn = false;
 	// _isInChan = 0;
 }
 
@@ -14,6 +15,7 @@ Client::Client(int fd): _clientFd(fd), _nickName("UNDEFINED"), _userName("UNDEFI
 _host("IRC with love"), _id()
 {
 	initModes();
+	loggedIn = false;
 	// _isInChan = 0;
 }
 

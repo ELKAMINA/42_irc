@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:37:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 13:24:14 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/16 15:25:13 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ public:
 	int											max_c;
 	std::string 								client_buffer;	
 	std::string 								client_welcoming;
-	std::vector<Client *> 						all_clients;
+	std::vector<Client* > 						all_clients;
 	std::vector<Channel*>						all_chanels;
 	bool										replied;
 	std::map<std::string, std::string>			opers;
