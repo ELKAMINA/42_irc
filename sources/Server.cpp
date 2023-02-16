@@ -197,9 +197,15 @@ void Server::new_client()
 	_client_events[_online_clients].fd = sock; /*We need to assign to the new client a new fd for the socket it refers to and add it the clients events tab*/
 	// std::cout << " sock " << sock << "  online clients " << _online_clients << std::endl;
 	// _online_clients++; /* incrementing the nb of connections */
-	std::string homepage = welcoming_newClients();
+	//std::string homepage = welcoming_newClients();
 	// std::cout << " sock " << sock << homepage.length() << std::endl;
-	if (send(sock, homepage.c_str(), 1067, 0) == -1)
+	std::ostringstream oss;
+	if (cli->getNickName().empty())
+		cli->setNickname("*");
+	oss << "001 " << " Welcome to the Internet Relay Network " << " "
+		<< cli->setPrefix() << "\n";
+	std::string var = oss.str();
+	if (send(sock, var.c_str(), 30000, 0) == -1)
 		perror("Big time for welcoming_ Bravo");
 	// char[50000] = homepage.c_str();
 	// memset((homepage.c_str()), 0, 50000);
