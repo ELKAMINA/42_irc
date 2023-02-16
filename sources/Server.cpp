@@ -185,15 +185,11 @@ void Server::new_client()
 	//std::string homepage = welcoming_newClients();
 	// std::cout << " sock " << sock << homepage.length() << std::endl;
 	std::ostringstream oss;
-	if (cli->getNickName().empty())
+	if (cli->getNickName().empty() ||cli->getNickName() == "UNDEFINED")
 		cli->setNickname("*");
-	oss << "001 Welcome to the Internet Relay Network " << " "
-		<< cli->setPrefix() << "\n";
-	std::string var = oss.str();
-	if (send(sock, var.c_str(), strlen(var.c_str()), 0) == -1)
+	std::string message = "001 Welcome to the Internet Relay Network " + cli->setPrefix() + "\n";
+	if (send(sock, message.c_str(), message.size(), 0) == -1)
 		perror("Big time for welcoming_ Bravo");
-	// char[50000] = homepage.c_str();
-	// memset((homepage.c_str()), 0, 50000);
 }
 
 std::string Server::welcoming_newClients()
