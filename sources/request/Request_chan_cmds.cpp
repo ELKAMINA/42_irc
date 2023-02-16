@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:23:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 19:21:40 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/16 13:21:33 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,12 @@ int	Request::_join(Client *cli, Server *serv)
 	// if (
 	if (entries[0][0] == '0')
 	{
-		std::cout << "je rentre " << std::endl;
-		/* checker getOnlineCOunt pour chaque channel ATTENTIIIOON et supprimer si cetait le dernier user*/
 		cli->leaveAllChans();
 	}
 	else if (_check_lists() != 0)
 	{
 
 			removing_sharp(entries);
-			// std::vector<std::string>::iterator it = entries.begin();
-			// while (it != entries.end())
-			// {
-			// 	std::cout << "iiiit " << (*it) << std::endl;
-			// 	it++;
-			// }
 			if (entries.size() < 1)
 				std::cout << "error " << std::endl;
 			else if (entries[0][0] == '0')
@@ -77,7 +69,7 @@ int	Request::_part(Client *cli, Server *serv)
 	else
 	{
 		reply = errUnknownCommand(cli->getNickName(), _command); /* on checke si larg apres les chan sil existe commence bien par : qui est le part message*/
-		serv->_test = true;
+		serv->replied = true;
 	}
 	size_t i = 0;
 	if (reply == "UNDEFINED")
@@ -89,7 +81,7 @@ int	Request::_part(Client *cli, Server *serv)
 			if (!tmp)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[i]);
-				serv->_test = true;
+				serv->replied = true;
 			}
 			else
 			{
@@ -99,14 +91,14 @@ int	Request::_part(Client *cli, Server *serv)
 				// std::cout << "je rentre ici oui ouis " << "getOnlineCount()" << tmp->getOnlineCount() << std::endl;
 				if (tmp->getOnlineCount() == 0)
 				{
-					for (size_t j = 0; j < serv->_all_chanels.size(); j++){
-						if (serv->_all_chanels[i]->getName() == tmp->getName())
+					for (size_t j = 0; j < serv->all_chanels.size(); j++){
+						if (serv->all_chanels[i]->getName() == tmp->getName())
 						{
-							serv->_all_chanels.erase(serv->_all_chanels.begin() + i);
+							serv->all_chanels.erase(serv->all_chanels.begin() + i);
 							// cli->_isInChan--; /* To get nb of chan, the client is in : for NAMES*/
 						}
 					}
-					// serv->_all_chanels.erase(it = find(serv->_all_chanels.begin(), serv->_all_chanels.end(), tmp)); //doesn't work
+					// serv->all_chanels.erase(it = find(serv->all_chanels.begin(), serv->all_chanels.end(), tmp)); //doesn't work
 				}
 			}
 			serv->_chan_requests(this);
@@ -139,7 +131,7 @@ int	Request::_kick(Client *cli, Server *serv)
 						if (isalnum((*it)[1]) == 0)
 						{
 							req_validity = invalid_req;
-							serv->_test = false;
+							serv->replied = false;
 							return 1;
 						}
 						
@@ -167,13 +159,12 @@ int	Request::_kick(Client *cli, Server *serv)
 				if (!tmp)
 				{
 					reply = errNoSuchChannel(cli->getNickName(), "No such Channel");
-					serv->_test = true;
+					serv->replied = true;
 				}
 				else
 				{
 					status = ongoing;
 					tmp->cmd_lexer(*this);
-					// cli->_isInChan--;
 				}
 				serv->_chan_requests(this);
 				i++;
@@ -197,7 +188,7 @@ int	Request::_topic(Client *cli, Server *serv)
 		else
 		{
 			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
-			serv->_test = true;
+			serv->replied = true;
 		}
 		serv->_chan_requests(this);
 	}

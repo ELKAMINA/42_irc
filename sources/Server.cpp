@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 10:23:11 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/16 13:24:41 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,11 @@ Server::Server(int domain, int service, int protocol, int port, u_long interface
 {
 	_online_clients = 0;
 	this->_client_events = new pollfd[max_co];
-	max_c = max_co;
 	_online_clients++;
-	global.buf[0] = '\0';
-	global.fd = 0;
-	global.id_requests = 0;
-	global.n = 0;
-	global.state = 0;
-	_test = false;
+	replied = false;
 	std::pair<std::string, std::string> pair("oper", "pwdoper");
-	_opers.insert(pair);
-	bif = "";
+	opers.insert(pair);
+	client_buffer = "";
 }
 
 Server::Server(const Server &rhs)
@@ -39,8 +33,10 @@ Server::Server(const Server &rhs)
 
 Server::~Server()
 {
-	delete (_server_events);
 	delete[] (_client_events);
+	all_chanels.clear();
+	all_clients.clear();
+	opers.clear();
 }
 
 Server &Server::operator=(const Server &rhs)
@@ -156,8 +152,8 @@ int Server::routine()
 				}
 				else
 				{
-					std::vector<Client *>::iterator it = _all_clients.begin();
-					while (it != _all_clients.end())
+					std::vector<Client *>::iterator it = all_clients.begin();
+					while (it != all_clients.end())
 					{
 						// std::cout << "here " << (*it)->getFdClient() << " " << _client_events[i].fd << std::endl;
 						if ((*it)->getFdClient() == _client_events[i].fd)
@@ -192,7 +188,7 @@ void Server::new_client()
 		return;
 	}
 	Client *cli = new Client(sock);
-	_all_clients.push_back(cli);
+	all_clients.push_back(cli);
 	_client_events[_online_clients].events = POLLIN;
 	_client_events[_online_clients].fd = sock; /*We need to assign to the new client a new fd for the socket it refers to and add it the clients events tab*/
 	// std::cout << " sock " << sock << "  online clients " << _online_clients << std::endl;
@@ -227,7 +223,7 @@ std::string Server::welcoming_newClients()
 
 void Server::read_client_req(Client *cli, int *i)
 {
-	n_ci = recv(cli->getFdClient(), read_buffer, 30000, 0);
+	size_t n_ci = recv(cli->getFdClient(), read_buffer, 30000, 0);
 	if (n_ci <= 0)
 	{
 		if (n_ci == 0)
@@ -237,16 +233,11 @@ void Server::read_client_req(Client *cli, int *i)
 			perror("Baaaad");
 		}
 		close(_client_events[*i].fd);
-		std::cout << " TOTOTOTO  " << std::endl;
-		// potential cause of irssi fail
-		// if nothing received, we need to delete the user
 		_client_events[*i] = _client_events[_online_clients - 1];
 		_online_clients--;
 	}
 	else
 	{
-		std::cout << " heheheh  " << std::endl;
-		// contld(read_buffer, n_ci);
 		handle_request(read_buffer, i, cli, n_ci);
 	}
 	memset(&read_buffer, 0, 30000); /* Pour reset les saisies Clients*/
@@ -254,7 +245,6 @@ void Server::read_client_req(Client *cli, int *i)
 
 bool Server::contld(char* buf, int nci)
 {
-	// std::cout << "buf 2222 " << buf << strlen(buf) << std::endl;
 	int j = 0;
 	while (j < nci)
 	{
@@ -271,47 +261,37 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 	// std::cout << "TOTO" << nci << " -- ";
 	// if (contld(buf, nci) == false)
 	// {
-	// 	bif += buf;
+	// 	client_buffer += buf;
 	// 	return ;
 	// }
 	(void)nci;
-	bif += buf;
+	client_buffer += buf;
 	// memset(&buf, 0, strlen(buf));
-	buf = &bif[0];
-	std::cout << "buf  " << buf << std::endl;
-	// std::cout << "buf[5]" << buf[4] << std::endl;
+	buf = &client_buffer[0];
 	size_t pos;
 	std::string input;
 	const char *client = NULL;
-	// std::vector<std::string> 
 	Request *req;
-	while ((pos = bif.find("\r\n")) != std::string::npos)
+	while ((pos = client_buffer.find("\r\n")) != std::string::npos)
 	{
-		// std::cout << "pos " << pos << std::endl;
-		std::cout << "bif ==> " << bif << std::endl;
-		input = bif.substr(0, pos + 1); // recup de la cde ligne par ligne à la connexion
+		input = client_buffer.substr(0, pos + 1); // recup de la cde ligne par ligne à la connexion
 		client = input.c_str();
 		req = new Request(client, cli);
 		_treating_req(req, cli, i);
-		bif.erase(0, pos + 2);
+		client_buffer.erase(0, pos + 2);
 	}
-	std::cout << " req response " << req->reply << std::endl;
-	bif.clear();
+	client_buffer.clear();
 	return ;
 }
 
 void Server::_treating_req(Request* req, Client* cli, int* i)
 {
 	std::vector<Request *> all_req_per_client;
-	_test  =false;
-	global.id_requests++;
-	req->_id = global.id_requests;
+	replied  =false;
 	// cli->setPwd(_pass);
 	check_req_validity(&req);
 	if (req->req_validity == valid_body || req->req_validity == valid_req)
-	{
-		_parsing(cli, req, all_req_per_client);
-	}
+		req->requestLexer(cli, this);
 	if (req->req_validity == invalid_req)
 		req->reply = errUnknownCommand("Unknown", req->_command);
 	else if (req->req_validity == invalid_body)
@@ -343,18 +323,17 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	else if (req->req_validity == empty_req)
 	{
 	} /* DO nothing */
-	if (_test == false && _client_events[*i].fd != req->_origin->getFdClient())
+	if (replied == false && _client_events[*i].fd != req->_origin->getFdClient())
 	{
 		if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
 			return (perror("Problem in sending from server ")); // a t on le droit ??
 	}
-	else if (_test == false && _client_events[*i].fd == req->_origin->getFdClient())
+	else if (replied == false && _client_events[*i].fd == req->_origin->getFdClient())
 	{
 		if (req->reply != "UNDEFINED")
 			if (send(_client_events[*i].fd, req->reply.c_str(), req->reply.length(), 0) == -1)
 				return (perror("Problem in sending from server "));
 	}
-	std::cout << " mOOOOOOOKKKKK " << std::endl;
 }
 
 int Server::is_charset(char c)
@@ -368,10 +347,10 @@ int Server::is_charset(char c)
 void Server::check_req_validity(Request **r)
 {
 	Request *req = *r;
+	std::vector<std::string>::iterator it;
 
 	if (req->_raw_req.length() == 1 && (req->_raw_req[0] == '\n' || req->_raw_req[0] == '\r')) /* Empty_req entry */
 	{
-		std::cout << " tooto " << std::endl;
 		req->req_validity = empty_req;
 		return;
 	}
@@ -383,7 +362,6 @@ void Server::check_req_validity(Request **r)
 	{
 		if (isupper(req->entries[0][i]) == 0)
 		{
-			// std::cout << "ici 1 " << std::endl;
 			req->req_validity = invalid_req;
 			return;
 		}
@@ -399,23 +377,9 @@ void Server::check_req_validity(Request **r)
 	}
 	req->entries[req->entries.size() - 1] = req->removing_backslash(req->entries);
 	req->_command = req->entries[0];
-	std::vector<std::string>::iterator it = req->entries.begin();
-	// while (it != req->entries.end())
-	// {
-	// 	std::cout << "iiiitt " << (*it) << std::endl;
-	// 	it++;
-	// }
+	it = req->entries.begin();
 	req->entries.erase(it);
 };
-
-void Server::_parsing(Client *cli, Request *req, std::vector<Request *> _all_req_per_client)
-{
-	_all_req_per_client.push_back(req);
-	std::pair<Client *, std::vector<Request *> >pairing = std::make_pair(cli, _all_req_per_client);
-	/* Verifier si c'est le même client */
-	_req_per_id.insert(pairing); // insert Client associated to the client
-	req->requestLexer(cli, this);
-}
 
 void	Server::_chan_requests(Request *req)
 {
@@ -432,7 +396,7 @@ void	Server::_chan_requests(Request *req)
 				return (perror("Problem in sending from server ")); // a t on le droit ?
 		i++;
 	}
-	_test = true;
+	replied = true;
 }
 
 void Server::_killing_cli(Client* cli)
@@ -441,10 +405,10 @@ void Server::_killing_cli(Client* cli)
 		std::cout << "Socket couldn't be closed" << std::endl;
 	if (cli->getChanNbr() > 0)
 	{
-		std::vector<Channel*>::iterator it = _all_chanels.begin();
-		while (it != _all_chanels.end())
+		std::vector<Channel*>::iterator it = all_chanels.begin();
+		while (it != all_chanels.end())
 		{
-			if ((*it)->isInChanList(cli, _all_clients) == true)
+			if ((*it)->isInChanList(cli, all_clients) == true)
 				
 			it++;
 

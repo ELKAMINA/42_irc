@@ -103,8 +103,6 @@ class Request
 		void initLexer();
 
 		/* Utils for commands*/
-		void		msg_to_user(Client* cli, Server *serv);
-		int			user_existence(std::string dest, Server *serv);
 		Client*		_find(std::string dest, Server *serv);
 		int			wrong_nickname();
 		Channel*	existing_chan(std::string chan_name, Server *serv);

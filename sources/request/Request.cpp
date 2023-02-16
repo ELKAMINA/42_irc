@@ -2,20 +2,11 @@
 
 Request::Request(const char* buffer, Client* cli) : _origin(cli)
 {
-	/* S'il faut gerer egalement les tabluations,ce code fait tres bien l'affaire. Il recupere les mots dans une phrase */
-		// std::string input = buffer;
-		// std::stringstream ss(input);
-		// std::string word;
-		// while(ss >> word) {
-		// 	entries.push_back(word);
-		// }
-	/* ********************************************* */
 	initLexer();
 	_raw_req = buffer;
 	char * token = strtok(const_cast<char *>(buffer) , " ");
 	while( token != NULL ) {
 		entries.push_back(token);
-		// std::cout << "token " << token << std::endl;
 		token = strtok(NULL, " ");
 	}
 	req_validity = valid_req;
@@ -26,7 +17,6 @@ Request::Request(const char* buffer, Client* cli) : _origin(cli)
 	message = "";
 	commas_c = true;
 	commas_e = true;
-	// _origin = cli;
 }
 
 
@@ -46,7 +36,6 @@ Request & Request::operator=( const Request& rhs )
 Request::~Request()
 {
 	this->entries.clear();
-	// this->eph.clear();
 	this->target.clear();
 	this->_request_cmds.clear();
 }
@@ -73,7 +62,6 @@ void Request::first_arg_for_entries(std::vector<std::string> entries)
 			}
 			if ((sharp = eph.find(',')) == std::string::npos)
 			{
-				// std::cout << " la ?????? " << std::endl;
 				if (count < entry_size)
 				{
 					_channels.push_back(eph);

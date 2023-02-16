@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:37:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/19 12:59:32 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/16 13:24:14 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,17 +35,6 @@
 class Client;
 class Request;
 class Channel;
-
-
-struct cinfo
-{
-	int fd;
-	char buf[30000 + 1];
-	int n;
-	int state;
-	int	id_requests;
-};
-
 class ServerSocket;
 
 class Server
@@ -80,40 +69,31 @@ public:
 	int											routine();
 	void										new_client();
 	void										read_client_req(Client* cli, int *i);
-	void										write_to_client(struct pollfd client);
 	std::string									welcoming_newClients();
 
 	/* Utils */							
 	int											is_charset(char c);
-	bool										sortClients(Client& a, Client& b);
 
 	/* Receiving and handling re				quest */
 	bool										contld(char* buf, int nci);
 	void										handle_request(char *buf, int *i, Client *cli, int nci);
 	void										_treating_req(Request *request, Client* cli, int* i);
 	void										check_req_validity(Request **req);
-	void										_parsing(Client *cli, Request *req, std::vector<Request*>);
 	void										_chan_requests(Request *req);
 	void										_killing_cli(Client* cli);
 
-	cinfo										global;
 	std::string									name; // limited to 63 characters
 	ServerSocket*								server_socket;
 
 	struct pollfd*								_client_events;
-	struct pollfd*								_server_events;
-	int 										nb_client_events; // aka nfds
 	char 										read_buffer[30000 + 1];
 	int											max_c;
-	std::string 								bif;
-	int 										n_ci;				
-	int 										fd_ci;				
+	std::string 								client_buffer;	
 	std::string 								client_welcoming;
-	std::vector<Client *> 						_all_clients;
-	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
-	std::vector<Channel*>						_all_chanels; //list of all existing channels
-	bool										_test;
-	std::map<std::string, std::string>			_opers; /* Configure the usernmae and pwd for operators*/
+	std::vector<Client *> 						all_clients;
+	std::vector<Channel*>						all_chanels;
+	bool										replied;
+	std::map<std::string, std::string>			opers;
 
 
 	
