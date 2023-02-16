@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 13:24:41 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/16 13:34:46 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,8 +114,6 @@ int Server::routine()
 	while (1)
 	{
 		// std::cout << "=============== Waiting on poll() ==============" << std::endl;
-		std::cout << " je passe ici " << std::endl;
-		std::cout << std::endl;
 
 		int active_co = poll(_client_events, _online_clients, -1); // equivalent epoll_wait: attend qu'un fd devienne dispo
 		if (active_co < 0)
@@ -142,24 +140,16 @@ int Server::routine()
 			{
 				if (_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
 				{
-					std::cout << "server socket " << server_socket->get_sock() << std::endl;
-					std::cout << "Client fd " << _client_events[i].fd << std::endl;
 					new_client();
-					// std::cout << " clients[online_client] " << _client_events[_online_clients].fd << std::endl;
-					std::cout << "i =  " << i << " online_client" << _online_clients << std::endl;
 					_online_clients++;
-					// read_client_req(cli, &i);
 				}
 				else
 				{
 					std::vector<Client *>::iterator it = all_clients.begin();
 					while (it != all_clients.end())
 					{
-						// std::cout << "here " << (*it)->getFdClient() << " " << _client_events[i].fd << std::endl;
 						if ((*it)->getFdClient() == _client_events[i].fd)
 						{
-							std::cout << "fd client " << (*it)->getFdClient() << std::endl;
-							// i += 1;
 							read_client_req(*it, &(i));
 							break ;
 						}
@@ -169,7 +159,6 @@ int Server::routine()
 			}
 		}
 	}
-	// std::cout << "juuuure " << std::endl;
 	close(server_socket->get_sock());
 }
 
@@ -198,10 +187,10 @@ void Server::new_client()
 	std::ostringstream oss;
 	if (cli->getNickName().empty())
 		cli->setNickname("*");
-	oss << "001 " << " Welcome to the Internet Relay Network " << " "
+	oss << "001 Welcome to the Internet Relay Network " << " "
 		<< cli->setPrefix() << "\n";
 	std::string var = oss.str();
-	if (send(sock, var.c_str(), 30000, 0) == -1)
+	if (send(sock, var.c_str(), strlen(var.c_str()), 0) == -1)
 		perror("Big time for welcoming_ Bravo");
 	// char[50000] = homepage.c_str();
 	// memset((homepage.c_str()), 0, 50000);
