@@ -12,7 +12,7 @@
 
 #include "Request.hpp"
 
-int	Request::_join(Client *cli, Server *serv)
+int Request::_join(Client *cli, Server *serv)
 {
 	(void)cli;
 	(void)serv;
@@ -23,32 +23,33 @@ int	Request::_join(Client *cli, Server *serv)
 	// }
 	if (_check_lists() != 0)
 	{
-			removing_sharp(entries);
-			// std::vector<std::string>::iterator it = entries.begin();
-			// while (it != entries.end())
-			// {
-			// 	std::cout << "entriiiizzz " << (*it) << "nb of chans " << jo_nb_chan << std::endl;
-			// 	it++;
-			// }
-			if (entries.size() < 1)
-				reply = errNeedMoreParams(cli->getNickName(), _command);
-			else if (entries[0][0] == '0')
-			{}
-				/* Leave all channels */
-			if (jo_nb_chan > 1)
-				multiChan(cli, serv);
-			if ((jo_nb_chan == 1 && jo_nb_keys == 0 ) || (jo_nb_chan == 1 && jo_nb_keys == 1))
-			{
-				// std::cout << "nb of chans " << jo_nb_chan << "nb of keys " << jo_nb_keys << std::endl;
-				oneChan(cli, serv);
-			}
+		removing_sharp(entries);
+		// std::vector<std::string>::iterator it = entries.begin();
+		// while (it != entries.end())
+		// {
+		// 	std::cout << "entriiiizzz " << (*it) << "nb of chans " << jo_nb_chan << std::endl;
+		// 	it++;
+		// }
+		if (entries.size() < 1)
+			reply = errNeedMoreParams(cli->getNickName(), _command);
+		else if (entries[0][0] == '0')
+		{
+		}
+		/* Leave all channels */
+		if (jo_nb_chan > 1)
+			multiChan(cli, serv);
+		if ((jo_nb_chan == 1 && jo_nb_keys == 0) || (jo_nb_chan == 1 && jo_nb_keys == 1))
+		{
+			// std::cout << "nb of chans " << jo_nb_chan << "nb of keys " << jo_nb_keys << std::endl;
+			oneChan(cli, serv);
+		}
 	}
 	else
 		reply = "Invalid request \n";
 	return 0;
 }
 
-int	Request::_part(Client *cli, Server *serv)
+int Request::_part(Client *cli, Server *serv)
 {
 	vector<Channel *>::iterator it;
 
@@ -65,7 +66,7 @@ int	Request::_part(Client *cli, Server *serv)
 			{
 				message.clear();
 				size_t i = jo_nb_chan;
-				while(i < entries.size())
+				while (i < entries.size())
 				{
 					message += entries[i];
 					message += ' ';
@@ -85,7 +86,7 @@ int	Request::_part(Client *cli, Server *serv)
 		removing_sharp(entries);
 		while (i < jo_nb_chan)
 		{
-			Channel* tmp = existing_chan(entries[i], serv);
+			Channel *tmp = existing_chan(entries[i], serv);
 			if (!tmp)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[i]);
@@ -94,12 +95,13 @@ int	Request::_part(Client *cli, Server *serv)
 			else
 			{
 				status = ongoing;
-				tmp->cmd_lexer(*this);
+				tmp->cmd_lexer(*this, serv);
 				// temporary solution, need to improve it
 				// std::cout << "je rentre ici oui ouis " << "getOnlineCount()" << tmp->getOnlineCount() << std::endl;
 				if (tmp->getOnlineCount() == 0)
 				{
-					for (size_t j = 0; j < serv->all_chanels.size(); j++){
+					for (size_t j = 0; j < serv->all_chanels.size(); j++)
+					{
 						if (serv->all_chanels[i]->getName() == tmp->getName())
 						{
 							serv->all_chanels.erase(serv->all_chanels.begin() + i);
@@ -118,8 +120,7 @@ int	Request::_part(Client *cli, Server *serv)
 	return 0;
 }
 
-
-int	Request::_kick(Client *cli, Server *serv)
+int Request::_kick(Client *cli, Server *serv)
 {
 	if (_check_lists() != 0)
 	{
@@ -130,7 +131,7 @@ int	Request::_kick(Client *cli, Server *serv)
 			if (entries.size() > jo_nb_chan)
 			{
 				std::vector<std::string>::iterator it = entries.begin() + jo_nb_chan;
-				bool comment =  false;
+				bool comment = false;
 				size_t nb = 0;
 				while (it != entries.end())
 				{
@@ -142,7 +143,7 @@ int	Request::_kick(Client *cli, Server *serv)
 							serv->replied = false;
 							return 1;
 						}
-						
+
 						while (it != entries.end())
 						{
 							message.clear();
@@ -151,7 +152,7 @@ int	Request::_kick(Client *cli, Server *serv)
 							it++;
 							comment = true;
 							nb++;
-						}	
+						}
 					}
 					if (comment == false)
 						it++;
@@ -163,7 +164,7 @@ int	Request::_kick(Client *cli, Server *serv)
 			size_t i = 0;
 			while (i < jo_nb_chan)
 			{
-				Channel* tmp = existing_chan(&entries[i][1], serv);
+				Channel *tmp = existing_chan(&entries[i][1], serv);
 				if (!tmp)
 				{
 					reply = errNoSuchChannel(cli->getNickName(), "No such Channel");
@@ -172,27 +173,26 @@ int	Request::_kick(Client *cli, Server *serv)
 				else
 				{
 					status = ongoing;
-					tmp->cmd_lexer(*this);
+					tmp->cmd_lexer(*this, serv);
 				}
 				serv->_chan_requests(this);
 				i++;
 			}
 		}
-
 	}
 	else
 		serv->_chan_requests(this);
 	return 0;
 }
 
-int	Request::_topic(Client *cli, Server *serv)
+int Request::_topic(Client *cli, Server *serv)
 {
 	beginning_with_diez(entries);
-	if(jo_nb_chan == 1 && entries[0][0] == '#')
+	if (jo_nb_chan == 1 && entries[0][0] == '#')
 	{
 		Channel *tmp = existing_chan(&entries[0][1], serv);
 		if (tmp)
-			tmp->cmd_lexer(*this);
+			tmp->cmd_lexer(*this, serv);
 		else
 		{
 			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
@@ -205,13 +205,13 @@ int	Request::_topic(Client *cli, Server *serv)
 	return 1;
 }
 
-int	Request::_mode(Client* cli, Server *serv)
+int Request::_mode(Client *cli, Server *serv)
 {
-	std::cout << "je rentre ici ?" << std::endl;
+	// std::cout << "je rentre ici ?" << std::endl;
 	beginning_with_diez(entries);
-	if(jo_nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&'))
+	if (jo_nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&'))
 		_mode_for_chans(cli, serv);
-	else if (jo_nb_chan == 0 && entries.size() >=2)
+	else if (jo_nb_chan == 0 && entries.size() >= 2)
 	{
 		_mode_for_clis(cli, serv);
 	}

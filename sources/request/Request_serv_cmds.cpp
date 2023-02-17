@@ -92,7 +92,6 @@ int Request::_user(Client *cli, Server *serv)
 		it = _findFd(cli->getFdClient(), serv);
 		if (it != serv->all_clients.end())
 		{
-
 			serv->all_clients.erase(it);
 			cli->loggedIn = true;
 			serv->all_clients.push_back(cli);
@@ -106,7 +105,7 @@ int Request::_user(Client *cli, Server *serv)
 			// std::cout << "Message == " << message << std::endl;
 			// if (send(cli->getFdClient(), message.c_str(), message.size(), 0) == -1)
 			// 	perror("Big time for welcoming_ Bravo");
-			std::cout << "fd client " << cli->getFdClient() << " messga == " << message << std::endl;
+			// std::cout << "fd client " << cli->getFdClient() << " Name = " << cli->getNickName() << std::endl;
 		}
 		message.clear();
 	}
@@ -181,14 +180,15 @@ int Request::_privmsg(Client *cli, Server *serv)
 						message += ' ';
 						i++;
 					}
+					message.append("\r\n");
 				}
-				tmp->cmd_lexer(*this);
+				tmp->cmd_lexer(*this, serv);
 			}
 			serv->_chan_requests(this);
-			return 2;
+			return 0;
 		}
 	}
-	return 5;
+	return 0;
 }
 
 int Request::_notice(Client *cli, Server *serv)
@@ -257,7 +257,7 @@ int Request::_notice(Client *cli, Server *serv)
 						i++;
 					}
 				}
-				tmp->cmd_lexer(*this);
+				tmp->cmd_lexer(*this, serv);
 			}
 			serv->_chan_requests(this);
 			return 2;
@@ -323,9 +323,9 @@ int Request::_cap(Client *cli, Server *serv)
 {
 	(void)cli;
 	(void)serv;
-	std::cout << " je returne rien "
-			  << "\n"
-			  << std::endl;
+	// std::cout << " je returne rien "
+			//   << "\n"
+			//   << std::endl;
 	return 0;
 }
 
@@ -360,8 +360,8 @@ int Request::_names(Client *cli, Server *serv) /* For later - A revoiiiiiiiir */
 					if (tmp)
 					{
 						if (tmp->activeMode('s') == false)
-							tmp->cmd_lexer(*this);
-						reply += rpl_endofnames(tmp->getName(), "option");
+							tmp->cmd_lexer(*this, serv);
+						reply += rpl_endofnames(*this, tmp->getName(), "option");
 					}
 					i++;
 				}
@@ -380,7 +380,7 @@ int Request::_invite(Client *cli, Server *serv)
 	{
 		Channel *tmp = existing_chan(&entries[0][1], serv);
 		if (tmp)
-			tmp->cmd_lexer(*this);
+			tmp->cmd_lexer(*this, serv);
 		else
 			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
 	}

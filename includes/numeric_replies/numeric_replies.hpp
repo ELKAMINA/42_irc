@@ -24,11 +24,11 @@ class Request;
  
 std::string         rpl_welcome(std::string str, std::string req );
 std::string         rpl_umodeis(std::string str, std::string req );
-std::string         rpl_topic(std::string channel, std::string topic);
+std::string         rpl_topic(Request& req, std::string channel, std::string topic);
 std::string         rpl_notopic(std::string channel, std::string topic);
 std::string         rpl_channelmodeis(std::string channel, std::string mode);
 std::string         rpl_namereply(std::string message, std::string option);
-std::string         rpl_endofnames(std::string message, std::string option);
+std::string         rpl_endofnames(Request& req, std::string message, std::string option);
 std::string         rpl_inviting(std::string nickName, std::string channel);
 std::string         rpl_away(std::string channel, std::string away);
 std::string         rpl_unaway(std::string channel, std::string away);

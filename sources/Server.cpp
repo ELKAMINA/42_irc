@@ -228,7 +228,7 @@ void Server::read_client_req(Client *cli, int *i)
 	}
 	else
 	{
-		std::cout << "client send: "<<read_buffer<<std::endl;
+		// std::cout << "client send: "<<read_buffer<<std::endl;
 		handle_request(read_buffer, i, cli, n_ci);
 	}
 	memset(&read_buffer, 0, 30000); /* Pour reset les saisies Clients*/
@@ -332,7 +332,7 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	{
 		if (req->reply != "UNDEFINED")
 		{
-			// std::cout << "je rentre ici = " << _client_events[*i].fd << "reply = " <<  req->reply << std::endl;
+			std::cout << "je rentre ici = " << _client_events[*i].fd << "reply = " <<  req->reply << std::endl;
 			if (send(req->_origin->getFdClient(), req->reply.c_str(), strlen(req->reply.c_str()), 0) == -1)
 				return (perror("Problem in sending from server "));
 
@@ -389,14 +389,16 @@ void	Server::_chan_requests(Request *req)
 {
 	if (req->reply != "UNDEFINED")
 	{
-		// std::cout << "REPLY " << req->reply << std::endl;
+		req->reply += "\n";
+		// std::cout << "REPLY " << req->reply << "REPLY FD" << req->_origin->getFdClient() << std::endl;
 		if (send(req->_origin->getFdClient(), req->reply.c_str(), req->reply.length(), 0) == -1)
 			return (perror("Problem in sending from server "));
 	}
 	size_t i = 0;
+	req->response += "\n";
 	while (i < req->target.size())
 	{
-		// std::cout << "target siiiiize " << req->response << std::endl;
+		// std::cout << "Response " << req->response << "reqOrigin " << req->target[i]->getFdClient() << std::endl;
 		if (send(req->target[i]->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
 				return (perror("Problem in sending from server ")); // a t on le droit ?
 		i++;

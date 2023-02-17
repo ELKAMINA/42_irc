@@ -123,11 +123,9 @@ void Client::setPwd(std::string pwd)
 
 std::string Client::setPrefix()
 {
-	
-	std::ostringstream oss;
-	oss << _nickName << "!" << _userName << "@" << _host;
-	std::string var = oss.str();
-	return (var);
+
+	std::string msg =  _nickName + "!" + _userName + "@localhost";
+	return (msg);
 }
 
 void Client::initModes()
