@@ -36,10 +36,8 @@ std::string	rpl_umodeis(std::string prefix, std::string req ) // Modifier "unreg
 std::string	rpl_topic(std::string channel, std::string topic ) // Modifier "unregistered client par le vrai client user"
 {
 	// (void)topic;
-	std::ostringstream oss;
-	oss << "#" << channel << " " << topic << "\n";
-	std::string var = oss.str();
-	return (var);
+	std::string message = "332 " + channel + " :" + topic + "\r\n";
+	return (message);
 }
 
 std::string	rpl_notopic(std::string channel, std::string topic ) // Modifier "unregistered client par le vrai client user"

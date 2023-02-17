@@ -39,7 +39,7 @@ int	Request::_join(Client *cli, Server *serv)
 				multiChan(cli, serv);
 			if ((jo_nb_chan == 1 && jo_nb_keys == 0 ) || (jo_nb_chan == 1 && jo_nb_keys == 1))
 			{
-				std::cout << "nb of chans " << jo_nb_chan << "nb of keys " << jo_nb_keys << std::endl;
+				// std::cout << "nb of chans " << jo_nb_chan << "nb of keys " << jo_nb_keys << std::endl;
 				oneChan(cli, serv);
 			}
 	}

@@ -7,6 +7,7 @@ _host("IRC with love"), _id()
 	initModes();
 	_away_msg = "";
 	loggedIn = false;
+	callToMode = 0;
 	// _isInChan = 0;
 }
 

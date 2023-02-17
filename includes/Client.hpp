@@ -69,6 +69,7 @@ class Client
 		// void receiveMessage(Message& message);
 
 		bool			loggedIn;
+		int				callToMode;
 	private:
 
 		void						initModes();

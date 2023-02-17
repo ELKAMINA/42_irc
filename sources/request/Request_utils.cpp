@@ -254,6 +254,11 @@ void Request::_mode_for_clis(Client* cli, Server* serv)
 	Client* tmp = _find(entries[0], serv);
 	if (tmp != NULL)
 	{
+		if (tmp->callToMode == 0) /* TO deal with MODE + i from the client, at the beginning*/
+		{
+			tmp->callToMode++;
+			return ;
+		}
 		if (mode_validity() == 0)
 			reply = errUModeUnknownFlag(cli->getNickName(), ":Unknown MODE flag\n");
 		if (entries[1][0] == '+')
@@ -269,6 +274,7 @@ void Request::_mode_for_clis(Client* cli, Server* serv)
 			tmp->setMode(entries[1][1], false);
 		}
 		reply = rpl_umodeis(retrieve_cliModes(tmp), tmp->getNickName());
+		tmp->callToMode ++;
 	}
 	else
 		reply = errUsersDontMatch(cli->getNickName(), ":Cannot change mode for other users\n");

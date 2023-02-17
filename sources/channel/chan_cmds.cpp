@@ -41,10 +41,7 @@ void Channel::cmd_lexer(Request& request)
 	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK", "NAMES", "MODE"};
 	for (size_t i = 0; i< _cmds.size(); i++){
 		if (request._command == cmd_name[i])
-		{
-			// std::cout << "Commande " << cmd_name[i] << std::endl;
 			(this->*(_cmds[i]))(request);
-		}
 	}
 }
 
@@ -64,7 +61,7 @@ void Channel::reply_joining(Request& request)
 		if (i < _users.size() -1)
 			rep += ", ";
 	}
-	rep += '\n';
+	rep += "\r\n";
 	request.reply = rep;
 	rep.clear();
 }
@@ -103,9 +100,10 @@ void Channel::join(Request &request)
 	}
 	_onlineUsers += 1;
 	request.target.insert(request.target.end(), _users.begin(), _users.end());
-	request.response = ":" + request._origin->setPrefix() + " has join #" + this->getName() + '\n';
+	request.response = ":" + request._origin->setPrefix() + " has join #" + this->getName() + "\r\n"; /* Backlash n*/
 	reply_joining(request);
 	_users.push_back(request._origin);
+	std::cout << "user size " << _users.size() << std::endl;
 	request._origin->addChanToList(this);
 	request.status = treated;
 }
@@ -194,7 +192,7 @@ void Channel::privmsg(Request& request)
 	if (!isInChanList((request._origin), _users))
 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
 	request.response = ":" + request._origin->setPrefix() + " PRIVMSG "
-	+  " " + request.message + '\n';
+	+  " " + request.message + "\r\n";
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
 	request.target.erase(it=find(request.target.begin(), request.target.end(), request._origin));
 	request.status = treated;

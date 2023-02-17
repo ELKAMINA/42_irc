@@ -323,7 +323,7 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	} /* DO nothing */
 	if (replied == false && _client_events[*i].fd != req->_origin->getFdClient())
 	{
-		// std::cout << "je rentre laaa laaalaaaa " << std::endl;
+		std::cout << "je rentre laaa laaalaaaa " << std::endl;
 
 		if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
 			return (perror("Problem in sending from server ")); // a t on le droit ??
@@ -332,7 +332,7 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	{
 		if (req->reply != "UNDEFINED")
 		{
-			// std::cout << "je rentre laaa fd = " << _client_events[*i].fd << "reply = " <<  req->reply << std::endl;
+			// std::cout << "je rentre ici = " << _client_events[*i].fd << "reply = " <<  req->reply << std::endl;
 			if (send(req->_origin->getFdClient(), req->reply.c_str(), strlen(req->reply.c_str()), 0) == -1)
 				return (perror("Problem in sending from server "));
 
@@ -389,13 +389,14 @@ void	Server::_chan_requests(Request *req)
 {
 	if (req->reply != "UNDEFINED")
 	{
+		// std::cout << "REPLY " << req->reply << std::endl;
 		if (send(req->_origin->getFdClient(), req->reply.c_str(), req->reply.length(), 0) == -1)
 			return (perror("Problem in sending from server "));
 	}
 	size_t i = 0;
-	// std::cout << "target siiiiize " << req->target.size() << std::endl;
 	while (i < req->target.size())
 	{
+		// std::cout << "target siiiiize " << req->response << std::endl;
 		if (send(req->target[i]->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
 				return (perror("Problem in sending from server ")); // a t on le droit ?
 		i++;

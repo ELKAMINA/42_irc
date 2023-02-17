@@ -139,7 +139,6 @@ int Request::_privmsg(Client *cli, Server *serv)
 					req_validity = invisible_man;
 				else
 				{
-
 					if (entries.size() >= 1)
 					{
 						size_t i = 0;
@@ -150,18 +149,20 @@ int Request::_privmsg(Client *cli, Server *serv)
 							i++;
 						}
 					}
+					message.append("\r\n");
 				}
-				std::ostringstream oss;
-				oss << ":" << cli->getNickName() << "!" << cli->getNickName() << "@" << cli->getRealName() << " PRIVMSG " << cli->getNickName() << " " << message << "\n";
-				std::string var = oss.str();
-				if (send(_find(dest, serv)->getFdClient(), var.c_str(), var.length(), 0) == -1)
+				std::string ToSend =  ": " + cli->getNickName() + " " + message;
+				if (send(_find(dest, serv)->getFdClient(), ToSend.c_str(), ToSend.length(), 0) == -1)
 					return (-1);
+				serv->replied = true;
 			}
 			return 0;
 		}
 		if (entries[0][0] == '&' || entries[0][0] == '#')
 		{
+			beginning_with_diez(entries);
 			Channel *tmp = existing_chan(&entries[0][1], serv);
+			// std::cout << "je rentre ici 1" << "nb of chans " << jo_nb_chan << std::endl;
 			if (!tmp)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[0]);
@@ -169,6 +170,7 @@ int Request::_privmsg(Client *cli, Server *serv)
 			}
 			else
 			{
+				// std::cout << "je rentre ici 2" << "nb of chans " << jo_nb_chan << std::endl;
 				if (message == "")
 				{
 					message.clear();
@@ -458,6 +460,8 @@ int Request::_ping(Client *cli, Server *serv) /* For later */
 	if (entries.size() < 1)
 		reply = errNeedMoreParams(cli->getNickName(), _command);
 	else
-		reply = "PONG: " + entries[0];
+	{
+		reply = "PONG: " + entries[0] + "\r\n";
+	}
 	return 0;
 } 
