@@ -47,26 +47,21 @@ void Channel::cmd_lexer(Request& request, Server* serv)
 
 void Channel::reply_joining(Request& request, Server* serv)
 {
+	(void)serv;
 	string rep = "";
 	vector<Client *>::iterator it;
-
-	if (this->_topic.size() > 0)
-	{
-		rep += rpl_topic(request, this->getName(), this->getTopic());
-		serv->_chan_requests(&request);
-		rep.clear();
-	}
+	request.reply.clear();
 	for (size_t i = 0; i < this->_users.size(); i++){
 		if ((it=find(_operators.begin(), _operators.end(), _users[i])) != _operators.end())
 			rep +="@";
 		else
-			rep +="";
+			rep +=" ";
 		rep += _users[i]->getNickName();
 		if (i < _users.size() -1)
-			rep += ", ";
+			rep += " ";
 	}
 	// rep += "\r\n"; /* Commenté par Amina */
-	request.reply = rep;
+	request.reply = "353 " + request._origin->setPrefix() + " = " + "#" + this->getName() + " :" + rep;
 	rep.clear();
 }
 
@@ -76,6 +71,7 @@ void Channel::join(Request &request, Server* serv)
 	vector<Client *>::iterator it;
 	int matching_param;
 	
+	// request.target.clear();
 	if (isInChanList((request._origin), _users))
 	{
 		return (errInCmd(request, errUserOnChannel(user,this->getName())));
@@ -103,12 +99,30 @@ void Channel::join(Request &request, Server* serv)
 		_invited.erase(it=find(_invited.begin(), _invited.end(), request._origin));
 	}
 	_onlineUsers += 1;
+	// std::cout << "Détenteur de la req " << request._origin->getNickName() << std::endl;
+	_users.push_back(request._origin);
 	request.target.insert(request.target.end(), _users.begin(), _users.end());
+	// std::vector<Client* >::iterator ita = request.target.begin();
+	// while (ita != request.target.end())
+	// {
+	// 	std::cout << "Client present " << (*ita)->getNickName() << std::endl;
+	// 	ita++;
+	// }
 	// request.response = ":" + request._origin->setPrefix() + " has join #" + this->getName() + "\r\n"; /* Backlash n*/
 	request.response = ":" + request._origin->setPrefix() + " JOIN #" + this->getName(); /* Backlash n*/
+	if (this->_topic.size() > 0)
+	{
+		std::string rep = rpl_topic(request, this->getName(), this->getTopic());
+		if (send(request._origin->getFdClient(), rep.c_str(), rep.length(), 0) == -1)
+			return (perror("Problem in sending from server ")); // a t on le droit ?
+	}
 	reply_joining(request, serv);
-	_users.push_back(request._origin);
-	// std::cout << "user size " << _users.size() << std::endl;
+	serv->_chan_requests(request);
+	request.response = "UNDEFINED";
+	request.reply.clear();
+	request.reply = rpl_endofnames(request, this->getName(), "option");
+	// std::cout << "endofnames list " << std::endl;
+	serv->_chan_requests(request);
 	request._origin->addChanToList(this);
 	request.status = treated;
 }
@@ -150,7 +164,7 @@ void Channel::topic(Request& request, Server* serv)
 		if (this->_topic.size() > 0)
 			request.reply = rpl_topic(request, this->getName(), this->getTopic());
 		else
-			request.reply = rpl_notopic(this->getName(), this->getTopic());
+			request.reply = rpl_notopic(request, this->getName(), "");
 	}
 	else if (!isInChanList((request._origin), _operators))
 		errInCmd(request, errChanPrivsNeeded(user, this->getName()));
@@ -198,13 +212,14 @@ void Channel::privmsg(Request& request, Server* serv)
 	string user = request._origin->getNickName();
 	vector<Client*>::iterator it;
 
+	request.target.clear();
 	if (!isInChanList((request._origin), _users))
 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
 	// request.response = ": " + request._origin->setPrefix() + " PRIVMSG "
-	// +  " " + request.message;
-	request.response = ": " + request._origin->getNickName() + " " + request.message;
+	// +  " " + request.message; /* Commenté par Amina */
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
 	request.target.erase(it=find(request.target.begin(), request.target.end(), request._origin));
+	request.response = ":" + request._origin->getNickName() + " " + request.message;  /* A jouté par Amina*/
 	request.status = treated;
 }
 

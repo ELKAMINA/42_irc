@@ -163,9 +163,9 @@ string errBadChannelKey(string nickName, string channel)
 
 string errChanPrivsNeeded(string nickName, string channel)
 {
-	(void)nickName;
+	// (void)nickName;
 	string reply;
-	reply = channel + " 482 * :You're not channel operator\n";
+	reply = nickName + " 482 " + channel + " :You're not channel operator\n";
 	return (reply);
 }
 

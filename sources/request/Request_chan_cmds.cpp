@@ -40,7 +40,7 @@ int Request::_join(Client *cli, Server *serv)
 			multiChan(cli, serv);
 		if ((jo_nb_chan == 1 && jo_nb_keys == 0) || (jo_nb_chan == 1 && jo_nb_keys == 1))
 		{
-			// std::cout << "nb of chans " << jo_nb_chan << "nb of keys " << jo_nb_keys << std::endl;
+			std::cout << "nb of chans " << jo_nb_chan << "nb of keys " << jo_nb_keys << std::endl;
 			oneChan(cli, serv);
 		}
 	}
@@ -111,12 +111,12 @@ int Request::_part(Client *cli, Server *serv)
 					// serv->all_chanels.erase(it = find(serv->all_chanels.begin(), serv->all_chanels.end(), tmp)); //doesn't work
 				}
 			}
-			serv->_chan_requests(this);
+			serv->_chan_requests(*this);
 			i++;
 		}
 	}
 	else
-		serv->_chan_requests(this);
+		serv->_chan_requests(*this);
 	return 0;
 }
 
@@ -175,13 +175,13 @@ int Request::_kick(Client *cli, Server *serv)
 					status = ongoing;
 					tmp->cmd_lexer(*this, serv);
 				}
-				serv->_chan_requests(this);
+				serv->_chan_requests(*this);
 				i++;
 			}
 		}
 	}
 	else
-		serv->_chan_requests(this);
+		serv->_chan_requests(*this);
 	return 0;
 }
 
@@ -198,7 +198,7 @@ int Request::_topic(Client *cli, Server *serv)
 			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
 			serv->replied = true;
 		}
-		serv->_chan_requests(this);
+		serv->_chan_requests(*this);
 	}
 	else
 		req_validity = invalid_req;
@@ -210,7 +210,11 @@ int Request::_mode(Client *cli, Server *serv)
 	// std::cout << "je rentre ici ?" << std::endl;
 	beginning_with_diez(entries);
 	if (jo_nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&'))
-		_mode_for_chans(cli, serv);
+	{
+		if (entries.size() > 1)
+			_mode_for_chans(cli, serv);
+		return 0;
+	}
 	else if (jo_nb_chan == 0 && entries.size() >= 2)
 	{
 		_mode_for_clis(cli, serv);

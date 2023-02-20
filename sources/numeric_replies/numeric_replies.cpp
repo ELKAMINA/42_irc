@@ -33,20 +33,20 @@ std::string	rpl_umodeis(std::string prefix, std::string req ) // Modifier "unreg
 	return (var);
 }
 
-std::string	rpl_topic(Request& req, std::string channel, std::string topic )
+std::string	rpl_notopic(Request& req, std::string channel, std::string topic ) // Modifier "unregistered client par le vrai client user"
 {
-	std::string message = "332 " + req._origin->setPrefix() + " " + channel + " :" + topic + "\r\n";
+	(void)topic;
+	std::string message = "331 " + req._origin->setPrefix() + " " + channel + " :No topic is set" + "\r\n";
 	return (message);
 }
 
-std::string	rpl_notopic(std::string channel, std::string topic ) // Modifier "unregistered client par le vrai client user"
+std::string	rpl_topic(Request& req, std::string channel, std::string topic )
 {
-	(void)topic;
-	std::ostringstream oss;
-	oss << "#" << channel << " :No topic is set" << "\n";
-	std::string var = oss.str();
-	return (var);
+	(void)req;
+	std::string message = "332 " + channel + " :" + topic + "\r\n";
+	return (message);
 }
+
 
 std::string	rpl_channelmodeis(std::string channel, std::string mode ) // Modifier "unregistered client par le vrai client user"
 { 
@@ -71,7 +71,7 @@ std::string	rpl_endofnames(Request& req, std::string channel, std::string op ) /
 	/* Résultat attendu : user per channels prend en compte les channels privés et secrets*/
 	(void)op;
 	string reply;
-	reply = "366 " + req._origin->setPrefix() + " #" + channel + " :End of /NAMES list";
+	reply = "366 " + req._origin->setPrefix() + " " + "#" + channel + " :End of /NAMES list";
 	return (reply);
 }
 

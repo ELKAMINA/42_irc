@@ -38,7 +38,7 @@ std::vector<Client* >::iterator Request::_findFd(int dest, Server *serv)
 	{
 		if	((*it)->getFdClient() == dest)
 		{
-			std::cout << "fdddds " << (*it)->getFdClient() << std::endl;
+			// std::cout << "fdddds " << (*it)->getFdClient() << std::endl;
 			return it;
 		}
 		it++;
@@ -126,7 +126,7 @@ void Request::oneChan(Client* cli, Server *serv)
 	Channel *tmp;
 	tmp = existing_chan(entries[0], serv);
 	this->status = ongoing;
-	bool yes = false;
+	// bool yes = false;
 	if(jo_nb_keys > jo_nb_chan)
 		reply = errNeedMoreParams("bad value", this->_command);
 	if (tmp != NULL) /* Channel existe */
@@ -136,38 +136,38 @@ void Request::oneChan(Client* cli, Server *serv)
 		{
 			reply = errPasswMismatch("Wrong Pwd for the Channel", "Wrong WRONG");
 			serv->replied = true;
-			yes = true;
+			// yes = true;
 		}
 		else
 		{
+			// std::cout << "oui oui " << std::endl;
 			status = ongoing;
+
 			tmp->cmd_lexer(*this, serv);
-			cli->addChanToList(tmp);
 		}
-		if (yes == false)
-		{
-			std::cout << "je rentre ici " << std::endl;
-			std::string finalrep = reply;
-			reply.clear();
-			reply = "353 " + _origin->setPrefix() + " = " + "#" + tmp->getName() + " :" + finalrep + "\r\n";
-			if (send(_origin->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
-				return (perror("Problem in sending from server ")); // a t on le droit ?
-			reply.clear();
-			reply = rpl_endofnames(*this, tmp->getName(), "option");
-		}
-		serv->_chan_requests(this);
+		// serv->_chan_requests(*this);
+		// if (yes == false)
+		// {
+		// 	reply.clear();
+		// 	reply = rpl_endofnames(*this, tmp->getName(), "option");
+		// 	if (send(_origin->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
+		// 		return (perror("Problem in sending from server "));
+		// }
 	}
 	else
 	{
 		Channel *to_add;
 		if (entries.size() == 1)
+		{
+			// std::cout << "oui oui " << entries[0] << std::endl;
 			to_add = new Channel((serv->all_clients), entries[0],  *cli);
+		}
 		else
 			to_add = new Channel((serv->all_clients), entries[0], entries[1], *cli);
-		cli->addChanToList(to_add);
+		_origin->setMode('o', true); /* Set the first user to operator*/
 		serv->all_chanels.push_back(to_add);
 		to_add->cmd_lexer(*this, serv);
-		serv->_chan_requests(this);
+		// serv->_chan_requests(*this);
 	}	 
 }
 
@@ -204,7 +204,7 @@ void Request::multiChan(Client* cli,Server *serv)
 			serv->all_chanels.push_back(to_add);
 			status =  ongoing;
 			to_add->cmd_lexer(*this, serv);
-			serv->_chan_requests(this);
+			serv->_chan_requests(*this);
 		}
 		else
 		{
@@ -237,7 +237,7 @@ void Request::multiChan(Client* cli,Server *serv)
 					cli->addChanToList(tmp);
 				}
 			}
-			serv->_chan_requests(this);
+			serv->_chan_requests(*this);
 			this->target.clear();
 		}
 		i++;
@@ -255,7 +255,7 @@ void Request::_mode_for_chans(Client* cli, Server* serv)
 		reply = errNoSuchChannel(cli->getNickName(), entries[0]);
 		serv->replied = true;
 	}
-	serv->_chan_requests(this);
+	serv->_chan_requests(*this);
 }
 
 std::string		Request::retrieve_cliModes(Client* tmp)

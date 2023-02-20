@@ -30,7 +30,7 @@ int Request::_pass(Client *cli, Server *serv)
 		{
 			req_validity = valid_req; // A changer
 			cli->setPwd(serv->get_pass());
-			std::cout << "je rentre ici  pWD" << cli->getPwd() << std::endl;
+			// std::cout << "je rentre ici  pWD" << cli->getPwd() << std::endl;
 			return 1;
 		}
 		else
@@ -64,7 +64,6 @@ int Request::_nick(Client *cli, Server *serv)
 		req_validity = erroneous_nickname;
 		return 1;
 	}
-	std::cout << "entries[0] " << std::endl;
 	cli->setNickname(entries[0]);
 	return 0;
 }
@@ -150,6 +149,7 @@ int Request::_privmsg(Client *cli, Server *serv)
 					}
 					message.append("\r\n");
 				}
+				// std::cout << "ouuuuuiiii " << std::endl;
 				std::string ToSend =  ": " + cli->getNickName() + " " + message;
 				if (send(_find(dest, serv)->getFdClient(), ToSend.c_str(), ToSend.length(), 0) == -1)
 					return (-1);
@@ -176,15 +176,21 @@ int Request::_privmsg(Client *cli, Server *serv)
 					size_t i = jo_nb_chan;
 					while (i < entries.size())
 					{
-						message += entries[i];
-						message += ' ';
+						message.append(entries[i]);
+						message.append(" ");
 						i++;
 					}
-					message.append("\r\n");
 				}
 				tmp->cmd_lexer(*this, serv);
+				// vector<Client*>::iterator ita = target.begin();
+				// while (ita != target.end())
+				// {
+				// 	cout << "TARGET " << (*ita)->getNickName() << std::endl;
+				// 	ita++;
+				// }
 			}
-			serv->_chan_requests(this);
+			serv->_chan_requests(*this);
+			// target.clear();
 			return 0;
 		}
 	}
@@ -259,7 +265,7 @@ int Request::_notice(Client *cli, Server *serv)
 				}
 				tmp->cmd_lexer(*this, serv);
 			}
-			serv->_chan_requests(this);
+			serv->_chan_requests(*this);
 			return 2;
 		}
 	}
@@ -334,6 +340,7 @@ int Request::_names(Client *cli, Server *serv) /* For later - A revoiiiiiiiir */
 	(void)cli;
 	// beginning_with_diez(entries);
 	// std::cout << "nb of channels " << jo_nb_chan << "entries.size() " << entries.size() << std::endl;
+	std::cout << "NAMES " << entries[0] << std::endl;
 	if (_check_lists() != 0)
 	{
 		std::vector<std::string>::iterator it = entries.begin();
@@ -368,7 +375,7 @@ int Request::_names(Client *cli, Server *serv) /* For later - A revoiiiiiiiir */
 			}
 		}
 	}
-	serv->_chan_requests(this);
+	serv->_chan_requests(*this);
 	return 0;
 }
 
@@ -384,7 +391,7 @@ int Request::_invite(Client *cli, Server *serv)
 		else
 			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
 	}
-	serv->_chan_requests(this);
+	serv->_chan_requests(*this);
 	return 0;
 }
 
@@ -404,7 +411,7 @@ int Request::_wallops(Client *cli, Server *serv)
 					reply += entries[i];
 					reply += " ";
 				}
-				serv->_chan_requests(this);
+				serv->_chan_requests(*this);
 			}
 			it++;
 		}
@@ -450,7 +457,7 @@ int Request::_oper(Client *cli, Server *serv) /* For later */
 	}
 	else
 		reply = errNoOperHost(":No O-lines for your host\n", "op");
-	serv->_chan_requests(this);
+	serv->_chan_requests(*this);
 	return 0;
 }
 
@@ -461,7 +468,7 @@ int Request::_ping(Client *cli, Server *serv) /* For later */
 		reply = errNeedMoreParams(cli->getNickName(), _command);
 	else
 	{
-		reply = "PONG: " + entries[0] + "\r\n";
+		reply = ":" + cli->setPrefix() + "PONG: " + entries[0] + "\r\n";
 	}
 	return 0;
 } 

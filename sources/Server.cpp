@@ -231,7 +231,7 @@ void Server::read_client_req(Client *cli, int *i)
 		// std::cout << "client send: "<<read_buffer<<std::endl;
 		handle_request(read_buffer, i, cli, n_ci);
 	}
-	memset(&read_buffer, 0, 30000); /* Pour reset les saisies Clients*/
+	memset(&read_buffer, 0, n_ci); /* Pour reset les saisies Clients*/
 }
 
 bool Server::contld(char* buf, int nci)
@@ -255,9 +255,10 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 	// 	client_buffer += buf;
 	// 	return ;
 	// }
-	(void)nci;
+	// (void)nci;
+	buf[nci] = '\0';
 	client_buffer += buf;
-	// std::cout << "client_buffer " << client_buffer << std::endl;
+	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
 	// memset(&buf, 0, strlen(buf));
 	// buf = &client_buffer[0];
 	size_t pos;
@@ -323,8 +324,7 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	} /* DO nothing */
 	if (replied == false && _client_events[*i].fd != req->_origin->getFdClient())
 	{
-		std::cout << "je rentre laaa laaalaaaa " << std::endl;
-
+		std::cout << "SERVER : 001 " << std::endl;
 		if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
 			return (perror("Problem in sending from server ")); // a t on le droit ??
 	}
@@ -332,7 +332,8 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	{
 		if (req->reply != "UNDEFINED")
 		{
-			std::cout << "je rentre ici = " << _client_events[*i].fd << "reply = " <<  req->reply << std::endl;
+			std::cout << "SERVER : 002 " << std::endl;
+			// std::cout << "je rentre ici = " << _client_events[*i].fd << "reply = " <<  req->reply << std::endl;
 			if (send(req->_origin->getFdClient(), req->reply.c_str(), strlen(req->reply.c_str()), 0) == -1)
 				return (perror("Problem in sending from server "));
 
@@ -385,24 +386,41 @@ void Server::check_req_validity(Request **r)
 	req->entries.erase(it);
 };
 
-void	Server::_chan_requests(Request *req)
+void	Server::_chan_requests(Request& req)
 {
-	if (req->reply != "UNDEFINED")
+	if (req.response != "UNDEFINED")
 	{
-		req->reply += "\n";
-		// std::cout << "REPLY " << req->reply << "REPLY FD" << req->_origin->getFdClient() << std::endl;
-		if (send(req->_origin->getFdClient(), req->reply.c_str(), req->reply.length(), 0) == -1)
+		size_t i = 0;
+		req.response += "\n";
+		// std::cout << "target size " << req.target.size() << std::endl;
+		std::vector<Client*>::iterator it;
+		while (i < req.target.size())
+		{
+			// std::cout << "RESPONSE " << req.response << std::endl;
+			it = req._findFd(req.target[i]->getFdClient(), this);
+			// std::cout << "Client nick =" << (*it)->getNickName() << "fd = " <<(*it)->getFdClient() << std::endl;
+			if (send((*it)->getFdClient(), req.response.c_str(), req.response.length(), MSG_DONTWAIT) == -1)
+					return (perror("Problem in sending from server ")); // a t on le droit ?
+			i++;
+		}
+	}
+	if (req.reply != "UNDEFINED")
+	{
+		std::cout << " je rentre ici " << req.reply.c_str() << std::endl;
+		req.reply += "\r\n";
+		if (send(req._origin->getFdClient(), req.reply.c_str(), req.reply.length(), 0) == -1)
 			return (perror("Problem in sending from server "));
+
+		std::cout << " req validity = " << req.req_validity << std::endl;
+		// if (req._command == "JOIN")
+		// {
+		// 	req.reply.clear();
+		// 	req.reply = rpl_endofnames(req, req.entries[0], "option");
+		// 	if (send(req._origin->getFdClient(), req.reply.c_str(), req.reply.length(), 0) == -1)
+		// 		return (perror("Problem in sending from server "));
+		// }
 	}
-	size_t i = 0;
-	req->response += "\n";
-	while (i < req->target.size())
-	{
-		// std::cout << "Response " << req->response << "reqOrigin " << req->target[i]->getFdClient() << std::endl;
-		if (send(req->target[i]->getFdClient(), req->response.c_str(), req->response.length(), 0) == -1)
-				return (perror("Problem in sending from server ")); // a t on le droit ?
-		i++;
-	}
+	// req.target.clear();
 	replied = true;
 }
 

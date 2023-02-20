@@ -12,6 +12,7 @@ Request::Request(const char* buffer, Client* cli) : _origin(cli)
 	req_validity = valid_req;
 	_cmd_types = UNKNOWN;
 	reply = "UNDEFINED";
+	response = "UNDEFINED";
 	jo_nb_chan = 0;
 	jo_nb_keys = 0;
 	message = "";
