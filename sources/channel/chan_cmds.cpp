@@ -89,7 +89,7 @@ void Channel::join(Request &request, Server* serv)
 		}
 		if (request.entries[matching_param + request.jo_nb_chan] != this->getKey())
 		{
-			errInCmd(request, errPasswMismatch(user, "wrong pwd"));
+			errInCmd(request, errBadChannelKey(user, this->getName()));
 			yes = true;
 		}
 		std::cout << "jusqu'ici " << yes << std::endl;
