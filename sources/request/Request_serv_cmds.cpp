@@ -96,15 +96,7 @@ int Request::_user(Client *cli, Server *serv)
 			serv->all_clients.push_back(cli);
 			if (cli->getNickName().empty() || cli->getNickName() == "UNDEFINED")
 				cli->setNickname("*");
-			// std::string message = "001 Welcome to Internet relay " + cli->getNickName() + "!" + cli->getUserName() + "@" + cli->getHost() + '\"';
 			req_validity = welcome_msg;
-			// reply = message;
-			// serv->replied = false;
-			// std::string message = "001 " + cli->getNickName() + " :Welcome to the Internet Relay Network" + cli->getNickName() + "!" + cli->getUserName() + "@localhost";
-			// std::cout << "Message == " << message << std::endl;
-			// if (send(cli->getFdClient(), message.c_str(), message.size(), 0) == -1)
-			// 	perror("Big time for welcoming_ Bravo");
-			// std::cout << "fd client " << cli->getFdClient() << " Name = " << cli->getNickName() << std::endl;
 		}
 		message.clear();
 	}
@@ -149,7 +141,6 @@ int Request::_privmsg(Client *cli, Server *serv)
 					}
 					message.append("\r\n");
 				}
-				// std::cout << "ouuuuuiiii " << std::endl;
 				std::string ToSend =  ": " + cli->getNickName() + " " + message;
 				if (send(_find(dest, serv)->getFdClient(), ToSend.c_str(), ToSend.length(), 0) == -1)
 					return (-1);
@@ -161,7 +152,6 @@ int Request::_privmsg(Client *cli, Server *serv)
 		{
 			beginning_with_diez(entries);
 			Channel *tmp = existing_chan(&entries[0][1], serv);
-			// std::cout << "je rentre ici 1" << "nb of chans " << jo_nb_chan << std::endl;
 			if (!tmp)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[0]);
@@ -169,7 +159,6 @@ int Request::_privmsg(Client *cli, Server *serv)
 			}
 			else
 			{
-				// std::cout << "je rentre ici 2" << "nb of chans " << jo_nb_chan << std::endl;
 				if (message == "")
 				{
 					message.clear();
@@ -182,15 +171,8 @@ int Request::_privmsg(Client *cli, Server *serv)
 					}
 				}
 				tmp->cmd_lexer(*this, serv);
-				// vector<Client*>::iterator ita = target.begin();
-				// while (ita != target.end())
-				// {
-				// 	cout << "TARGET " << (*ita)->getNickName() << std::endl;
-				// 	ita++;
-				// }
 			}
 			serv->_chan_requests(*this);
-			// target.clear();
 			return 0;
 		}
 	}

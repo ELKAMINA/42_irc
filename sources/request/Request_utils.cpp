@@ -136,23 +136,13 @@ void Request::oneChan(Client* cli, Server *serv)
 		{
 			reply = errPasswMismatch("Wrong Pwd for the Channel", "Wrong WRONG");
 			serv->replied = true;
-			// yes = true;
 		}
 		else
 		{
-			// std::cout << "oui oui " << std::endl;
 			status = ongoing;
-
 			tmp->cmd_lexer(*this, serv);
 		}
-		// serv->_chan_requests(*this);
-		// if (yes == false)
-		// {
-		// 	reply.clear();
-		// 	reply = rpl_endofnames(*this, tmp->getName(), "option");
-		// 	if (send(_origin->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
-		// 		return (perror("Problem in sending from server "));
-		// }
+
 	}
 	else
 	{
@@ -167,7 +157,6 @@ void Request::oneChan(Client* cli, Server *serv)
 		_origin->setMode('o', true); /* Set the first user to operator*/
 		serv->all_chanels.push_back(to_add);
 		to_add->cmd_lexer(*this, serv);
-		// serv->_chan_requests(*this);
 	}	 
 }
 

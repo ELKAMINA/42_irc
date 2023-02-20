@@ -99,17 +99,9 @@ void Channel::join(Request &request, Server* serv)
 		_invited.erase(it=find(_invited.begin(), _invited.end(), request._origin));
 	}
 	_onlineUsers += 1;
-	// std::cout << "Détenteur de la req " << request._origin->getNickName() << std::endl;
 	_users.push_back(request._origin);
 	request.target.insert(request.target.end(), _users.begin(), _users.end());
-	// std::vector<Client* >::iterator ita = request.target.begin();
-	// while (ita != request.target.end())
-	// {
-	// 	std::cout << "Client present " << (*ita)->getNickName() << std::endl;
-	// 	ita++;
-	// }
-	// request.response = ":" + request._origin->setPrefix() + " has join #" + this->getName() + "\r\n"; /* Backlash n*/
-	request.response = ":" + request._origin->setPrefix() + " JOIN #" + this->getName(); /* Backlash n*/
+	request.response = ":" + request._origin->setPrefix() + " JOIN #" + this->getName();
 	if (this->_topic.size() > 0)
 	{
 		std::string rep = rpl_topic(request, this->getName(), this->getTopic());
@@ -121,7 +113,6 @@ void Channel::join(Request &request, Server* serv)
 	request.response = "UNDEFINED";
 	request.reply.clear();
 	request.reply = rpl_endofnames(request, this->getName(), "option");
-	// std::cout << "endofnames list " << std::endl;
 	serv->_chan_requests(request);
 	request._origin->addChanToList(this);
 	request.status = treated;
@@ -213,13 +204,14 @@ void Channel::privmsg(Request& request, Server* serv)
 	vector<Client*>::iterator it;
 
 	request.target.clear();
+	request.response.clear();
 	if (!isInChanList((request._origin), _users))
 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
 	// request.response = ": " + request._origin->setPrefix() + " PRIVMSG "
 	// +  " " + request.message; /* Commenté par Amina */
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
 	request.target.erase(it=find(request.target.begin(), request.target.end(), request._origin));
-	request.response = ":" + request._origin->getNickName() + " " + request.message;  /* A jouté par Amina*/
+	request.response = ":" + request._origin->getNickName() + " PRIVMSG #" + this->getName() + " " + request.message;  /* A jouté par Amina*/
 	request.status = treated;
 }
 

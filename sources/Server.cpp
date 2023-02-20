@@ -396,9 +396,7 @@ void	Server::_chan_requests(Request& req)
 		std::vector<Client*>::iterator it;
 		while (i < req.target.size())
 		{
-			// std::cout << "RESPONSE " << req.response << std::endl;
 			it = req._findFd(req.target[i]->getFdClient(), this);
-			// std::cout << "Client nick =" << (*it)->getNickName() << "fd = " <<(*it)->getFdClient() << std::endl;
 			if (send((*it)->getFdClient(), req.response.c_str(), req.response.length(), MSG_DONTWAIT) == -1)
 					return (perror("Problem in sending from server ")); // a t on le droit ?
 			i++;
@@ -406,21 +404,10 @@ void	Server::_chan_requests(Request& req)
 	}
 	if (req.reply != "UNDEFINED")
 	{
-		std::cout << " je rentre ici " << req.reply.c_str() << std::endl;
 		req.reply += "\r\n";
 		if (send(req._origin->getFdClient(), req.reply.c_str(), req.reply.length(), 0) == -1)
 			return (perror("Problem in sending from server "));
-
-		std::cout << " req validity = " << req.req_validity << std::endl;
-		// if (req._command == "JOIN")
-		// {
-		// 	req.reply.clear();
-		// 	req.reply = rpl_endofnames(req, req.entries[0], "option");
-		// 	if (send(req._origin->getFdClient(), req.reply.c_str(), req.reply.length(), 0) == -1)
-		// 		return (perror("Problem in sending from server "));
-		// }
 	}
-	// req.target.clear();
 	replied = true;
 }
 
@@ -436,8 +423,6 @@ void Server::_killing_cli(Client* cli)
 			if ((*it)->isInChanList(cli, all_clients) == true)
 				
 			it++;
-
-			/* A voir avec Mitch car demande modif dans Channel pr rajouter fctions liées au remove du client */
 		}
 	}
 }
