@@ -392,7 +392,7 @@ void	Server::_chan_requests(Request& req)
 	{
 		size_t i = 0;
 		req.response += "\n";
-		// std::cout << "target size " << req.target.size() << std::endl;
+		std::cout << "RESPONSE " << req.response << std::endl;
 		std::vector<Client*>::iterator it;
 		while (i < req.target.size())
 		{

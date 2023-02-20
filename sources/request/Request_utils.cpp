@@ -131,7 +131,7 @@ void Request::oneChan(Client* cli, Server *serv)
 		if ((tmp->activeMode('k') == true && entries.size() == 1)
 		|| (tmp->activeMode('k') == false && entries.size() > 1))
 		{
-			std::cout << "heeeere " << std::endl;
+			// std::cout << "heeeere " << std::endl;
 			reply = errBadChannelKey(_origin->getNickName(), tmp->getName());
 			return ;
 			// serv->replied = true;
@@ -169,13 +169,12 @@ void Request::multiChan(Client* cli,Server *serv)
 	Channel* tmp;
 	if(jo_nb_keys > jo_nb_chan)
 	{
-		reply = errNeedMoreParams("bad value", this->_command);
-		serv->replied = false;
+		reply = errBadChannelKey(_origin->getNickName(), "One of them");
 		return ;
 	}
 	size_t i = 0;
 	size_t k = jo_nb_chan;
-	std::cout << "Nb de keys " << jo_nb_keys << std::endl;
+	// std::cout << "Nb de keys " << jo_nb_keys << std::endl;
 	while (i < k)
 	{
 		tmp = existing_chan(entries[i], serv);

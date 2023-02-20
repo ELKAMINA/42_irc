@@ -92,7 +92,7 @@ void Channel::join(Request &request, Server* serv)
 			errInCmd(request, errBadChannelKey(user, this->getName()));
 			yes = true;
 		}
-		std::cout << "jusqu'ici " << yes << std::endl;
+		// std::cout << "jusqu'ici " << yes << std::endl;
 	}
 	if (_mods['l'] && _onlineUsers == _maxUsers)
 	{
@@ -195,16 +195,20 @@ void Channel::topic(Request& request, Server* serv)
 void Channel::part(Request& request, Server* serv)
 {
 	(void)serv;
-	string user = request._origin->getNickName();
+	// string user = request._origin->getNickName();
+	Client *user = request._origin;
 	vector<Client*>::iterator it;
-
+	
+	request.response.clear();
 	if (!isInChanList((request._origin), _users))
-		errInCmd(request, errNotOnChannel(user, this->getName()));
+		errInCmd(request, errNotOnChannel(user->getNickName(), this->getName()));
 	else
 	{
-		removeUser(request._origin);
 		request.target.insert(request.target.end(), _users.begin(), _users.end());
-		request.response = user + " leaves #" + this->getName() + " " + request.message + '\n';
+		// request.response = user + " leaves #" + this->getName() + " " + request.message + '\n';
+		request.response = ":" + user->setPrefix() + " PART #" + this->getName();
+		serv->_chan_requests(request);
+		removeUser(request._origin);
 		request._origin->removeChanFromList(this);
 		request.status = treated;
 	}

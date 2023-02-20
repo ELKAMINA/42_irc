@@ -46,12 +46,6 @@ int Request::_join(Client *cli, Server *serv)
 int Request::_part(Client *cli, Server *serv)
 {
 	vector<Channel *>::iterator it;
-
-	if (entries.size() == 0)
-	{
-		req_validity = notEnough_params;
-		return 1;
-	}
 	if (_check_lists() != 0)
 	{
 		if (entries.size() > jo_nb_chan)
@@ -71,8 +65,9 @@ int Request::_part(Client *cli, Server *serv)
 	}
 	else
 	{
-		reply = errUnknownCommand(cli->getNickName(), _command); /* on checke si larg apres les chan sil existe commence bien par : qui est le part message*/
-		serv->replied = true;
+		reply = errUnknownCommand(cli->getNickName(), _command);
+		return 1; /* on checke si larg apres les chan sil existe commence bien par : qui est le part message*/
+		// serv->replied = true;
 	}
 	size_t i = 0;
 	if (reply == "UNDEFINED")
@@ -84,16 +79,17 @@ int Request::_part(Client *cli, Server *serv)
 			if (!tmp)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[i]);
-				serv->replied = true;
+				return 1;
+				// serv->replied = true;
 			}
 			else
 			{
 				status = ongoing;
 				tmp->cmd_lexer(*this, serv);
 				// temporary solution, need to improve it
-				// std::cout << "je rentre ici oui ouis " << "getOnlineCount()" << tmp->getOnlineCount() << std::endl;
 				if (tmp->getOnlineCount() == 0)
 				{
+					std::cout << "nb of chans == " << jo_nb_chan << std::endl;
 					for (size_t j = 0; j < serv->all_chanels.size(); j++)
 					{
 						if (serv->all_chanels[i]->getName() == tmp->getName())
@@ -105,7 +101,7 @@ int Request::_part(Client *cli, Server *serv)
 					// serv->all_chanels.erase(it = find(serv->all_chanels.begin(), serv->all_chanels.end(), tmp)); //doesn't work
 				}
 			}
-			serv->_chan_requests(*this);
+			// serv->_chan_requests(*this);
 			i++;
 		}
 	}
