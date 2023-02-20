@@ -70,11 +70,13 @@ void Channel::join(Request &request, Server* serv)
 	string user = request._origin->getNickName();
 	vector<Client *>::iterator it;
 	int matching_param;
+	bool yes = false;
 	
 	// request.target.clear();
 	if (isInChanList((request._origin), _users))
 	{
-		return (errInCmd(request, errUserOnChannel(user,this->getName())));
+		errInCmd(request, errUserOnChannel(user,this->getName()));
+		yes = true;
 	}
 	if (_mods['k'] == true)
 	{
@@ -86,36 +88,47 @@ void Channel::join(Request &request, Server* serv)
 			}
 		}
 		if (request.entries[matching_param + request.jo_nb_chan] != this->getKey())
-			return (errInCmd(request, errPasswMismatch(user, "wrong pwd")));
+		{
+			errInCmd(request, errPasswMismatch(user, "wrong pwd"));
+			yes = true;
+		}
+		std::cout << "jusqu'ici " << yes << std::endl;
 	}
 	if (_mods['l'] && _onlineUsers == _maxUsers)
 	{
-		return (errInCmd(request, errChannelIsFull(user, this->getName())));
+		errInCmd(request, errChannelIsFull(user, this->getName()));
+		yes = true;
 	}
 	if (_mods['i'] == true)
 	{
 		if (!isInChanList((request._origin), _invited))
-			return (errInCmd(request, errInviteOnlyChan(user, this->getName())));
+		{
+			errInCmd(request, errInviteOnlyChan(user, this->getName()));
+			yes = true;
+		}
 		_invited.erase(it=find(_invited.begin(), _invited.end(), request._origin));
 	}
-	_onlineUsers += 1;
-	_users.push_back(request._origin);
-	request.target.insert(request.target.end(), _users.begin(), _users.end());
-	request.response = ":" + request._origin->setPrefix() + " JOIN #" + this->getName();
-	if (this->_topic.size() > 0)
+	if ( yes == false)
 	{
-		std::string rep = rpl_topic(request, this->getName(), this->getTopic());
-		if (send(request._origin->getFdClient(), rep.c_str(), rep.length(), 0) == -1)
-			return (perror("Problem in sending from server ")); // a t on le droit ?
+		_onlineUsers += 1;
+		_users.push_back(request._origin);
+		request.target.insert(request.target.end(), _users.begin(), _users.end());
+		request.response = ":" + request._origin->setPrefix() + " JOIN #" + this->getName();
+		if (this->_topic.size() > 0)
+		{
+			std::string rep = rpl_topic(request, this->getName(), this->getTopic());
+			if (send(request._origin->getFdClient(), rep.c_str(), rep.length(), 0) == -1)
+				return (perror("Problem in sending from server ")); // a t on le droit ?
+		}
+		reply_joining(request, serv);
+		serv->_chan_requests(request);
+		request.response = "UNDEFINED";
+		request.reply.clear();
+		request.reply = rpl_endofnames(request, this->getName(), "option");
+		request._origin->addChanToList(this);
+		request.status = treated;
 	}
-	reply_joining(request, serv);
 	serv->_chan_requests(request);
-	request.response = "UNDEFINED";
-	request.reply.clear();
-	request.reply = rpl_endofnames(request, this->getName(), "option");
-	serv->_chan_requests(request);
-	request._origin->addChanToList(this);
-	request.status = treated;
 }
 
 void Channel::invite(Request& request, Server* serv)

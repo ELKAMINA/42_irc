@@ -37,10 +37,7 @@ std::vector<Client* >::iterator Request::_findFd(int dest, Server *serv)
 	while (it != serv->all_clients.end())
 	{
 		if	((*it)->getFdClient() == dest)
-		{
-			// std::cout << "fdddds " << (*it)->getFdClient() << std::endl;
 			return it;
-		}
 		it++;
 	}
 	return (serv->all_clients.end());
@@ -134,8 +131,10 @@ void Request::oneChan(Client* cli, Server *serv)
 		if ((tmp->activeMode('k') == true && entries.size() == 1)
 		|| (tmp->activeMode('k') == false && entries.size() > 1))
 		{
-			reply = errPasswMismatch("Wrong Pwd for the Channel", "Wrong WRONG");
-			serv->replied = true;
+			std::cout << "heeeere " << std::endl;
+			reply = errBadChannelKey(_origin->getNickName(), tmp->getName());
+			return ;
+			// serv->replied = true;
 		}
 		else
 		{
@@ -149,11 +148,14 @@ void Request::oneChan(Client* cli, Server *serv)
 		Channel *to_add;
 		if (entries.size() == 1)
 		{
-			// std::cout << "oui oui " << entries[0] << std::endl;
 			to_add = new Channel((serv->all_clients), entries[0],  *cli);
 		}
 		else
+		{
+
+			std::cout << "oui oui " << entries[1] << std::endl;
 			to_add = new Channel((serv->all_clients), entries[0], entries[1], *cli);
+		}
 		_origin->setMode('o', true); /* Set the first user to operator*/
 		serv->all_chanels.push_back(to_add);
 		to_add->cmd_lexer(*this, serv);
@@ -173,6 +175,7 @@ void Request::multiChan(Client* cli,Server *serv)
 	}
 	size_t i = 0;
 	size_t k = jo_nb_chan;
+	std::cout << "Nb de keys " << jo_nb_keys << std::endl;
 	while (i < k)
 	{
 		tmp = existing_chan(entries[i], serv);
@@ -182,18 +185,16 @@ void Request::multiChan(Client* cli,Server *serv)
 			if (jo_nb_keys != 0) /* cela veut dire quil ya des mdp pr les chans*/
 			{
 				to_add = new Channel((serv->all_clients), entries[i], ((entries[i + jo_nb_chan])), *cli);
-				cli->addChanToList(to_add);
 				jo_nb_keys--;
 			}
 			else 
 			{
 				to_add = new Channel((serv->all_clients), entries[i], *cli);
-				cli->addChanToList(to_add);
 			}
 			serv->all_chanels.push_back(to_add);
 			status =  ongoing;
 			to_add->cmd_lexer(*this, serv);
-			serv->_chan_requests(*this);
+
 		}
 		else
 		{
@@ -226,7 +227,6 @@ void Request::multiChan(Client* cli,Server *serv)
 					cli->addChanToList(tmp);
 				}
 			}
-			serv->_chan_requests(*this);
 			this->target.clear();
 		}
 		i++;

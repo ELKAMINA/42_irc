@@ -24,12 +24,6 @@ int Request::_join(Client *cli, Server *serv)
 	if (_check_lists() != 0)
 	{
 		removing_sharp(entries);
-		// std::vector<std::string>::iterator it = entries.begin();
-		// while (it != entries.end())
-		// {
-		// 	std::cout << "entriiiizzz " << (*it) << "nb of chans " << jo_nb_chan << std::endl;
-		// 	it++;
-		// }
 		if (entries.size() < 1)
 			reply = errNeedMoreParams(cli->getNickName(), _command);
 		else if (entries[0][0] == '0')
@@ -40,7 +34,7 @@ int Request::_join(Client *cli, Server *serv)
 			multiChan(cli, serv);
 		if ((jo_nb_chan == 1 && jo_nb_keys == 0) || (jo_nb_chan == 1 && jo_nb_keys == 1))
 		{
-			std::cout << "nb of chans " << jo_nb_chan << "nb of keys " << jo_nb_keys << std::endl;
+			std::cout << "nb chan = " << jo_nb_chan << "jo nb keys " << jo_nb_keys << std::endl;
 			oneChan(cli, serv);
 		}
 	}

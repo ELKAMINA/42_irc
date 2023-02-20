@@ -107,7 +107,7 @@ string	errNeedMoreParams(string nickName, string command)
 {
 	(void)nickName;
 	string reply;
-	reply = "461 * " + command + " :Not enough parameters\n";
+	reply = "461 " + nickName + " " + command + " :Not enough parameters\n";
 	return (reply);
 }
 
@@ -125,7 +125,7 @@ string	errPasswMismatch(string nickName, string message)
 	(void)nickName;
 	(void)message;
 	string reply;
-	reply = "464 * :Password incorrect\n";
+	reply = "464 " + nickName + ":Password incorrect\n";
 	return (reply);
 }
 
@@ -155,9 +155,8 @@ string errBannedFromChan(string nickName, string channel)
 
 string errBadChannelKey(string nickName, string channel)
 {
-	(void)nickName;
 	string reply;
-	reply = channel + " 475 * :Cannot join channel (+k)\n";
+	reply = "475 " + nickName + " " + channel +  " :Cannot join channel (+k)\n";
 	return (reply);
 }
 

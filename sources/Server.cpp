@@ -332,7 +332,7 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	{
 		if (req->reply != "UNDEFINED")
 		{
-			std::cout << "SERVER : 002 " << std::endl;
+			std::cout << "SERVER : 002 " << req->reply << std::endl;
 			// std::cout << "je rentre ici = " << _client_events[*i].fd << "reply = " <<  req->reply << std::endl;
 			if (send(req->_origin->getFdClient(), req->reply.c_str(), strlen(req->reply.c_str()), 0) == -1)
 				return (perror("Problem in sending from server "));
