@@ -132,7 +132,6 @@ class Request
 		int			_nick(Client* cli, Server *serv);
 		int			_user(Client* cli, Server *serv);
 		int			_privmsg(Client* cli, Server *serv);
-		int			_notice(Client* cli, Server *serv);
 		int			_away(Client* cli, Server *serv);
 		int			_list(Client* cli, Server* serv);
 		int			_names(Client* cli, Server* serv);

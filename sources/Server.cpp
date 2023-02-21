@@ -283,9 +283,7 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 void Server::_treating_req(Request* req, Client* cli, int* i)
 {
 	replied = false;
-	// cli->setPwd(_pass);
 	check_req_validity(&req);
-	// std::cout << "req_validity = " << req->req_validity << std::endl;
 	if (req->req_validity == valid_body || req->req_validity == valid_req)
 		req->requestLexer(cli, this);
 	if (req->req_validity == invalid_req)
@@ -305,13 +303,9 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	// else if (req->req_validity == erroneous_nickname)
 	// 	req->response = errErroneusNickname(cli, req);
 	if (req->req_validity == nickname_exists)
-	{
-		// std::cout << " je rentre weshshhhh " << std::endl;
 		req->reply = errNicknameInUse(cli->getNickName(), req->entries[1]);
-	}
 	if (req->req_validity == welcome_msg)
 	{
-		// std::cout << "AAAH " << std::endl;
 		replied = false;
 		req->reply = "001 " + cli->getNickName() + " :Welcome to the Internet Relay Network " + cli->setPrefix() + "\r\n";
 		
@@ -321,7 +315,6 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	} /* DO nothing */
 	if (replied == false && _client_events[*i].fd != req->_origin->getFdClient())
 	{
-		std::cout << "SERVER : 001 " << std::endl;
 		if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
 			return (perror("Problem in sending from server ")); // a t on le droit ??
 	}
@@ -329,11 +322,8 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	{
 		if (req->reply != "UNDEFINED")
 		{
-			std::cout << "SERVER : 002 " << req->reply << std::endl;
-			// std::cout << "je rentre ici = " << _client_events[*i].fd << "reply = " <<  req->reply << std::endl;
 			if (send(req->_origin->getFdClient(), req->reply.c_str(), strlen(req->reply.c_str()), 0) == -1)
 				return (perror("Problem in sending from server "));
-
 		}
 	}
 }
@@ -389,7 +379,6 @@ void	Server::_chan_requests(Request& req)
 	{
 		size_t i = 0;
 		req.response += "\n";
-		std::cout << "RESPONSE " << req.response << std::endl;
 		std::vector<Client*>::iterator it;
 		while (i < req.target.size())
 		{

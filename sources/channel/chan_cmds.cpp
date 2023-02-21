@@ -39,6 +39,11 @@ void Channel::removeUser(Client * client)
 void Channel::cmd_lexer(Request& request, Server* serv)
 {
 	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK", "NAMES", "MODE"};
+	if (request._command == "NOTICE")
+	{
+		(this->*(_cmds[4]))(request, serv);
+		return ;
+	}
 	for (size_t i = 0; i< _cmds.size(); i++){
 		if (request._command == cmd_name[i])
 			(this->*(_cmds[i]))(request, serv);
@@ -235,7 +240,8 @@ void Channel::privmsg(Request& request, Server* serv)
 	// +  " " + request.message; /* Commenté par Amina */
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
 	request.target.erase(it=find(request.target.begin(), request.target.end(), request._origin));
-	request.response = ":" + request._origin->getNickName() + request._command + " #" + this->getName() + " " + request.message;  /* A jouté par Amina*/
+	request.response = ":" + request._origin->getNickName() + " " + request._command + " #" + this->getName() + " " + request.message;  /* A jouté par Amina*/
+	// std::cout << "response " << request.response << std::endl;
 	request.status = treated;
 }
 
