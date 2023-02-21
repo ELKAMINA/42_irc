@@ -110,13 +110,6 @@ int Request::_kick(Client *cli, Server *serv)
 				{
 					if ((*it)[0] == ':')
 					{
-						if (isalnum((*it)[1]) == 0)
-						{
-							req_validity = invalid_req;
-							serv->replied = false;
-							return 1;
-						}
-
 						while (it != entries.end())
 						{
 							message.clear();
@@ -139,22 +132,16 @@ int Request::_kick(Client *cli, Server *serv)
 			{
 				Channel *tmp = existing_chan(&entries[i][1], serv);
 				if (!tmp)
-				{
 					reply = errNoSuchChannel(cli->getNickName(), "No such Channel");
-					serv->replied = true;
-				}
 				else
 				{
 					status = ongoing;
 					tmp->cmd_lexer(*this, serv);
 				}
-				serv->_chan_requests(*this);
 				i++;
 			}
 		}
 	}
-	else
-		serv->_chan_requests(*this);
 	return 0;
 }
 

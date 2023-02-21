@@ -263,15 +263,17 @@ void Channel::kick(Request& request, Server* serv)
 	Client* to_kick = found(request.entries[1], _users);
 	vector<Client *>::iterator it;
 
+	request.response.clear();
 	if (!isInChanList((request._origin), _users))
 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
 	if (!isInChanList((request._origin), _operators))
 		return(errInCmd(request, errChanPrivsNeeded(user, this->getName())));
 	if ((it = find(_users.begin(), _users.end(), to_kick)) == _users.end())
 		return(errInCmd(request, errNoSuchNick(user, request.entries[1])));
+	request.target.insert(request.target.begin(), _users.begin(), _users.end());
+	request.response = ":" + request._origin->setPrefix() + " KICK #" + this->getName() + " " + request.entries[1] + " :" + request.message;
+	serv->_chan_requests(request);
 	removeUser(to_kick);
-	request.response += request._origin->setPrefix() + " KICK " + this->getName() + " "
-	+ request.entries[1] + " " + request.message + '\n';
 	to_kick->removeChanFromList(this);
 	request.status = treated;
 }
