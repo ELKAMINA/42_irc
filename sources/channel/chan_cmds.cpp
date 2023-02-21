@@ -161,34 +161,48 @@ void Channel::topic(Request& request, Server* serv)
 {
 	(void)serv;
 	size_t size = request.entries.size();
-	string user = request._origin->getNickName();
+	Client* user = request._origin;
 
 	if (size == 1)
 	{
 		if (this->_topic.size() > 0)
+		{
+			std::cout << "TOPIC here " << this->_topic << std::endl;
 			request.reply = rpl_topic(request, this->getName(), this->getTopic());
+
+		}
 		else
+		{
+			std::cout << "TOPIC here 2" << this->_topic << std::endl;
 			request.reply = rpl_notopic(request, this->getName(), "");
+		}
+		// serv->_chan_requests(request);
+		return ;
 	}
 	else if (!isInChanList((request._origin), _operators))
-		errInCmd(request, errChanPrivsNeeded(user, this->getName()));
+		errInCmd(request, errChanPrivsNeeded(user->getNickName(), this->getName()));
 	else // new topic and user is operator
 	{
 		if (request.entries[1].size() == 1)
 			this->_topic = "";
 		else
 		{
+			request.response.clear();
 			if (request.entries[1][0] != ':')
-				errInCmd(request, errNeedMoreParams(user, request._command));
+				errInCmd(request, errNeedMoreParams(user->getNickName(), request._command));
 			else
 			{
 				this->_topic = request.entries[1];
 				for (size_t i = 2; i < request.entries.size(); i++){
 					this->_topic += " " + request.entries[i];
 				}
+				std::cout << "TOPIIIIIIIC = " << this->_topic << std::endl;
+				request.target.insert(request.target.end(), _users.begin(), _users.end());
+				request.response = ":" + user->setPrefix() + " " + "TOPIC #" + this->getName() + " " + _topic;
 			}
 		}
 	}
+	serv->_chan_requests(request);
 	request.status = treated;
 }
 

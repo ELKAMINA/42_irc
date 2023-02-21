@@ -43,7 +43,7 @@ std::string	rpl_notopic(Request& req, std::string channel, std::string topic ) /
 std::string	rpl_topic(Request& req, std::string channel, std::string topic )
 {
 	(void)req;
-	std::string message = "332 " + channel + " :" + topic + "\r\n";
+	std::string message = "332 " + req._origin->setPrefix() + " #" + channel + " " + topic + "\n";
 	return (message);
 }
 

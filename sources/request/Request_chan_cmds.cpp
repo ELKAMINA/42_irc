@@ -178,6 +178,7 @@ int Request::_kick(Client *cli, Server *serv)
 int Request::_topic(Client *cli, Server *serv)
 {
 	beginning_with_diez(entries);
+	// std::cout << "nb of chans " << jo_nb_chan << std::endl;
 	if (jo_nb_chan == 1 && entries[0][0] == '#')
 	{
 		Channel *tmp = existing_chan(&entries[0][1], serv);
@@ -186,9 +187,8 @@ int Request::_topic(Client *cli, Server *serv)
 		else
 		{
 			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
-			serv->replied = true;
+			return 1;
 		}
-		serv->_chan_requests(*this);
 	}
 	else
 		req_validity = invalid_req;
