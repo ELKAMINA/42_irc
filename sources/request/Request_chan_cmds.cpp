@@ -16,11 +16,8 @@ int Request::_join(Client *cli, Server *serv)
 {
 	(void)cli;
 	(void)serv;
-	// if (
-	// if (entries[0][0] == '0')
-	// {
-	// 	cli->leaveAllChans();
-	// }
+	// if (entries[0] == "#0") /*A faire ? IRSSI reinterprete le join 0 en join #0 et donc ca cree un nouveau channel */
+	// 	_origin->leaveAllChans();
 	if (_check_lists() != 0)
 	{
 		removing_sharp(entries);
@@ -34,7 +31,7 @@ int Request::_join(Client *cli, Server *serv)
 			multiChan(cli, serv);
 		if ((jo_nb_chan == 1 && jo_nb_keys == 0) || (jo_nb_chan == 1 && jo_nb_keys == 1))
 		{
-			std::cout << "nb chan = " << jo_nb_chan << "jo nb keys " << jo_nb_keys << std::endl;
+			// std::cout << "nb chan = " << jo_nb_chan << "jo nb keys " << jo_nb_keys << std::endl;
 			oneChan(cli, serv);
 		}
 	}
@@ -80,7 +77,6 @@ int Request::_part(Client *cli, Server *serv)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[i]);
 				return 1;
-				// serv->replied = true;
 			}
 			else
 			{
@@ -89,19 +85,13 @@ int Request::_part(Client *cli, Server *serv)
 				// temporary solution, need to improve it
 				if (tmp->getOnlineCount() == 0)
 				{
-					std::cout << "nb of chans == " << jo_nb_chan << std::endl;
 					for (size_t j = 0; j < serv->all_chanels.size(); j++)
 					{
 						if (serv->all_chanels[i]->getName() == tmp->getName())
-						{
 							serv->all_chanels.erase(serv->all_chanels.begin() + i);
-							// cli->_isInChan--; /* To get nb of chan, the client is in : for NAMES*/
-						}
 					}
-					// serv->all_chanels.erase(it = find(serv->all_chanels.begin(), serv->all_chanels.end(), tmp)); //doesn't work
 				}
 			}
-			// serv->_chan_requests(*this);
 			i++;
 		}
 	}

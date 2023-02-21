@@ -167,13 +167,13 @@ void Channel::topic(Request& request, Server* serv)
 	{
 		if (this->_topic.size() > 0)
 		{
-			std::cout << "TOPIC here " << this->_topic << std::endl;
+			// std::cout << "TOPIC here " << this->_topic << std::endl;
 			request.reply = rpl_topic(request, this->getName(), this->getTopic());
 
 		}
 		else
 		{
-			std::cout << "TOPIC here 2" << this->_topic << std::endl;
+			// std::cout << "TOPIC here 2" << this->_topic << std::endl;
 			request.reply = rpl_notopic(request, this->getName(), "");
 		}
 		// serv->_chan_requests(request);
