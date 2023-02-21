@@ -117,8 +117,14 @@ int Request::_privmsg(Client *cli, Server *serv)
 			if (_find(dest, serv) != *(serv->all_clients.end()))
 			{
 				entries.erase(it);
-				if ((_find(dest, serv))->checkMode('a') == 1) // à tester pour NOTICE
+				if ((_find(dest, serv))->checkMode('a') == 1)
+				{
 					message = (_find(dest, serv))->getAwayMessage();
+					std::cout << "AWAY message " <<  message << std::endl;
+					if (send(_origin->getFdClient(), message.c_str(), message.length(), 0) == -1)
+					return (-1);
+					return 0;
+				} // à tester pour NOTICE
 				else
 				{
 					if (entries.size() >= 1)
@@ -176,28 +182,32 @@ int Request::_privmsg(Client *cli, Server *serv)
 int Request::_away(Client *cli, Server *serv)
 {
 	(void)serv;
-	if (entries.size() == 0 || (entries.size() == 1 && entries[1] == ""))
+	(void)cli;
+	if (entries.size() == 0 || (entries.size() == 1 && entries[0] == "")) /* Marche pas sur IRC */
 	{
-		if (cli->checkMode('a') == 1)
+		if (_origin->checkMode('a') == 1)
 		{
-			reply = rpl_unaway(cli->getNickName(), ":You are no longer marked as being away!\n");
-			cli->setMode('a', false);
+			reply = rpl_unaway(_origin->getNickName(), ":You are no longer marked as being away!\n");
+			_origin->setMode('a', false);
 		}
 	}
-	else if (entries.size() == 2 && entries[1][0] == ':')
+	else if (entries.size() >= 2 && entries[0][0] == ':')
 	{
+		_origin->setMode('a', true);
 		size_t i = 0;
 		std::string away;
+		away += _origin->getNickName() + " ";
 		while (i < entries.size())
 		{
 			away += entries[i];
 			away += " ";
 			i++;
 		}
-		cli->setAwayMessage(away);
+		away += "\n";
+		_origin->setAwayMessage(&away[1]);
+		reply = rpl_away(_origin->getNickName(), "away");
 	}
-	else
-		req_validity = invalid_req;
+	serv->_chan_requests(*this);
 	return 0;
 }
 
@@ -237,12 +247,6 @@ int Request::_names(Client *cli, Server *serv) /* For later - A revoiiiiiiiir */
 	(void)cli;
 	if (_check_lists() != 0)
 	{
-		std::vector<std::string>::iterator it = entries.begin();
-		while (it != entries.end())
-		{
-			std::cout << "iiiit " << (*it) << std::endl;
-			it++;
-		}
 		if (reply == "UNDEFINED")
 		{
 			removing_sharp(entries);

@@ -141,6 +141,7 @@ void Channel::invite(Request& request, Server* serv)
 	(void)serv;
 	string user = request._origin->getNickName();
 	vector<string>::iterator it;
+	request.response.clear();
 	Client* to_add = found(request.entries[1], _allUsers);
 	if (request.entries.size() < 2)
 		return (errInCmd(request, errNeedMoreParams(user, request._command)));
