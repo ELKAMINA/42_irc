@@ -117,7 +117,7 @@ int Request::_privmsg(Client *cli, Server *serv)
 			if (_find(dest, serv) != *(serv->all_clients.end()))
 			{
 				entries.erase(it);
-				if ((_find(dest, serv))->checkMode('a') == 1)
+				if ((_find(dest, serv))->checkMode('a') == 1) // à tester pour NOTICE
 					message = (_find(dest, serv))->getAwayMessage();
 				else
 				{
@@ -133,22 +133,20 @@ int Request::_privmsg(Client *cli, Server *serv)
 					}
 					message.append("\n");
 				}
-				std::string ToSend =  ":" + _origin->getNickName() + " " + "PRIVMSG " + dest + " " + &message[1];
+				std::string ToSend =  ":" + _origin->getNickName() + " " + _command + " " + dest + " " + &message[1];
 				if (send(_find(dest, serv)->getFdClient(), ToSend.c_str(), ToSend.length(), 0) == -1)
 					return (-1);
 				serv->replied = true;
 			}
-			else if (_find(dest, serv) == *(serv->all_clients.end()))
+			else if (_find(dest, serv) == *(serv->all_clients.end()) && _command == "PRIVMSG")
 				reply = errNoSuchNick(_origin->getNickName(), entries[0]);
-			// else if (entries.size() == 1)
-			// 	reply = errNoTextToSend();
 			return 0;
 		}
 		if (entries[0][0] == '&' || entries[0][0] == '#')
 		{
 			beginning_with_diez(entries);
 			Channel *tmp = existing_chan(&entries[0][1], serv);
-			if (!tmp)
+			if (!tmp && _command == "PRIVMSG")
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[0]);
 				serv->replied = true;

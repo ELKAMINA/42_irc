@@ -287,10 +287,7 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 	check_req_validity(&req);
 	// std::cout << "req_validity = " << req->req_validity << std::endl;
 	if (req->req_validity == valid_body || req->req_validity == valid_req)
-	{
-		// std::cout << "PIPI" << std::endl;
 		req->requestLexer(cli, this);
-	}
 	if (req->req_validity == invalid_req)
 		req->reply = errUnknownCommand("Unknown", req->_command);
 	if (req->req_validity == invalid_body)

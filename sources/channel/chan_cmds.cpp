@@ -166,17 +166,9 @@ void Channel::topic(Request& request, Server* serv)
 	if (size == 1)
 	{
 		if (this->_topic.size() > 0)
-		{
-			// std::cout << "TOPIC here " << this->_topic << std::endl;
 			request.reply = rpl_topic(request, this->getName(), this->getTopic());
-
-		}
 		else
-		{
-			// std::cout << "TOPIC here 2" << this->_topic << std::endl;
 			request.reply = rpl_notopic(request, this->getName(), "");
-		}
-		// serv->_chan_requests(request);
 		return ;
 	}
 	else if (!isInChanList((request._origin), _operators))
@@ -196,7 +188,6 @@ void Channel::topic(Request& request, Server* serv)
 				for (size_t i = 2; i < request.entries.size(); i++){
 					this->_topic += " " + request.entries[i];
 				}
-				// std::cout << "TOPIIIIIIIC = " << this->_topic << std::endl;
 				request.target.insert(request.target.end(), _users.begin(), _users.end());
 				request.response = ":" + user->setPrefix() + " " + "TOPIC #" + this->getName() + " " + _topic;
 			}
@@ -236,15 +227,15 @@ void Channel::privmsg(Request& request, Server* serv)
 
 	request.target.clear();
 	request.response.clear();
-	if (!isInChanList((request._origin), _users))
+	if (!isInChanList((request._origin), _users) && request._command == "PRIVMSG")
 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
-	if (clientAcceSs(*(request._origin)) == true)
+	if (clientAcceSs(*(request._origin)) == true&&  request._command == "PRIVMSG")
 		return (errInCmd(request, errCannotSendToChan(user, this->getName())));
 	// request.response = ": " + request._origin->setPrefix() + " PRIVMSG "
 	// +  " " + request.message; /* Commenté par Amina */
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
 	request.target.erase(it=find(request.target.begin(), request.target.end(), request._origin));
-	request.response = ":" + request._origin->getNickName() + " PRIVMSG #" + this->getName() + " " + request.message;  /* A jouté par Amina*/
+	request.response = ":" + request._origin->getNickName() + request._command + " #" + this->getName() + " " + request.message;  /* A jouté par Amina*/
 	request.status = treated;
 }
 

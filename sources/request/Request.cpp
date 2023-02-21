@@ -114,7 +114,6 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::_nick);
 	_request_cmds.push_back(&Request::_user);
 	_request_cmds.push_back(&Request::_privmsg);
-	_request_cmds.push_back(&Request::_notice);
 	_request_cmds.push_back(&Request::_join);
 	_request_cmds.push_back(&Request::_part);
 	_request_cmds.push_back(&Request::_kick);
@@ -129,13 +128,19 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::_wallops);
 	_request_cmds.push_back(&Request::_kill);
 	_request_cmds.push_back(&Request::_ping);
+	// _request_cmds.push_back(&Request::_notice);
 }
 
 void Request::requestLexer(Client* cli, Server* serv)
 {
-	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "NOTICE", "JOIN",
+	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN",
 					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "KILL", "PING"};
 	size_t i = 0;
+	if (this->_command == "NOTICE")
+	{
+		(this->*(_request_cmds[3]))(cli, serv);		
+		return ;
+	}
 	for (; i < _request_cmds.size(); i++){
 		if (this->_command == cmds[i])
 		{
