@@ -142,10 +142,10 @@ void Channel::invite(Request& request, Server* serv)
 	string user = request._origin->getNickName();
 	vector<string>::iterator it;
 	request.response.clear();
-	Client* to_add = found(request.entries[1], _allUsers);
+	Client* to_add = found(request.entries[0], _allUsers);
 	if (request.entries.size() < 2)
 		return (errInCmd(request, errNeedMoreParams(user, request._command)));
-	if (!isInServ(request.entries[1], this->_allUsers))
+	if (!isInServ(request.entries[0], this->_allUsers))
 		return (errInCmd(request, errNoSuchNick(user, request.entries[1])));
 	if (_mods['l'] && _onlineUsers == _maxUsers)
 		return (errInCmd(request, errChannelIsFull(user, this->getName())));
@@ -158,8 +158,8 @@ void Channel::invite(Request& request, Server* serv)
 	if (!isInChanList(to_add, _invited))
 		_invited.push_back(to_add);
 	request.target.push_back(to_add);
-	request.response += request._origin->setPrefix() + " INVITE " + request.entries[1] + " #" + this->getName() + '\n';
-	request.reply = rpl_inviting(request.entries[1], this->getName());
+	request.response += request._origin->setPrefix() + " INVITE " + request.entries[0] + " #" + this->getName() + '\n';
+	request.reply = rpl_inviting(request.entries[0], this->getName());
 	request.status = treated;
 }
 

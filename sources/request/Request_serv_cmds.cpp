@@ -242,7 +242,7 @@ int Request::_cap(Client *cli, Server *serv)
 	return 0;
 }
 
-int Request::_names(Client *cli, Server *serv) /* For later - A revoiiiiiiiir */
+int Request::_names(Client *cli, Server *serv)
 {
 	(void)cli;
 	if (_check_lists() != 0)
@@ -283,13 +283,14 @@ int Request::_invite(Client *cli, Server *serv)
 		reply = errNeedMoreParams(cli->getNickName(), _command);
 	else
 	{
-		Channel *tmp = existing_chan(&entries[0][1], serv);
+		Channel *tmp = existing_chan(&entries[1][1], serv);
 		if (tmp)
 			tmp->cmd_lexer(*this, serv);
 		else
-			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
+			reply = errNoSuchChannel(_origin->getNickName(), entries[0]);
 	}
 	serv->_chan_requests(*this);
+	serv->replied = true;
 	return 0;
 }
 
