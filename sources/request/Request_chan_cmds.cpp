@@ -23,17 +23,10 @@ int Request::_join(Client *cli, Server *serv)
 		removing_sharp(entries);
 		if (entries.size() < 1)
 			reply = errNeedMoreParams(cli->getNickName(), _command);
-		else if (entries[0][0] == '0')
-		{
-		}
-		/* Leave all channels */
 		if (jo_nb_chan > 1)
 			multiChan(cli, serv);
 		if ((jo_nb_chan == 1 && jo_nb_keys == 0) || (jo_nb_chan == 1 && jo_nb_keys == 1))
-		{
-			// std::cout << "nb chan = " << jo_nb_chan << "jo nb keys " << jo_nb_keys << std::endl;
 			oneChan(cli, serv);
-		}
 	}
 	else
 		reply = "Invalid request \n";

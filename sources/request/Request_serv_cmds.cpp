@@ -125,8 +125,6 @@ int Request::_privmsg(Client *cli, Server *serv)
 			{
 				if ((_find(dest, serv))->checkMode('a') == 1)
 					message = (_find(dest, serv))->getAwayMessage();
-				else if ((_find(dest, serv))->checkMode('i') == 1)
-					req_validity = invisible_man;
 				else
 				{
 					if (entries.size() >= 1)
@@ -139,9 +137,10 @@ int Request::_privmsg(Client *cli, Server *serv)
 							i++;
 						}
 					}
-					message.append("\r\n");
+					message.append("\n");
 				}
-				std::string ToSend =  ": " + cli->getNickName() + " " + message;
+				std::cout << "message = " << message << std::endl;
+				std::string ToSend =  ":" + _origin->getNickName() + " " + "PRIVMSG " + dest + " " + &message[1];
 				if (send(_find(dest, serv)->getFdClient(), ToSend.c_str(), ToSend.length(), 0) == -1)
 					return (-1);
 				serv->replied = true;
@@ -311,9 +310,6 @@ int Request::_cap(Client *cli, Server *serv)
 {
 	(void)cli;
 	(void)serv;
-	// std::cout << " je returne rien "
-			//   << "\n"
-			//   << std::endl;
 	return 0;
 }
 
