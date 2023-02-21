@@ -196,7 +196,7 @@ void Channel::topic(Request& request, Server* serv)
 				for (size_t i = 2; i < request.entries.size(); i++){
 					this->_topic += " " + request.entries[i];
 				}
-				std::cout << "TOPIIIIIIIC = " << this->_topic << std::endl;
+				// std::cout << "TOPIIIIIIIC = " << this->_topic << std::endl;
 				request.target.insert(request.target.end(), _users.begin(), _users.end());
 				request.response = ":" + user->setPrefix() + " " + "TOPIC #" + this->getName() + " " + _topic;
 			}
@@ -238,6 +238,8 @@ void Channel::privmsg(Request& request, Server* serv)
 	request.response.clear();
 	if (!isInChanList((request._origin), _users))
 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
+	if (clientAcceSs(*(request._origin)) == true)
+		return (errInCmd(request, errCannotSendToChan(user, this->getName())));
 	// request.response = ": " + request._origin->setPrefix() + " PRIVMSG "
 	// +  " " + request.message; /* Commenté par Amina */
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());

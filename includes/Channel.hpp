@@ -75,7 +75,7 @@ class Channel
 		bool	isInChanList(Client const *user, vector<Client*>& list);
 		bool	isInServ(string const& user, vector<Client *>&users);
 		Client*	found(string nickname, vector<Client*>&list);
-
+		bool	clientAcceSs(Client& cli);
 		/* CHAN MODE CHECKER */
 		
 		bool activeMode(char mode);

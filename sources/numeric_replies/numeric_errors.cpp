@@ -16,7 +16,7 @@ string	errNoSuchNick(string senderNick, string wrongNick)
 {
 	(void)senderNick;
 	string reply;
-	reply = wrongNick + " 401 * :No such nick/chan\n";
+	reply = "401 " + senderNick + " " + wrongNick + " :No such nickname\n";
 	return (reply);
 }
 
@@ -32,7 +32,7 @@ string	errCannotSendToChan(string nickName, string channel)
 {
 	(void)nickName;
 	string reply;
-	reply = "404 * " + channel + " :Cannot send to channel\n";
+	reply = "404 " + nickName + " #" + channel + " :Cannot send to channel\n";
 	return (reply);
 }
 

@@ -107,22 +107,16 @@ int Request::_privmsg(Client *cli, Server *serv)
 {
 	(void)cli;
 	(void)serv;
-	if (entries.size() < 2)
-	{
-		req_validity = notEnough_params;
-		return 1;
-	}
-	else if (entries.size() >= 2)
+	if (entries.size() >= 2)
 	{
 		if (entries[0][0] != '&' && entries[0][0] != '#')
 		{
 			std::vector<std::string>::iterator it = entries.begin();
-			std::string dest;
-			dest = entries[0];
+			std::string dest = entries[0];
 			std::string message;
-			entries.erase(it);
 			if (_find(dest, serv) != *(serv->all_clients.end()))
 			{
+				entries.erase(it);
 				if ((_find(dest, serv))->checkMode('a') == 1)
 					message = (_find(dest, serv))->getAwayMessage();
 				else
@@ -139,12 +133,15 @@ int Request::_privmsg(Client *cli, Server *serv)
 					}
 					message.append("\n");
 				}
-				std::cout << "message = " << message << std::endl;
 				std::string ToSend =  ":" + _origin->getNickName() + " " + "PRIVMSG " + dest + " " + &message[1];
 				if (send(_find(dest, serv)->getFdClient(), ToSend.c_str(), ToSend.length(), 0) == -1)
 					return (-1);
 				serv->replied = true;
 			}
+			else if (_find(dest, serv) == *(serv->all_clients.end()))
+				reply = errNoSuchNick(_origin->getNickName(), entries[0]);
+			// else if (entries.size() == 1)
+			// 	reply = errNoTextToSend();
 			return 0;
 		}
 		if (entries[0][0] == '&' || entries[0][0] == '#')
@@ -199,8 +196,6 @@ int Request::_notice(Client *cli, Server *serv)
 			if (_find(dest, serv) != *(serv->all_clients.end()))
 			{
 				if ((_find(dest, serv))->checkMode('a') == 1)
-					return 0;
-				else if ((_find(dest, serv))->checkMode('i') == 1)
 					return 0;
 				else
 				{

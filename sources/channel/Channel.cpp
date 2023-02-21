@@ -133,6 +133,35 @@ bool Channel::isInServ(string const& user, vector<Client *>&users)
 	return false;
 }
 
+bool Channel::clientAcceSs(Client& cli)
+{
+	std::vector<Client*>::iterator it = _banned.begin();
+	while (it != _banned.end())
+	{
+		if ((*it)->getNickName() == cli.getNickName())
+			return true;
+	}
+	if (this->activeMode('m'))
+	{
+		std::vector<Client*>::iterator ita = _operators.begin();
+		while (ita != _operators.end())
+		{
+			if ((*ita)->getNickName() == cli.getNickName())
+			return true;
+		}
+		std::vector<Client*>::iterator ito = _vocal.begin();
+		while (ito != _vocal.end())
+		{
+			if ((*ito)->getNickName() == cli.getNickName())
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+
+
 /* ****************************** */
 /* *** CHAN MODE CHECKERS ******* */
 /* ****************************** */
