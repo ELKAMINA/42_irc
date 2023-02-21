@@ -216,7 +216,7 @@ void Channel::part(Request& request, Server* serv)
 	{
 		request.target.insert(request.target.end(), _users.begin(), _users.end());
 		// request.response = user + " leaves #" + this->getName() + " " + request.message + '\n';
-		request.response = ":" + user->setPrefix() + " PART #" + this->getName();
+		request.response = ":" + user->setPrefix() + " PART #" + this->getName() + " " + request.message;
 		serv->_chan_requests(request);
 		removeUser(request._origin);
 		request._origin->removeChanFromList(this);

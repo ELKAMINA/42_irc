@@ -24,7 +24,7 @@ string	errNoSuchChannel(string senderNick, string wrongChan)
 {
 	(void)senderNick;
 	string reply;
-	reply = wrongChan + " 403 * :No such channel\n";
+	reply = "#" + wrongChan + " 403 * :No such channel\n";
 	return (reply);
 }
 

@@ -176,7 +176,6 @@ int Request::_privmsg(Client *cli, Server *serv)
 int Request::_away(Client *cli, Server *serv)
 {
 	(void)serv;
-
 	if (entries.size() == 0 || (entries.size() == 1 && entries[1] == ""))
 	{
 		if (cli->checkMode('a') == 1)
@@ -236,9 +235,6 @@ int Request::_cap(Client *cli, Server *serv)
 int Request::_names(Client *cli, Server *serv) /* For later - A revoiiiiiiiir */
 {
 	(void)cli;
-	// beginning_with_diez(entries);
-	// std::cout << "nb of channels " << jo_nb_chan << "entries.size() " << entries.size() << std::endl;
-	std::cout << "NAMES " << entries[0] << std::endl;
 	if (_check_lists() != 0)
 	{
 		std::vector<std::string>::iterator it = entries.begin();
