@@ -340,14 +340,12 @@ int Request::_kill(Client *cli, Server *serv)
 
 int Request::_oper(Client *cli, Server *serv)
 {
-	if (entries.size() != 2)
-		reply = errNeedMoreParams(cli->getNickName(), _command);
-	else if (entries.size() == 2)
+	if (entries.size() == 2)
 	{
 		if (serv->opers[entries[0]] == entries[1])
 		{
 			reply = rpl_youreoper("381 " + _origin->setPrefix() + " :You are now an IRC operator\n", "op");
-			cli->setMode('o', true);
+			_origin->setMode('o', true);
 		}
 		else
 			reply = errPasswMismatch(cli->getNickName(), ":Password incorrect\n");
