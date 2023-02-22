@@ -265,7 +265,7 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 	Request *req;
 	while ((pos = client_buffer.find("\r\n")) != std::string::npos)
 	{
-		input = client_buffer.substr(0, pos + 1); // recup de la cde ligne par ligne à la connexion
+		input = client_buffer.substr(0, pos + 1);
 		client = input.c_str();
 		req = new Request(client, cli);
 		client = NULL;
@@ -328,7 +328,7 @@ void Server::_treating_req(Request* req, Client* cli, int* i)
 int Server::is_charset(char c)
 {
 	if (isalpha(c))
-		return 0; // true
+		return 0;
 	else
 		return 1;
 }
@@ -338,7 +338,7 @@ void Server::check_req_validity(Request **r)
 	Request *req = *r;
 	std::vector<std::string>::iterator it;
 
-	if (req->_raw_req.length() == 1 && (req->_raw_req[0] == '\n' || req->_raw_req[0] == '\r')) /* Empty_req entry */
+	if (req->_raw_req.length() == 1 && (req->_raw_req[0] == '\n' || req->_raw_req[0] == '\r'))
 	{
 		req->req_validity = empty_req;
 		return;
@@ -379,10 +379,9 @@ void	Server::_chan_requests(Request& req)
 		std::vector<Client*>::iterator it;
 		while (i < req.target.size())
 		{
-			// std::cout << "ici 2" << std::endl;
 			it = req._findFd(req.target[i]->getFdClient(), this);
 			if (send((*it)->getFdClient(), req.response.c_str(), req.response.length(), MSG_DONTWAIT) == -1)
-					return (perror("Problem in sending from server ")); // a t on le droit ?
+					return (perror("Problem in sending from server "));
 			i++;
 		}
 	}
@@ -403,7 +402,6 @@ void Server::_killing_cli(Client& cli)
 	std::vector<Channel*>::iterator it = all_chanels.begin();
 	while (it != all_chanels.end())
 	{
-		// std::cout << "ici " << (*it)->isInChanList(&cli, (*it)->_users) << std::endl;
 		if((*it)->isInChanList(&cli, (*it)->_users) == true)
 		{
 			(*it)->removeUser(&cli);

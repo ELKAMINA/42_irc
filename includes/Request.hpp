@@ -88,7 +88,6 @@ class Request
 		bool						commas_c;
 		bool						commas_e;
 		std::string					user_to_kick;
-		// int							type;
 
 	public:
 		Request		(const char* buf, Client* cli);
@@ -126,6 +125,7 @@ class Request
 		int			_check_lists();
 		int			_verifications();
 		int			_transformations();
+		void		req_getComments(std::vector<std::string>& entries, size_t i);
 
 	private:
 		/* Server Commands */

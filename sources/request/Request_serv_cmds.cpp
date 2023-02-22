@@ -320,7 +320,6 @@ int Request::_wallops(Client *cli, Server *serv)
 
 int Request::_kill(Client *cli, Server *serv)
 {
-	// std::cout << "holaaa " << std::endl;
 	(void)cli;
 	if (entries.size() < 2)
 		reply = errNeedMoreParams(_origin->getNickName(), _command);
@@ -333,27 +332,14 @@ int Request::_kill(Client *cli, Server *serv)
 			reply = errNoSuchNick(entries[0], entries[0]);
 		else
 		{
-			if (entries.size() > 2)
-			{
-				if (message == "")
-				{
-					message.clear();
-					size_t i = 2;
-					while (i < entries.size())
-					{
-						message.append(entries[i]);
-						message.append(" ");
-						i++;
-					}
-					// message.append("\n");
-				}
-			}
+			if (entries.size() >= 2)
+				req_getComments(entries, 1);
 			user_to_kick = entries[0];
 			reply = ":" + _origin->setPrefix() + " KILL " + tmp->getNickName() + " :" + message + "\n";
 			if (send(tmp->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
 				perror("Big time");
 			reply.clear();
-			reply = "ERROR :Killed by " + _origin->getNickName() + " (" +  message + ")\n";
+			reply = "ERROR :Killed by " + _origin->getNickName() + " (" +  &message[1] + ")\n";
 			if (send(tmp->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
 				perror("Big time");
 			reply = "UNDEFINED";
@@ -362,7 +348,7 @@ int Request::_kill(Client *cli, Server *serv)
 			target.insert(target.end(), serv->all_clients.begin(),serv->all_clients.end());
 			target.erase(it=find(target.begin(), target.end(), tmp));
 			serv->_killing_cli(*tmp);
-			response = ":" + prefix + " QUIT :Killed by " + _origin->getNickName() + " (" +  message + ")\n";
+			response = ":" + prefix + " QUIT :Killed by " + _origin->getNickName() + " (" +  &message[1] + ")\n";
 			serv->_chan_requests(*this);
 			
 		}
@@ -370,7 +356,7 @@ int Request::_kill(Client *cli, Server *serv)
 	return 0;
 }
 
-int Request::_oper(Client *cli, Server *serv) /* For later */
+int Request::_oper(Client *cli, Server *serv)
 {
 	if (entries.size() != 2)
 		reply = errNeedMoreParams(cli->getNickName(), _command);

@@ -391,3 +391,18 @@ int Request::_transformations()
 	}
 	return 1;
 }
+
+void Request::req_getComments(std::vector<std::string> &entries, size_t j)
+{
+	if (message == "")
+	{
+		message.clear();
+		size_t i = j;
+		while (i < entries.size())
+		{
+			message.append(entries[i]);
+			message.append(" ");
+			i++;
+		}
+	}
+}
