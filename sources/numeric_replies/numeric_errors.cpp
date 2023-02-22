@@ -122,10 +122,9 @@ string	errAlreadyRegistered(string nickName, string message)
 
 string	errPasswMismatch(string nickName, string message)
 {
-	(void)nickName;
 	(void)message;
 	string reply;
-	reply = "464 " + nickName + ":Password incorrect\n";
+	reply = "464 " + nickName;
 	return (reply);
 }
 

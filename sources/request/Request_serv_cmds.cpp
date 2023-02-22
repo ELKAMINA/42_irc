@@ -340,6 +340,7 @@ int Request::_kill(Client *cli, Server *serv)
 
 int Request::_oper(Client *cli, Server *serv)
 {
+	(void)cli;
 	if (entries.size() == 2)
 	{
 		if (serv->opers[entries[0]] == entries[1])
@@ -348,7 +349,7 @@ int Request::_oper(Client *cli, Server *serv)
 			_origin->setMode('o', true);
 		}
 		else
-			reply = errPasswMismatch(cli->getNickName(), ":Password incorrect\n");
+			reply = errPasswMismatch(_origin->setPrefix() + ":Password incorrect", "empty");
 	}
 	else
 		reply = errNoOperHost(":No O-lines for your host\n", "op");
