@@ -126,6 +126,7 @@ class Request
 		int			_verifications();
 		int			_transformations();
 		void		req_getComments(std::vector<std::string>& entries, size_t i);
+		void		req_killingProcess(Client* tmp, Server* serv);
 
 	private:
 		/* Server Commands */

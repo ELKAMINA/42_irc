@@ -406,3 +406,23 @@ void Request::req_getComments(std::vector<std::string> &entries, size_t j)
 		}
 	}
 }
+
+void Request::req_killingProcess(Client* tmp, Server* serv)
+{
+	user_to_kick = entries[0];
+	reply = ":" + _origin->setPrefix() + " KILL " + tmp->getNickName() + " :" + message + "\n";
+	if (send(tmp->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
+		perror("Big time");
+	reply.clear();
+	reply = "ERROR :Killed by " + _origin->getNickName() + " (" +  &message[1] + ")\n";
+	if (send(tmp->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
+		perror("Big time");
+	reply = "UNDEFINED";
+	std::string prefix = tmp->setPrefix();
+	std::vector<Client*>::iterator it;
+	target.insert(target.end(), serv->all_clients.begin(),serv->all_clients.end());
+	target.erase(it=find(target.begin(), target.end(), tmp));
+	serv->_killing_cli(*tmp);
+	response = ":" + prefix + " QUIT :Killed by " + _origin->getNickName() + " (" +  &message[1] + ")\n";
+	serv->_chan_requests(*this);
+}
