@@ -321,9 +321,7 @@ int Request::_wallops(Client *cli, Server *serv)
 int Request::_kill(Client *cli, Server *serv)
 {
 	(void)cli;
-	if (entries.size() < 2)
-		reply = errNeedMoreParams(_origin->getNickName(), _command);
-	else if (_origin->checkMode('o') == false)
+	if (_origin->checkMode('o') == false)
 		reply = errNoPrivileges(_origin->setPrefix() + " :Permission Denied - You're not an IRC operator\n", "opti");
 	else
 	{
