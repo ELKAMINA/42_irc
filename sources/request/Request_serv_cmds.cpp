@@ -378,7 +378,7 @@ int Request::_oper(Client *cli, Server *serv) /* For later */
 	{
 		if (serv->opers[entries[0]] == entries[1])
 		{
-			reply = rpl_youreoper(":You are now an IRC operator\n", "op");
+			reply = rpl_youreoper("381 " + _origin->setPrefix() + " :You are now an IRC operator\n", "op");
 			cli->setMode('o', true);
 		}
 		else
