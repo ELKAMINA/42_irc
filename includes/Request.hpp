@@ -118,6 +118,8 @@ class Request
 		void		_mode_for_clis(Client* cli, Server* serv);
 		int			mode_validity(void);
 		std::string	retrieve_cliModes(Client* tmp);
+		void		names_noParams(Server* serv);
+		void		names_params(Server* serv);
 		void		chan_names(Server* serv);
 		void		noChan_names(Server* serv);
 		void		first_arg_for_entries(std::vector<std::string> entries);

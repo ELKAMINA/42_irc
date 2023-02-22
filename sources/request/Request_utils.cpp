@@ -426,3 +426,25 @@ void Request::req_killingProcess(Client* tmp, Server* serv)
 	response = ":" + prefix + " QUIT :Killed by " + _origin->getNickName() + " (" +  &message[1] + ")\n";
 	serv->_chan_requests(*this);
 }
+
+void Request::names_noParams(Server* serv)
+{
+	chan_names(serv);
+	noChan_names(serv);
+}
+
+void Request::names_params(Server* serv)
+{
+	size_t i = 0;
+	while (i < entries.size() && jo_nb_chan != 0)
+	{
+		Channel *tmp = existing_chan(entries[i], serv);
+		if (tmp)
+		{
+			if (tmp->activeMode('s') == false)
+				tmp->cmd_lexer(*this, serv);
+			reply += rpl_endofnames(*this, tmp->getName(), "option");
+		}
+		i++;
+	}	
+}

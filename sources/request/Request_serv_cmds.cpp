@@ -252,25 +252,9 @@ int Request::_names(Client *cli, Server *serv)
 			removing_sharp(entries);
 			reply.clear();
 			if (entries.size() == 0 && jo_nb_chan == 0)
-			{
-				chan_names(serv);
-				noChan_names(serv);
-			}
+				names_noParams(serv);
 			else if (entries.size() >= 1)
-			{
-				size_t i = 0;
-				while (i < entries.size() && jo_nb_chan != 0)
-				{
-					Channel *tmp = existing_chan(entries[i], serv);
-					if (tmp)
-					{
-						if (tmp->activeMode('s') == false)
-							tmp->cmd_lexer(*this, serv);
-						reply += rpl_endofnames(*this, tmp->getName(), "option");
-					}
-					i++;
-				}
-			}
+				names_params(serv);
 		}
 	}
 	serv->_chan_requests(*this);
