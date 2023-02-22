@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:37:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 15:25:13 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:19:09 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 # include <netinet/in.h>
 # include <poll.h>
 # include <utility>
-# include "ServerSocket.hpp"
+# include "Socket.hpp"
 # include <map>
 # include "Client.hpp"
 # include "Request.hpp"
@@ -35,7 +35,7 @@
 class Client;
 class Request;
 class Channel;
-class ServerSocket;
+class Socket;
 
 class Server
 {
@@ -65,7 +65,7 @@ public:
 /* EXCEPTIONS ????*/				
 
 	/* METHODS */				
-	void 										start_server();
+	int 										start_server();
 	int											routine();
 	void										new_client();
 	void										read_client_req(Client* cli, int *i);
@@ -83,7 +83,7 @@ public:
 	void										_killing_cli(Client& cli);
 
 	std::string									name; // limited to 63 characters
-	ServerSocket*								server_socket;
+	Socket*										server_socket;
 
 	struct pollfd*								_client_events;
 	char 										read_buffer[30000 + 1];

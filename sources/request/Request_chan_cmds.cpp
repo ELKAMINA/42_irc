@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:23:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 15:21:56 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:58:46 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int Request::_part(Client *cli, Server *serv)
 			else
 			{
 				status = ongoing;
-				tmp->cmd_lexer(*this, serv);
+				tmp->part(*this, serv);
 				// temporary solution, need to improve it
 				if (tmp->getOnlineCount() == 0)
 				{
@@ -149,7 +149,7 @@ int Request::_kick(Client *cli, Server *serv)
 					status = ongoing;
 					user_to_kick.clear();
 					user_to_kick = entries[jo_nb_chan];
-					tmp->cmd_lexer(*this, serv);
+					tmp->kick(*this, serv);
 				}
 				i++;
 			}
@@ -166,7 +166,7 @@ int Request::_topic(Client *cli, Server *serv)
 	{
 		Channel *tmp = existing_chan(&entries[0][1], serv);
 		if (tmp)
-			tmp->cmd_lexer(*this, serv);
+			tmp->topic(*this, serv);
 		else
 		{
 			reply = errNoSuchChannel(cli->getNickName(), entries[0]);

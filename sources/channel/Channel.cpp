@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 19:28:00 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:54:25 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ Channel::Channel( vector<Client*>& allUsers, string channelName, Client& owner )
 _name(channelName), _allUsers(allUsers)
 {
 	initModes();
-	initLexer();
 	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
 	_onlineUsers = 0;
 	_maxUsers = -1;
@@ -34,7 +33,6 @@ Channel::Channel( vector<Client*>& allUsers, string channelName, string channelK
 _name(channelName), _key(channelKey), _allUsers(allUsers)
 {
 	initModes();
-	initLexer();
 	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
 	_onlineUsers = 0;
 	_maxUsers = -1;
@@ -73,7 +71,6 @@ Channel::~Channel()
 	this->_banned.clear();
 	this->_invited.clear();
 	this->_mods.clear();
-	this->_cmds.clear();
 }
 
 void Channel::initModes()
@@ -87,17 +84,6 @@ void Channel::initModes()
 	_mods.insert(make_pair('t', false));
 }
 
-void Channel::initLexer()
-{
-	_cmds.push_back(&Channel::join);
-	_cmds.push_back(&Channel::invite);
-	_cmds.push_back(&Channel::topic);
-	_cmds.push_back(&Channel::part);
-	_cmds.push_back(&Channel::privmsg);
-	_cmds.push_back(&Channel::kick);
-	_cmds.push_back(&Channel::names);
-	_cmds.push_back(&Channel::mode);
-}
 /* ****************************** */
 /* *** CHAN INFO CHECKERS ******* */
 /* ****************************** */

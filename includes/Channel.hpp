@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 19:25:20 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:54:06 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <algorithm>
 # include <map>
 # include "Colors.hpp"
-# include "ServerSocket.hpp"
+# include "Socket.hpp"
 # include "Request.hpp"
 # include "Client.hpp"
 // # include "numeric_replies.hpp"
@@ -34,7 +34,6 @@ class Server;
 class Channel
 {
 	public:
-	typedef void	(Channel::*cmds)(Request&, Server* serv);
 
 	/* CONSTRUCTORS */
 		Channel( vector<Client*>& allUsers, string channelName, Client& owner );
@@ -48,7 +47,6 @@ class Channel
 	/* METHODS */
 
 		void initModes();
-		void initLexer();
 		
 		/* MODES MANAGEMENT */
 		void changeUserMode(Request& request, pair<string, string> command,vector<Client*>& target);
@@ -61,7 +59,6 @@ class Channel
 		void errInCmd(Request& request, string err);
 		void reply_joining(Request& request, Server* serv);
 		void removeUser(Client * client);
-		void cmd_lexer(Request& request, Server* serv);
 		void privmsg(Request& request, Server* serv);
 		void invite(Request& request, Server* serv);
 		void topic(Request& request, Server* serv);
@@ -105,7 +102,6 @@ class Channel
 
 		vector<Client *>&	_allUsers;
 		map<char, bool>		_mods;
-		vector<cmds>		_cmds;
 
 };
 

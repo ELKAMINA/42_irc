@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 08:33:03 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/19 16:28:51 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 16:40:52 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,10 @@ int main(int ac, char *av[])
 	std::string name = "Our IRC";
 	Server* myServ = new Server(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, 10, name, pass);
 	std::cout << "port is " << port << ", name is " << myServ->get_name() << " and pass is " << myServ->get_pass() << std::endl;
-	myServ->start_server(); // initalise la socket server en ecoute
-	myServ->routine();
+	if (myServ->start_server() != -1)
+		myServ->routine();
 	signal(SIGINT, handle_sig);
+	close(myServ->server_socket->get_sock());
 	delete(myServ);
 	return 0;
 }

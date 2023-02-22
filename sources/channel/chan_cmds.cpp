@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 19:02:28 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:53:40 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,20 +34,6 @@ void Channel::removeUser(Client * client)
 			_vocal.erase(it);
 		_onlineUsers -= 1;
 
-}
-
-void Channel::cmd_lexer(Request& request, Server* serv)
-{
-	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK", "NAMES", "MODE"};
-	if (request._command == "NOTICE")
-	{
-		(this->*(_cmds[4]))(request, serv);
-		return ;
-	}
-	for (size_t i = 0; i< _cmds.size(); i++){
-		if (request._command == cmd_name[i])
-			(this->*(_cmds[i]))(request, serv);
-	}
 }
 
 void Channel::reply_joining(Request& request, Server* serv)

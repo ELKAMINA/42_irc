@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:20:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 15:51:56 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 18:11:39 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ int Request::_privmsg(Client *cli, Server *serv)
 						i++;
 					}
 				}
-				tmp->cmd_lexer(*this, serv);
+				tmp->privmsg(*this, serv);
 			}
 			serv->_chan_requests(*this);
 			return 0;
@@ -266,7 +266,7 @@ int Request::_invite(Client *cli, Server *serv)
 	(void)cli;
 	Channel *tmp = existing_chan(&entries[1][1], serv);
 	if (tmp)
-		tmp->cmd_lexer(*this, serv);
+		tmp->invite(*this, serv);
 	else
 		reply = errNoSuchChannel(_origin->getNickName(), entries[0]);
 	serv->_chan_requests(*this);
@@ -343,8 +343,6 @@ int Request::_ping(Client *cli, Server *serv) /* For later */
 	if (entries.size() < 1)
 		reply = errNeedMoreParams(cli->getNickName(), _command);
 	else
-	{
 		reply = ":" + cli->setPrefix() + "PONG: " + entries[0] + "\r\n";
-	}
 	return 0;
 } 

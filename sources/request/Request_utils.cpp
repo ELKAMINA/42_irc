@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:14:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 14:51:21 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 18:07:33 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,9 +122,8 @@ void Request::removing_sharp(std::vector<std::string>& en)
 void Request::oneChan(Client* cli, Server *serv)
 {
 	Channel *tmp;
+
 	tmp = existing_chan(entries[0], serv);
-	this->status = ongoing;
-	// bool yes = false;
 	if(jo_nb_keys > jo_nb_chan)
 		reply = errNeedMoreParams("bad value", this->_command);
 	if (tmp != NULL) /* Channel existe */
@@ -132,34 +131,27 @@ void Request::oneChan(Client* cli, Server *serv)
 		if ((tmp->activeMode('k') == true && entries.size() == 1)
 		|| (tmp->activeMode('k') == false && entries.size() > 1))
 		{
-			// std::cout << "heeeere " << std::endl;
 			reply = errBadChannelKey(_origin->getNickName(), tmp->getName());
 			return ;
 			// serv->replied = true;
 		}
 		else
-		{
-			status = ongoing;
-			tmp->cmd_lexer(*this, serv);
-		}
-
+			tmp->join(*this, serv);
 	}
 	else
 	{
 		Channel *to_add;
 		if (entries.size() == 1)
-		{
 			to_add = new Channel((serv->all_clients), entries[0],  *cli);
-		}
 		else
 		{
-
 			std::cout << "oui oui " << entries[1] << std::endl;
 			to_add = new Channel((serv->all_clients), entries[0], entries[1], *cli);
 		}
+		// NOPE -> il devient oper IRC avec ca, il est déja operateur a la création du chan
 		_origin->setMode('o', true); /* Set the first user to operator*/
 		serv->all_chanels.push_back(to_add);
-		to_add->cmd_lexer(*this, serv);
+		to_add->join(*this, serv);
 	}	 
 }
 
@@ -168,14 +160,14 @@ void Request::multiChan(Client* cli,Server *serv)
 	(void)serv;
 	(void)cli;
 	Channel* tmp;
+	size_t i = 0;
+	size_t k = jo_nb_chan;
+
 	if(jo_nb_keys > jo_nb_chan)
 	{
 		reply = errBadChannelKey(_origin->getNickName(), "One of them");
 		return ;
 	}
-	size_t i = 0;
-	size_t k = jo_nb_chan;
-	// std::cout << "Nb de keys " << jo_nb_keys << std::endl;
 	while (i < k)
 	{
 		tmp = existing_chan(entries[i], serv);
@@ -188,13 +180,10 @@ void Request::multiChan(Client* cli,Server *serv)
 				jo_nb_keys--;
 			}
 			else 
-			{
 				to_add = new Channel((serv->all_clients), entries[i], *cli);
-			}
 			serv->all_chanels.push_back(to_add);
 			status =  ongoing;
-			to_add->cmd_lexer(*this, serv);
-
+			to_add->join(*this, serv);
 		}
 		else
 		{
@@ -203,8 +192,7 @@ void Request::multiChan(Client* cli,Server *serv)
 				if (jo_nb_keys != 0)
 				{
 					jo_nb_keys--;
-					status = ongoing;
-					tmp->cmd_lexer(*this, serv);
+					tmp->join(*this, serv);
 					cli->addChanToList(tmp);
 				}
 				else
@@ -222,8 +210,7 @@ void Request::multiChan(Client* cli,Server *serv)
 				}
 				else
 				{
-					status = ongoing;
-					tmp->cmd_lexer(*this, serv);
+					tmp->join(*this, serv);
 					cli->addChanToList(tmp);
 				}
 			}
@@ -238,7 +225,7 @@ void Request::_mode_for_chans(Client* cli, Server* serv)
 {
 	Channel *tmp = existing_chan(&entries[0][1], serv);
 	if (tmp)
-		tmp->cmd_lexer(*this, serv);
+		tmp->mode(*this, serv);
 	else
 	{
 		reply = errNoSuchChannel(cli->getNickName(), entries[0]);
@@ -304,7 +291,7 @@ void Request::chan_names(Server* serv)
 		// std::cout << "je rentre ici 2 " << std::endl;
 		if ((*it)->activeMode('s') == false)
 		{
-			(*it)->cmd_lexer(*this, serv);
+			(*it)->names(*this, serv);
 			reply += rpl_endofnames(*this, (*it)->getName(), "option");
 		}
 		it++;
@@ -442,7 +429,7 @@ void Request::names_params(Server* serv)
 		if (tmp)
 		{
 			if (tmp->activeMode('s') == false)
-				tmp->cmd_lexer(*this, serv);
+				tmp->names(*this, serv);
 			reply += rpl_endofnames(*this, tmp->getName(), "option");
 		}
 		i++;

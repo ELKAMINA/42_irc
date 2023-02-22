@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 15:35:27 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:41:41 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,10 +96,16 @@ const std::string &Server::get_pass() const
 	return _pass;
 }
 
-void Server::start_server()
+int Server::start_server()
 {
-	this->server_socket = new ServerSocket(this->_domain, this->_service, this->_protocol,
+	this->server_socket = new Socket(this->_domain, this->_service, this->_protocol,
 										   this->_port, this->_interface, this->_max_co);
+	this->server_socket->start_server();
+	if (server_socket->get_sock() == -1)
+	{
+		delete (this->server_socket);
+		return -1;
+	}
 	_client_events[0].events = POLLIN | POLLOUT;
 	_client_events[0].fd = server_socket->get_sock(); /* On the file descriptor data.fd */
 	for (int i = 0; i < max_c; i++)
@@ -107,94 +113,53 @@ void Server::start_server()
 		_client_events[i].events = POLLIN | POLLOUT;
 		_client_events[i].fd = server_socket->get_sock();
 	}
+	return 0;
 }
 
 int Server::routine()
 {
+	int active_co;
+
 	while (1)
 	{
-		// std::cout << "=============== Waiting on poll() ==============" << std::endl;
-
-		int active_co = poll(_client_events, _online_clients, -1); // equivalent epoll_wait: attend qu'un fd devienne dispo
-		if (active_co < 0)
+		active_co = poll(_client_events, _online_clients, -1);
+		if (active_co <= 0)
+			return (perror("poll error"), 1);
+		for (int i = 0; i < _online_clients; i++)
 		{
-			perror("poll creation ");
-			return 1;
-		}
-		if (active_co == 0)
-		{
-			perror("poll timeout");
-			return 1;
-		}
-		for (int i = 0; i < _online_clients; i++) /* Depending on how many events poll waited to happen */
-		{
-			/*r_events is an attribute of pollfd structure that is filled by the kernel depending on what type of events we're waiting for*/
-			if (_client_events[i].revents == 0) /*revents = 0 means that client_events[i].fd is negative which mean that is not an open file so there isnt any event for now */
-				continue;
-			// if (_client_events[i].revents != POLLIN) /* revent is not POLLIN so dont know what it is*/
-			// {
-			// 	perror("Not Pollin");
-			// 	return 1;
-			// }
-			else if (_client_events[i].revents & POLLIN)
+			if (_client_events[i].revents != 0 && _client_events[i].revents & POLLIN)
 			{
-				if (_client_events[i].fd == server_socket->get_sock()) /*each new client connecting on socket retrieve the server socket fd*/
-				{
+				if (_client_events[i].fd == server_socket->get_sock())
 					new_client();
-					_online_clients++;
-				}
 				else
 				{
-					std::vector<Client *>::iterator it = all_clients.begin();
-					while (it != all_clients.end())
-					{
+					for (std::vector<Client *>::iterator it = all_clients.begin();it != all_clients.end(); it++){
 						if ((*it)->getFdClient() == _client_events[i].fd)
 						{
 							read_client_req(*it, &(i));
-
 							break ;
 						}
-						it++;
 					}
 				}
 			}
 		}
 	}
-	close(server_socket->get_sock());
 }
 
 void Server::new_client()
 {
-	int sock = 0;
-	struct sockaddr_in clientAddr;
+	struct sockaddr_in	clientAddr;
 	socklen_t			client_len = sizeof(clientAddr);
-	std::cout << "=============== Listening socket is readable ==============" << std::endl;
-	std::cout << std::endl;
+	int					sock = 0;
 
 	sock = accept(server_socket->get_sock(),(struct sockaddr *)&clientAddr, &client_len);
 	if (sock < 0)
-	{
-		perror("accept");
-		return;
-	}
+		return (perror("accept"));
 	Client* cli = new Client(sock);
 	_client_events[_online_clients].events = POLLIN;
-	_client_events[_online_clients].fd = sock; /*We need to assign to the new client a new fd for the socket it refers to and add it the clients events tab*/
-	// int i = 0;
-	// std::cout << "totoooo " << std::endl;
-	// read_client_req(cli, &(i));
+	_client_events[_online_clients].fd = sock;
 	all_clients.push_back(cli);
-	// std::cout << " sock " << sock << "  online clients " << _online_clients << std::endl;
-	// _online_clients++; /* incrementing the nb of connections */
-	//std::string homepage = welcoming_newClients();
-	// std::cout << " sock " << sock << homepage.length() << std::endl;
-	// all_clients.push_back(cli);
-	// if (cli->getNickName().empty() ||cli->getNickName() == "UNDEFINED")
-	// 	cli->setNickname("*");
-	// std::string message = "001 Welcome to the Internet Relay Network " + cli->setPrefix() + "\n";
-	// std::cout << "Message == " << message << std::endl;
-	// if (send(sock, message.c_str(), message.size(), 0) == -1)
-	// 	perror("Big time for welcoming_ Bravo");
+	_online_clients++;
 }
 
 std::string Server::welcoming_newClients()
@@ -213,25 +178,20 @@ std::string Server::welcoming_newClients()
 
 void Server::read_client_req(Client *cli, int *i)
 {
-	size_t n_ci = recv(cli->getFdClient(), read_buffer, 30000, 0);
-	if (n_ci <= 0)
+	size_t readBytes = recv(cli->getFdClient(), read_buffer, 30000, 0);
+	if (readBytes <= 0)
 	{
-		if (n_ci == 0)
+		if (readBytes == 0)
 			std::cout << "The client which fd is " << cli->getFdClient() << " sent an empty_req request " << std::endl;
 		else
-		{
-			perror("Baaaad");
-		}
+			perror("recv error");
 		close(_client_events[*i].fd);
 		_client_events[*i] = _client_events[_online_clients - 1];
 		_online_clients--;
 	}
 	else
-	{
-		// std::cout << "client send: "<<read_buffer<<std::endl;
-		handle_request(read_buffer, i, cli, n_ci);
-	}
-	memset(&read_buffer, 0, n_ci); /* Pour reset les saisies Clients*/
+		handle_request(read_buffer, i, cli, readBytes);
+	memset(&read_buffer, 0, readBytes);
 }
 
 bool Server::contld(char* buf, int nci)
@@ -248,21 +208,14 @@ bool Server::contld(char* buf, int nci)
 
 void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 {
-	/* Creating the request and the client associated */
-	// std::cout << "TOTO" << nci << " -- ";
-	// if (contld(buf, nci) == false)
-	// {
-	// 	client_buffer += buf;
-	// 	return ;
-	// }
-	// (void)nci;
+	size_t		pos;
+	Request		*req;
+	std::string input;
+	const char	*client = NULL;
+
 	buf[nci] = '\0';
 	client_buffer += buf;
 	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
-	size_t pos;
-	std::string input;
-	const char *client = NULL;
-	Request *req;
 	while ((pos = client_buffer.find("\r\n")) != std::string::npos)
 	{
 		input = client_buffer.substr(0, pos + 1);
@@ -273,7 +226,6 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 		client_buffer.erase(0, pos + 2);
 	}
 	client_buffer.clear();
-	// }
 	return ;
 }
 

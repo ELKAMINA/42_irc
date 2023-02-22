@@ -6,29 +6,16 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 10:14:08 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/19 17:28:33 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/22 16:35:48 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
 
-Socket::Socket(int domain, int service, int protocol, int port, u_long interface)
+Socket::Socket(int domain, int service, int protocol, int port, u_long interface, int max_co) :
+_domain(domain), _service(service), _protocol(protocol), _port(port), _interface(interface), _max_co(max_co)
 {
-	_address.sin_family = domain;
 
-	/* naming a socket =  assigning a transport address to the socket (a port number in IP networking)*/
-	_address.sin_port = htons(port);
-
-	_address.sin_addr.s_addr = htonl(interface); /*the interface on which the socket will run (it's the IP Adress) */
-
-	_socket = socket(domain, service, protocol);
-	test_connection(_socket);
-	int val = 1;
-	if(setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)))
-		std::cout << "ERROOOOOOR setsockopt" << std::endl;
-	if (fcntl(_socket, F_SETFL, O_NONBLOCK) == -1) /*Syscall (service from program to kernel) = makes a socket Non blocking*/
-		std::cout << "ERROOOOOOR fcntl" << std::endl;
-	
 }
 
 Socket::Socket(const Socket& rhs)
@@ -52,13 +39,47 @@ Socket& Socket::operator=(const Socket& rhs)
 	return *this;
 }
 
-void Socket::test_connection(int item_to_test)
+struct sockaddr_in Socket::set_socket_datas()
 {
-	if(item_to_test < 0 )
+	struct sockaddr_in	address;
+
+	address.sin_addr.s_addr = htons(this->_interface);
+	address.sin_port = htons(this->_port);
+	address.sin_family = AF_INET;
+	return address;
+}
+
+int Socket::init_socket_server()
+{
+	int 				sockFd;
+	int 				sockAddr;
+	int					val = 1;
+	struct sockaddr_in	address;
+
+	if ((sockFd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		return (perror("socket"), -1);
+	if (setsockopt(sockFd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(int)) == -1)
 	{
-		perror("Failed to connect");
-		exit(0);
+		close(sockFd);
+		return (perror("set socket options"), -1);
 	}
+	address = set_socket_datas();
+	if ((sockAddr = bind(sockFd, (const sockaddr*)&address, sizeof(address))) == -1)
+	{
+		close(sockFd);
+		return (perror("bind"), -1);
+	}
+	if ((sockAddr = listen(sockFd, 200)) == -1)
+	{
+		close(sockFd);
+		return (perror("listen"), -1);
+	}
+	return sockFd;
+}
+
+void Socket::start_server()
+{
+	this->_socket = init_socket_server();
 }
 
 sockaddr_in Socket::get_address() const
@@ -70,12 +91,3 @@ int Socket::get_sock() const
 	return this->_socket;
 }
 
-int Socket::get_connection() const
-{
-	return this->_connection;
-}
-
-void Socket::set_connection(int newC)
-{
-	this->_connection = newC;
-}
