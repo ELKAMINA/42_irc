@@ -58,7 +58,7 @@ Channel* Request::existing_chan(std::string name, Server *serv)
 	std::vector<Channel *>::iterator it = serv->all_chanels.begin();
 	while(it != serv->all_chanels.end())
 	{
-		std::cout << "existing chan " << (*it)->getName() << std::endl;
+		// std::cout << "existing chan " << (*it)->getName() << std::endl;
 		if ((*it)->getName() == name)
 			return *it;
 		it++;

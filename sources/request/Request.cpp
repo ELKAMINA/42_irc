@@ -13,6 +13,7 @@ Request::Request(const char* buffer, Client* cli) : _origin(cli)
 	_cmd_types = UNKNOWN;
 	reply = "UNDEFINED";
 	response = "UNDEFINED";
+	user_to_kick = "UNDEFINED";
 	jo_nb_chan = 0;
 	jo_nb_keys = 0;
 	message = "";
@@ -44,6 +45,13 @@ Request::~Request()
 
 void Request::first_arg_for_entries(std::vector<std::string> entries)
 {
+	// std::cout << "ARRRRGGGGGS " << std::endl; 
+	// std::vector<std::string>::iterator it = entries.begin();
+	// while (it != entries.end())
+	// {
+	// 	std::cout << "Entriiies " << (*it) << std::endl;
+	// 	it++;
+	// }
 	std::string new_token;
 	size_t sharp = 0;
 	if (entries[0][0] != '\0')
@@ -72,13 +80,27 @@ void Request::first_arg_for_entries(std::vector<std::string> entries)
 			}
 		}
 	}
+	// std::cout << "FIIIIIN ARRRRGGGGGS " << std::endl; 
+	// std::vector<std::string>::iterator ita = _channels.begin();
+	// while (ita != _channels.end())
+	// {
+	// 	std::cout << "Entriiies " << (*ita) << std::endl;
+	// 	ita++;
+	// }
 }
 
 void Request::second_arg_for_entries(std::vector<std::string> entries)
 {
+	// std::vector<std::string>::iterator ita = entries.begin();
+	// while (ita != entries.end())
+	// {
+	// 	std::cout << "it " << (*ita) << std::endl;
+	// 	ita++;
+	// }
 	std::string new_token;
 	size_t sharp = 0;
 	std::string eph = entries[1];
+	// std::cout << "eph " << eph << " size = " << entries[1].size() << std::endl;
 	size_t entry_size = entries[1].size();
 	size_t count = 0; /* Combien on a consomme de eph*/
 	while (eph.size() != 0)

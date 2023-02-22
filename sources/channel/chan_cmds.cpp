@@ -259,8 +259,11 @@ void Channel::mode(Request& request, Server* serv)
 void Channel::kick(Request& request, Server* serv)
 {
 	(void)serv;
+	Client* to_kick = NULL;
 	string user = request._origin->getNickName();
-	Client* to_kick = found(request.entries[1], _users);
+	// std::cout << "USER TO KICK " << request.user_to_kick << std::endl;
+	if (request.user_to_kick != "UNDEFINED")
+		to_kick = found(request.user_to_kick, _users);
 	vector<Client *>::iterator it;
 
 	request.response.clear();
@@ -271,11 +274,12 @@ void Channel::kick(Request& request, Server* serv)
 	if ((it = find(_users.begin(), _users.end(), to_kick)) == _users.end())
 		return(errInCmd(request, errNoSuchNick(user, request.entries[1])));
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
-	request.response = ":" + request._origin->setPrefix() + " KICK #" + this->getName() + " " + request.entries[1] + " :" + request.message;
+	request.response = ":" + request._origin->setPrefix() + " KICK #" + this->getName() + " " + request.user_to_kick + " :" + request.message;
 	serv->_chan_requests(request);
 	removeUser(to_kick);
 	to_kick->removeChanFromList(this);
 	request.status = treated;
+	request.target.clear();
 }
 
 void Channel::names(Request& request,Server* serv)

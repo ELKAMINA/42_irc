@@ -87,6 +87,7 @@ class Request
 		size_t						jo_nb_keys;
 		bool						commas_c;
 		bool						commas_e;
+		std::string					user_to_kick;
 		// int							type;
 
 	public:
@@ -145,6 +146,7 @@ class Request
 		int			_join(Client* cli, Server *serv);
 		int			_part(Client* cli, Server *serv);
 		int			_kick(Client* cli, Server *serv);
+		int			_kickingEach(Client* cli, Server *serv);
 		int			_topic(Client* cli, Server *serv);
 		int			_mode(Client* cli, Server *serv);
 		int			_invite(Client* cli, Server *serv);

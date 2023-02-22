@@ -259,15 +259,26 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 	buf[nci] = '\0';
 	client_buffer += buf;
 	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
-	// memset(&buf, 0, strlen(buf));
-	// buf = &client_buffer[0];
 	size_t pos;
 	std::string input;
 	const char *client = NULL;
 	Request *req;
+	// if ((pos = client_buffer.find("KICK")) != std::string::npos)
+	// {
+	// 	while ((pos = client_buffer.find("\r\n")) != std::string::npos)
+	// 	{
+	// 			input += client_buffer.substr(0, pos + 1);
+	// 			client_buffer.erase(0, pos + 2);
+	// 	}
+	// }
+	// else
+	// {
+		// memset(&buf, 0, strlen(buf));
+		// buf = &client_buffer[0];
 	while ((pos = client_buffer.find("\r\n")) != std::string::npos)
 	{
 		input = client_buffer.substr(0, pos + 1); // recup de la cde ligne par ligne à la connexion
+		std::cout << "input " << input << std::endl;
 		client = input.c_str();
 		req = new Request(client, cli);
 		client = NULL;
@@ -276,7 +287,7 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 		client_buffer.erase(0, pos + 2);
 	}
 	client_buffer.clear();
-
+	// }
 	return ;
 }
 

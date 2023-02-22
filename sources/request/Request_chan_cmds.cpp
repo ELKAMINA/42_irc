@@ -93,14 +93,47 @@ int Request::_part(Client *cli, Server *serv)
 	return 0;
 }
 
+// int Request::_kick(Client *cli, Server *serv)
+// {
+// 	(void)cli;
+// 	(void)serv;
+// 	std::vector<std::string>::iterator it = entries.begin();
+// 	// size_t pos = 0;
+// 	while (it != entries.end())
+// 	{
+// 		std::cout << "Entrues " << (*it) << std::endl;
+// 		it++;
+// 	}
+// 	return 0;
+// }
+
+
+
 int Request::_kick(Client *cli, Server *serv)
 {
+	// sleep(10);
 	if (_check_lists() != 0)
 	{
+		jo_nb_chan = 0;
+		std::vector<std::string>::iterator ita = entries.begin();
+		while (ita != entries.end())
+		{
+			std::cout << "Entriiies " << (*ita) << std::endl;
+			ita++;
+		}
+		beginning_with_diez(entries);
 		removing_sharp(entries);
+		// std::vector<std::string>::iterator it = entries.begin();
+		// while (it != entries.end())
+		// {
+		// 	if ((*it)[0] == '#' || (*it)[0] == '&')
+		// 		jo_nb_chan++; /* Counting nb of diez in the req to check it with the nb of keys*/
+		// 	it++;
+		// }
 		if (reply == "UNDEFINED")
 		{
 			size_t users_toKick = 0;
+			// std::cout << "KIIIICK " << jo_nb_chan << std::endl;
 			if (entries.size() > jo_nb_chan)
 			{
 				std::vector<std::string>::iterator it = entries.begin() + jo_nb_chan;
@@ -124,10 +157,12 @@ int Request::_kick(Client *cli, Server *serv)
 						it++;
 				}
 				users_toKick = entries.size() - jo_nb_chan - nb;
+				// std::cout << "users to kick " << users_toKick << std::endl;
 			}
-			if ((jo_nb_chan == 1 && !users_toKick) || (jo_nb_chan > 1 && users_toKick != jo_nb_chan))
+			if ((jo_nb_chan >= 1 && !users_toKick))
 				reply = errNeedMoreParams(cli->getNickName(), _command);
 			size_t i = 0;
+			// std::cout << "nb of channels " << jo_nb_chan << std::endl;
 			while (i < jo_nb_chan)
 			{
 				Channel *tmp = existing_chan(&entries[i][1], serv);
@@ -136,6 +171,8 @@ int Request::_kick(Client *cli, Server *serv)
 				else
 				{
 					status = ongoing;
+					user_to_kick.clear();
+					user_to_kick = entries[jo_nb_chan];
 					tmp->cmd_lexer(*this, serv);
 				}
 				i++;
@@ -167,7 +204,6 @@ int Request::_topic(Client *cli, Server *serv)
 
 int Request::_mode(Client *cli, Server *serv)
 {
-	// std::cout << "je rentre ici ?" << std::endl;
 	beginning_with_diez(entries);
 	if (jo_nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&'))
 	{
