@@ -320,10 +320,12 @@ int Request::_wallops(Client *cli, Server *serv)
 
 int Request::_kill(Client *cli, Server *serv)
 {
+	// std::cout << "holaaa " << std::endl;
+	(void)cli;
 	if (entries.size() < 2)
-		reply = errNeedMoreParams(cli->getNickName(), _command);
-	else if (cli->checkMode('o') == false)
-		reply = errNoPrivileges(":Permission Denied= You're not an IRC operator\n", "opti");
+		reply = errNeedMoreParams(_origin->getNickName(), _command);
+	else if (_origin->checkMode('o') == false)
+		reply = errNoPrivileges(_origin->setPrefix() + " :Permission Denied - You're not an IRC operator\n", "opti");
 	else
 	{
 		Client *tmp = _find(entries[0], serv);
@@ -331,10 +333,38 @@ int Request::_kill(Client *cli, Server *serv)
 			reply = errNoSuchNick(entries[0], entries[0]);
 		else
 		{
-			std::string message = " :You are getting killed by " + cli->getNickName();
-			if (send(tmp->getFdClient(), message.c_str(), message.length(), 0) == -1)
-				perror("Big time for welcoming_ Bravo");
-			/* Supprimer le user from Chan et de toutes leslistes dans lesquelles il existe !!! */
+			if (entries.size() > 2)
+			{
+				if (message == "")
+				{
+					message.clear();
+					size_t i = 2;
+					while (i < entries.size())
+					{
+						message.append(entries[i]);
+						message.append(" ");
+						i++;
+					}
+					// message.append("\n");
+				}
+			}
+			user_to_kick = entries[0];
+			reply = ":" + _origin->setPrefix() + " KILL " + tmp->getNickName() + " :" + message + "\n";
+			if (send(tmp->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
+				perror("Big time");
+			reply.clear();
+			reply = "ERROR :Killed by " + _origin->getNickName() + " (" +  message + ")\n";
+			if (send(tmp->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
+				perror("Big time");
+			reply = "UNDEFINED";
+			std::string prefix = tmp->setPrefix();
+			std::vector<Client*>::iterator it;
+			target.insert(target.end(), serv->all_clients.begin(),serv->all_clients.end());
+			target.erase(it=find(target.begin(), target.end(), tmp));
+			serv->_killing_cli(*tmp);
+			response = ":" + prefix + " QUIT :Killed by " + _origin->getNickName() + " (" +  message + ")\n";
+			serv->_chan_requests(*this);
+			
 		}
 	}
 	return 0;

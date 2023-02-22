@@ -300,3 +300,29 @@ void Channel::names(Request& request,Server* serv)
 	}
 	request.reply.replace(request.reply.size() -2, 2, "\n");
 }
+
+// void Channel::kill(Request& request, Server* serv)
+// {
+// 	(void)serv;
+// 	Client* to_kick = NULL;
+// 	string user = request._origin->getNickName();
+// 	// std::cout << "USER TO KICK " << request.user_to_kick << std::endl;
+// 	if (request.user_to_kick != "UNDEFINED")
+// 		to_kick = found(request.user_to_kick, _users);
+// 	vector<Client *>::iterator it;
+
+// 	request.response.clear();
+// 	if (!isInChanList((request._origin), _users))
+// 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
+// 	if (!isInChanList((request._origin), _operators))
+// 		return(errInCmd(request, errChanPrivsNeeded(user, this->getName())));
+// 	if ((it = find(_users.begin(), _users.end(), to_kick)) == _users.end())
+// 		return(errInCmd(request, errNoSuchNick(user, request.entries[1])));
+// 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
+// 	request.response = ":" + request._origin->setPrefix() + " KICK #" + this->getName() + " " + request.user_to_kick + " :" + request.message;
+// 	serv->_chan_requests(request);
+// 	removeUser(to_kick);
+// 	to_kick->removeChanFromList(this);
+// 	request.status = treated;
+// 	request.target.clear();
+// }

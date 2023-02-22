@@ -88,6 +88,7 @@ class Channel
 		string		getName() const;
 		std::string	getKey() const;
 			
+		vector<Client *>	_users;
 	private:
 
 		int					_onlineUsers;
@@ -99,7 +100,6 @@ class Channel
 
 		vector<Client *>	_operators; // separated from users or duplicated ?
 		vector<Client *>	_invited;
-		vector<Client *>	_users;
 		vector<Client *>	_vocal;
 		vector<Client *>	_banned;
 

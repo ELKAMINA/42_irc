@@ -198,6 +198,6 @@ string		errNoPrivileges(string message, string me)
 {
 	(void)me;
 	string reply;
-	reply =  " 481 * " + message;
+	reply =  "481 " + message;
 	return (reply);
 }

@@ -45,13 +45,6 @@ Request::~Request()
 
 void Request::first_arg_for_entries(std::vector<std::string> entries)
 {
-	// std::cout << "ARRRRGGGGGS " << std::endl; 
-	// std::vector<std::string>::iterator it = entries.begin();
-	// while (it != entries.end())
-	// {
-	// 	std::cout << "Entriiies " << (*it) << std::endl;
-	// 	it++;
-	// }
 	std::string new_token;
 	size_t sharp = 0;
 	if (entries[0][0] != '\0')
@@ -156,7 +149,7 @@ void Request::initLexer()
 void Request::requestLexer(Client* cli, Server* serv)
 {
 	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN",
-					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "KILL", "PING"};
+					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "kill", "PING"};
 	size_t i = 0;
 	if (this->_command == "NOTICE")
 	{

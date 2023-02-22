@@ -93,22 +93,6 @@ int Request::_part(Client *cli, Server *serv)
 	return 0;
 }
 
-// int Request::_kick(Client *cli, Server *serv)
-// {
-// 	(void)cli;
-// 	(void)serv;
-// 	std::vector<std::string>::iterator it = entries.begin();
-// 	// size_t pos = 0;
-// 	while (it != entries.end())
-// 	{
-// 		std::cout << "Entrues " << (*it) << std::endl;
-// 		it++;
-// 	}
-// 	return 0;
-// }
-
-
-
 int Request::_kick(Client *cli, Server *serv)
 {
 	// sleep(10);
@@ -123,17 +107,9 @@ int Request::_kick(Client *cli, Server *serv)
 		}
 		beginning_with_diez(entries);
 		removing_sharp(entries);
-		// std::vector<std::string>::iterator it = entries.begin();
-		// while (it != entries.end())
-		// {
-		// 	if ((*it)[0] == '#' || (*it)[0] == '&')
-		// 		jo_nb_chan++; /* Counting nb of diez in the req to check it with the nb of keys*/
-		// 	it++;
-		// }
 		if (reply == "UNDEFINED")
 		{
 			size_t users_toKick = 0;
-			// std::cout << "KIIIICK " << jo_nb_chan << std::endl;
 			if (entries.size() > jo_nb_chan)
 			{
 				std::vector<std::string>::iterator it = entries.begin() + jo_nb_chan;

@@ -263,26 +263,12 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 	std::string input;
 	const char *client = NULL;
 	Request *req;
-	// if ((pos = client_buffer.find("KICK")) != std::string::npos)
-	// {
-	// 	while ((pos = client_buffer.find("\r\n")) != std::string::npos)
-	// 	{
-	// 			input += client_buffer.substr(0, pos + 1);
-	// 			client_buffer.erase(0, pos + 2);
-	// 	}
-	// }
-	// else
-	// {
-		// memset(&buf, 0, strlen(buf));
-		// buf = &client_buffer[0];
 	while ((pos = client_buffer.find("\r\n")) != std::string::npos)
 	{
 		input = client_buffer.substr(0, pos + 1); // recup de la cde ligne par ligne à la connexion
-		std::cout << "input " << input << std::endl;
 		client = input.c_str();
 		req = new Request(client, cli);
 		client = NULL;
-		// std::cout << "input " << input << std::endl;
 		_treating_req(req, cli, i);
 		client_buffer.erase(0, pos + 2);
 	}
@@ -363,7 +349,7 @@ void Server::check_req_validity(Request **r)
 	}
 	for (size_t i = 0; i < req->entries[0].size() - 1; i++)
 	{
-		if (isupper(req->entries[0][i]) == 0)
+		if (isupper(req->entries[0][i]) == 0 && req->entries[0] != "kill")
 		{
 			req->req_validity = invalid_req;
 			return;
@@ -393,6 +379,7 @@ void	Server::_chan_requests(Request& req)
 		std::vector<Client*>::iterator it;
 		while (i < req.target.size())
 		{
+			// std::cout << "ici 2" << std::endl;
 			it = req._findFd(req.target[i]->getFdClient(), this);
 			if (send((*it)->getFdClient(), req.response.c_str(), req.response.length(), MSG_DONTWAIT) == -1)
 					return (perror("Problem in sending from server ")); // a t on le droit ?
@@ -408,18 +395,25 @@ void	Server::_chan_requests(Request& req)
 	replied = true;
 }
 
-void Server::_killing_cli(Client* cli)
+void Server::_killing_cli(Client& cli)
 {
-	if (close(cli->getFdClient()) < 0)
+	std::vector<Client*>::iterator ita;
+	if (close(cli.getFdClient()) < 0)
 		std::cout << "Socket couldn't be closed" << std::endl;
-	if (cli->getChanNbr() > 0)
+	std::vector<Channel*>::iterator it = all_chanels.begin();
+	while (it != all_chanels.end())
 	{
-		std::vector<Channel*>::iterator it = all_chanels.begin();
-		while (it != all_chanels.end())
+		// std::cout << "ici " << (*it)->isInChanList(&cli, (*it)->_users) << std::endl;
+		if((*it)->isInChanList(&cli, (*it)->_users) == true)
 		{
-			if ((*it)->isInChanList(cli, all_clients) == true)
-				
+			(*it)->removeUser(&cli);
+			if ((*it)->getOnlineCount() == 0)
+			{
+				all_chanels.erase(it);
+			}	
 			it++;
 		}
 	}
+	ita = find(all_clients.begin(), all_clients.end(), &cli);
+	all_clients.erase(ita);	
 }

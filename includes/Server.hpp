@@ -80,7 +80,7 @@ public:
 	void										_treating_req(Request *request, Client* cli, int* i);
 	void										check_req_validity(Request **req);
 	void										_chan_requests(Request& req);
-	void										_killing_cli(Client* cli);
+	void										_killing_cli(Client& cli);
 
 	std::string									name; // limited to 63 characters
 	ServerSocket*								server_socket;
