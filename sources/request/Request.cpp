@@ -127,6 +127,7 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::_nick);
 	_request_cmds.push_back(&Request::_user);
 	_request_cmds.push_back(&Request::_privmsg);
+	_request_cmds.push_back(&Request::_privmsg);
 	_request_cmds.push_back(&Request::_join);
 	_request_cmds.push_back(&Request::_part);
 	_request_cmds.push_back(&Request::_kick);
@@ -144,28 +145,24 @@ void Request::initLexer()
 	// _request_cmds.push_back(&Request::_notice);
 }
 
-void Request::requestLexer(Client* cli, Server* serv)
+int Request::requestLexer(Client* cli, Server* serv)
 {
-	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "JOIN",
+	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "NOTICE", "JOIN",
 					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "kill", "PING"};
 	size_t i = 0;
-	if (this->_command == "NOTICE")
-	{
-		(this->*(_request_cmds[3]))(cli, serv);		
-		return ;
-	}
+
 	for (; i < _request_cmds.size(); i++){
 		if (this->_command == cmds[i])
 		{
-				(this->*(_request_cmds[i]))(cli, serv);
-				break ;
+				return ((this->*(_request_cmds[i]))(cli, serv));
 		}
 	}
 	if (i == _request_cmds.size())
 	{
 		reply = errUnknownCommand(_origin->getNickName(), _command);
 		if (send(_origin->getFdClient(), reply.c_str(), strlen(reply.c_str()), 0) == -1)
-				return (perror("Problem in sending from server "));
+				perror("Send ");
 	}
+	return 0;
 }
 

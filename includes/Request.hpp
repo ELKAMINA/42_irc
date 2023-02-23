@@ -28,20 +28,15 @@ typedef int	(Request::*requ_cmds)(Client*, Server*);
 class Request
 {
 	public:
-		int							_id;
 		std::string					raw_input;
-		std::vector<std::string>	entries; // Params + Commands (entries[0] Max 512 caracteres (including the CR-LF)
+		std::vector<std::string>	entries;
 		std::vector<std::string>	_channels;
 		std::vector<std::string>	_else;
-		char						_prefix; // Optional : ":" used by servers to indicate the true origin of the message
 		std::string					_command;
-		std::string					_body;
 		Client*						_origin;
-		std::string					serv_origin;
 		std::string					response;
-		std::string					reply; /* Errors or Replies */
+		std::string					reply;
 		std::string					message;
-		// ajouter une reply pour lexpediteur en cas de commande ou lexpediteur attend une réponse 
 		std::vector<Client*>		target;
 		size_t						jo_nb_chan;
 		size_t						jo_nb_keys;
@@ -59,7 +54,7 @@ class Request
 		std::string getEntries(size_t i) const;
 
 		/* Methods */
-		void requestLexer(Client *cli, Server* serv);
+		int requestLexer(Client *cli, Server* serv);
 		void initLexer();
 
 		/* Utils */
@@ -68,7 +63,6 @@ class Request
 
 		/* Utils for commands*/
 		std::vector<Client* >::iterator	_find(std::string dest, Server *serv);
-		// std::vector<Client* >::iterator _findFd(int dest, Server *serv);
 		int			wrong_nickname();
 		Channel*	existing_chan(std::string chan_name, Server *serv);
 		int			beginning_with_diez(std::vector<string> entries);

@@ -50,7 +50,6 @@ string errUnknownCommand(string nickName, string command)
 	(void)nickName;
 	(void)command;
 	string reply;
-	// reply = "zboub\n";
 	reply = "421 * " + command + " :Unknown command\n";
 	return (reply);
 }
@@ -66,9 +65,9 @@ string errNoNicknameGiven(string nickName, string message)
 
 string	errNicknameInUse(string nickName, string message)
 {
-	(void)nickName;
+	(void)message;
 	string reply;
-	reply = message + " 433 * :Nickname is already in use\n";
+	reply = ":433 *" + nickName + " :Nickname already in use\n";
 	return (reply);
 } 
 
@@ -116,7 +115,7 @@ string	errAlreadyRegistered(string nickName, string message)
 	(void)nickName;
 	(void)message;
 	string reply;
-	reply = "462 * :You Unauthorized command (already registered)\n";
+	reply = ":462 * :Unauthorized command (already registered)\n";
 	return (reply);
 }
 
@@ -124,7 +123,7 @@ string	errPasswMismatch(string nickName, string message)
 {
 	(void)message;
 	string reply;
-	reply = "464 " + nickName;
+	reply = "464 " + nickName + " :Password incorrect\n";
 	return (reply);
 }
 

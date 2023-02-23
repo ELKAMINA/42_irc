@@ -14,92 +14,53 @@
 
 int Request::_pass(Client *cli, Server *serv)
 {
-	if ((entries.size() + 1) > 2 || (entries.size() + 1) < 2)
-	{
-		//  = notEnough_params;
-		return 1;
-	}
-	else if (cli->getNickName() != "UNDEFINED")
-	{
-		//  = already_registered;
-		return 1;
-	}
-	else if ((entries.size() + 1) == 2)
+	if (entries.size() == 1)
 	{
 		if (entries[0] == serv->get_pass() && cli->loggedIn == false)
 		{
-			//  = valid_req; // A changer
 			cli->setPwd(serv->get_pass());
-			// std::cout << "je rentre ici  pWD" << cli->getPwd() << std::endl;
-			return 1;
+			return 0;
 		}
 		else
 		{
-			//  = incorrect_pwd;
-			return 1;
+			reply = errPasswMismatch(entries[0], "");
+			serv->_chan_requests(*this);
 		}
 	}
-	return 0;
+	return 1;
 }
 
 int Request::_nick(Client *cli, Server *serv)
 {
-	if (entries.size() > 1 || entries.size() < 1)
+	(void)serv;
+	if (cli->getPwd() != serv->get_pass())
+		reply = errNotRegistered(cli->getNickName(), "not registered");
+	if ((_find(entries[0], serv)) != (serv->all_clients.end()))
 	{
-		//  = notEnough_params;
-		return 1;
+		reply = errNicknameInUse(entries[0], "option");
 	}
-	else if (cli->getPwd() == "UNDEFINED")
-	{
-		//  = omitted_cmd;
-		return 1;
-	}
-	else if ((_find(entries[0], serv)) != (serv->all_clients.end()))
-	{
-		//  = nickname_exists;
-		return 1;
-	}
-	else if (wrong_nickname() == 0)
-	{
-		//  = erroneous_nickname;
-		return 1;
-	}
-	cli->setNickname(entries[0]);
+	// else if (wrong_nickname() == 0)
+	// 	reply = err
+	else
+		cli->setNickname(entries[0]);
+	serv->_chan_requests(*this);
 	return 0;
 }
 
 int Request::_user(Client *cli, Server *serv)
 {
-	(void)serv;
 
-	if (entries.size() < 4 || entries.size() > 4)
+	if (cli->loggedIn == false && cli->getNickName() != "UNDEFINED")
 	{
-		//  = notEnough_params;
-		return 1;
-	}
-	else if ((cli->getPwd() == "UNDEFINED" || cli->getNickName() == "UNDEFINED"))
-	{
-		//  = omitted_cmd;
-		return 1;
-	}
-	else if (cli->loggedIn == false)
-	{
-		cli->loggedIn = true;
 		cli->setUsername(entries[0]);
 		cli->setRealname(entries[3]);
-		std::vector<Client *>::iterator it;
-		it = _find(cli->getNickName(), serv);
-		if (it != serv->all_clients.end())
-		{
-			serv->all_clients.erase(it);
-			cli->loggedIn = true;
-			serv->all_clients.push_back(cli);
-			if (cli->getNickName().empty() || cli->getNickName() == "UNDEFINED")
-				cli->setNickname("*");
-			//  = welcome_msg;
-		}
-		message.clear();
+		cli->loggedIn = true;
+		reply = "001 " + _origin->getNickName() + " :Welcome to the Internet Relay Network "
+		+ _origin->setPrefix() + "\r\n";
 	}
+	else
+		reply = errAlreadyRegistered(cli->getNickName(), "Already registered");
+	serv->_chan_requests(*this);
 	return 0;
 }
 

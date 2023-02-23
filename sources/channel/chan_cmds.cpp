@@ -161,17 +161,15 @@ void Channel::topic(Request& request, Server* serv)
 			request.reply = rpl_topic(request, this->getName(), this->getTopic());
 		else
 			request.reply = rpl_notopic(request, this->getName(), "");
-		return ;
 	}
 	else if (!isInChanList((request._origin), _operators))
 		errInCmd(request, errChanPrivsNeeded(user->getNickName(), this->getName()));
 	else // new topic and user is operator
 	{
-		if (request.entries[1].size() == 1)
+		if (request.entries[1].size() == 0)
 			this->_topic = "";
 		else
 		{
-			request.response.clear();
 			if (request.entries[1][0] != ':')
 				errInCmd(request, errNeedMoreParams(user->getNickName(), request._command));
 			else
@@ -186,7 +184,6 @@ void Channel::topic(Request& request, Server* serv)
 		}
 	}
 	serv->_chan_requests(request);
-	//request.status = treated;
 }
 
 void Channel::part(Request& request, Server* serv)

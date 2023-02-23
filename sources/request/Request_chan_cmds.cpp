@@ -132,7 +132,6 @@ int Request::_kick(Client *cli, Server *serv)
 						it++;
 				}
 				users_toKick = entries.size() - jo_nb_chan - nb;
-				// std::cout << "users to kick " << users_toKick << std::endl;
 			}
 			if ((jo_nb_chan >= 1 && !users_toKick))
 				reply = errNeedMoreParams(cli->getNickName(), _command);
@@ -158,20 +157,16 @@ int Request::_kick(Client *cli, Server *serv)
 
 int Request::_topic(Client *cli, Server *serv)
 {
-	beginning_with_diez(entries);
-	// std::cout << "nb of chans " << jo_nb_chan << std::endl;
-	if (jo_nb_chan == 1 && entries[0][0] == '#')
+	Channel *tmp = existing_chan(&entries[0][1], serv);
+	if (tmp)
+		tmp->topic(*this, serv);
+	else
 	{
-		Channel *tmp = existing_chan(&entries[0][1], serv);
-		if (tmp)
-			tmp->topic(*this, serv);
-		else
-		{
-			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
-			return 1;
-		}
+		reply = errNoSuchChannel(cli->getNickName(), entries[0]);
+		serv->_chan_requests(*this);
+		return 1;
 	}
-	return 1;
+	return 0;
 }
 
 int Request::_mode(Client *cli, Server *serv)
@@ -181,11 +176,8 @@ int Request::_mode(Client *cli, Server *serv)
 	{
 		if (entries.size() > 1)
 			_mode_for_chans(cli, serv);
-		return 0;
 	}
 	else if (jo_nb_chan == 0 && entries.size() >= 2)
-	{
 		_mode_for_clis(cli, serv);
-	}
-	return 1;
+	return 0;
 }

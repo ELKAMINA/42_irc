@@ -138,7 +138,10 @@ int Server::routine()
 			if (_client_events[i].revents != 0 && _client_events[i].revents & POLLIN)
 			{
 				if (_client_events[i].fd == server_socket->get_sock())
+				{
+					std::cout << "Online Clients " << _online_clients << std::endl;
 					new_client();
+				}
 				else
 				{
 					for (std::vector<Client *>::iterator it = all_clients.begin();it != all_clients.end(); it++){
@@ -185,7 +188,7 @@ void Server::read_client_req(Client *cli, int *i)
 		_online_clients--;
 	}
 	else
-		handle_request(read_buffer, cli, readBytes);
+		handle_request(read_buffer, cli, readBytes, i);
 	memset(&read_buffer, 0, readBytes);
 }
 
@@ -201,7 +204,7 @@ bool Server::contld(char* buf, int nci)
 	return false;
 }
 
-void Server::handle_request(char *buf, Client *cli, int nci)
+void Server::handle_request(char *buf, Client *cli, int nci, int*i)
 {
 	size_t		pos;
 	Request		*req;
@@ -218,20 +221,30 @@ void Server::handle_request(char *buf, Client *cli, int nci)
 		client = input.c_str();
 		req = new Request(client, cli);
 		client = NULL;
-		_treating_req(req, cli);
+		if (_treating_req(req, cli) == 1)
+		{
+			close(_client_events[*i].fd);
+			_client_events[*i] = _client_events[_online_clients - 1];
+			_online_clients--;
+			std::vector<Client*>::iterator it = req->_find(req->_origin->getNickName(), this);
+			all_clients.erase(it);
+			delete req;
+			break ;
+		}
 		client_buffer.erase(0, pos + 2);
 	}
 	client_buffer.clear();
 	return ;
 }
 
-void Server::_treating_req(Request* req, Client* cli)
+int Server::_treating_req(Request* req, Client* cli)
 {
 	if (req->check_validity() != 1)
 	{
 		req->format_entries();
-		req->requestLexer(cli, this);
+		return (req->requestLexer(cli, this));
 	}
+	return 0;
 }
 
 void	Server::_chan_requests(Request& req)

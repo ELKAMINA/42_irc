@@ -70,8 +70,8 @@ public:
 
 	/* Receiving and handling re				quest */
 	bool										contld(char* buf, int nci);
-	void										handle_request(char *buf, Client *cli, int nci);
-	void										_treating_req(Request *request, Client* cli);
+	void										handle_request(char *buf, Client *cli, int nci, int *i);
+	int											_treating_req(Request *request, Client* cli);
 	void										_chan_requests(Request& req);
 	void										_killing_cli(Client& cli);
 
