@@ -57,7 +57,7 @@ int Request::_part(Client *cli, Server *serv)
 	{
 		reply = errUnknownCommand(cli->getNickName(), _command);
 		return 1; /* on checke si larg apres les chan sil existe commence bien par : qui est le part message*/
-		// serv->replied = true;
+		// //serv->//replied = true;
 	}
 	size_t i = 0;
 	if (reply == "UNDEFINED")
@@ -73,7 +73,6 @@ int Request::_part(Client *cli, Server *serv)
 			}
 			else
 			{
-				status = ongoing;
 				tmp->part(*this, serv);
 				// temporary solution, need to improve it
 				if (tmp->getOnlineCount() == 0)
@@ -146,7 +145,6 @@ int Request::_kick(Client *cli, Server *serv)
 					reply = errNoSuchChannel(cli->getNickName(), "No such Channel");
 				else
 				{
-					status = ongoing;
 					user_to_kick.clear();
 					user_to_kick = entries[jo_nb_chan];
 					tmp->kick(*this, serv);
@@ -173,8 +171,6 @@ int Request::_topic(Client *cli, Server *serv)
 			return 1;
 		}
 	}
-	else
-		req_validity = invalid_req;
 	return 1;
 }
 
@@ -191,7 +187,5 @@ int Request::_mode(Client *cli, Server *serv)
 	{
 		_mode_for_clis(cli, serv);
 	}
-	else
-		req_validity = invalid_req;
 	return 1;
 }

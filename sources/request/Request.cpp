@@ -3,14 +3,12 @@
 Request::Request(const char* buffer, Client* cli) : _origin(cli)
 {
 	initLexer();
-	_raw_req = buffer;
+	raw_input = buffer;
 	char * token = strtok(const_cast<char *>(buffer) , " ");
 	while( token != NULL ) {
 		entries.push_back(token);
 		token = strtok(NULL, " ");
 	}
-	req_validity = valid_req;
-	_cmd_types = UNKNOWN;
 	reply = "UNDEFINED";
 	response = "UNDEFINED";
 	user_to_kick = "UNDEFINED";
@@ -160,13 +158,14 @@ void Request::requestLexer(Client* cli, Server* serv)
 		if (this->_command == cmds[i])
 		{
 				(this->*(_request_cmds[i]))(cli, serv);
-				{
-					// std::cout << "je rentre ici " << cmds[i] << "\n" << std::endl;
-					break ;
-				}
+				break ;
 		}
 	}
 	if (i == _request_cmds.size())
-		req_validity = invalid_req;
+	{
+		reply = errUnknownCommand(_origin->getNickName(), _command);
+		if (send(_origin->getFdClient(), reply.c_str(), strlen(reply.c_str()), 0) == -1)
+				return (perror("Problem in sending from server "));
+	}
 }
 

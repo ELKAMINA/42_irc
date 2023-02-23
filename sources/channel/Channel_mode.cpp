@@ -198,6 +198,6 @@ int Channel::addMode(Request& request, vector<string>params)
 				changeChanMode(request, *it);
 		}
 	}
-	request.status = treated;
+	//request.status = treated;
 	return 0;
 }

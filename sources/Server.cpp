@@ -20,10 +20,8 @@ Server::Server(int domain, int service, int protocol, int port, u_long interface
 	_online_clients = 0;
 	this->_client_events = new pollfd[max_co];
 	_online_clients++;
-	replied = false;
 	std::pair<std::string, std::string> pair("oper", "pwdoper");
 	opers.insert(pair);
-	client_buffer = "";
 }
 
 Server::Server(const Server &rhs)
@@ -50,6 +48,15 @@ Server &Server::operator=(const Server &rhs)
 		this->_port = rhs._port;
 		this->_interface = rhs._interface;
 		this->_max_co = rhs._max_co;
+		this->all_chanels.clear();
+		this->all_chanels = rhs.all_chanels;
+		this->all_clients.clear();
+		this->all_clients = rhs.all_clients;
+		this->_name = rhs._name;
+		this->_pass = rhs._pass;
+		this->_online_clients = rhs._online_clients;
+		this->server_socket->state = rhs.server_socket->state;
+		this->_client_events = rhs._client_events;
 	}
 	return *this;
 }
@@ -108,10 +115,11 @@ int Server::start_server()
 	}
 	_client_events[0].events = POLLIN | POLLOUT;
 	_client_events[0].fd = server_socket->get_sock(); /* On the file descriptor data.fd */
-	for (int i = 0; i < max_c; i++)
+	for (int i = 0; i < _max_co; i++)
 	{
 		_client_events[i].events = POLLIN | POLLOUT;
 		_client_events[i].fd = server_socket->get_sock();
+		_client_events[i].revents = POLLIN;
 	}
 	return 0;
 }
@@ -162,23 +170,10 @@ void Server::new_client()
 	_online_clients++;
 }
 
-std::string Server::welcoming_newClients()
-{
-	client_welcoming.append("██╗    ██╗███████╗██╗      ██████╗ ██████╗ ███╗   ███╗███████╗\n");
-	client_welcoming.append("██║    ██║██╔════╝██║     ██╔════╝██╔═══██╗████╗ ████║██╔════╝\n");
-	client_welcoming.append("██║ █╗ ██║█████╗  ██║     ██║     ██║   ██║██╔████╔██║█████╗\n");
-	client_welcoming.append("██║███╗██║██╔══╝  ██║     ██║     ██║   ██║██║╚██╔╝██║██╔══╝\n");
-	client_welcoming.append("╚███╔███╔╝███████╗███████╗╚██████╗╚██████╔╝██║ ╚═╝ ██║███████╗\n");
-	client_welcoming.append(" ╚══╝╚══╝ ╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝\n");
-	client_welcoming.append(BLUE);
-	client_welcoming.append("Please write PASS then password, NICK then nickname, USER then 5 params to login :)\n");
-	client_welcoming.append(RESET);
-	return (client_welcoming);
-}
-
 void Server::read_client_req(Client *cli, int *i)
 {
-	size_t readBytes = recv(cli->getFdClient(), read_buffer, 30000, 0);
+	char read_buffer[1000];
+	size_t readBytes = recv(cli->getFdClient(), read_buffer, 1000, 0);
 	if (readBytes <= 0)
 	{
 		if (readBytes == 0)
@@ -190,7 +185,7 @@ void Server::read_client_req(Client *cli, int *i)
 		_online_clients--;
 	}
 	else
-		handle_request(read_buffer, i, cli, readBytes);
+		handle_request(read_buffer, cli, readBytes);
 	memset(&read_buffer, 0, readBytes);
 }
 
@@ -206,11 +201,12 @@ bool Server::contld(char* buf, int nci)
 	return false;
 }
 
-void Server::handle_request(char *buf, int *i, Client *cli, int nci)
+void Server::handle_request(char *buf, Client *cli, int nci)
 {
 	size_t		pos;
 	Request		*req;
 	std::string input;
+	std::string client_buffer = "";
 	const char	*client = NULL;
 
 	buf[nci] = '\0';
@@ -222,105 +218,21 @@ void Server::handle_request(char *buf, int *i, Client *cli, int nci)
 		client = input.c_str();
 		req = new Request(client, cli);
 		client = NULL;
-		_treating_req(req, cli, i);
+		_treating_req(req, cli);
 		client_buffer.erase(0, pos + 2);
 	}
 	client_buffer.clear();
 	return ;
 }
 
-void Server::_treating_req(Request* req, Client* cli, int* i)
+void Server::_treating_req(Request* req, Client* cli)
 {
-	replied = false;
-	check_req_validity(&req);
-	if (req->req_validity == valid_body || req->req_validity == valid_req)
+	if (req->check_validity() != 1)
+	{
+		req->format_entries();
 		req->requestLexer(cli, this);
-	if (req->req_validity == invalid_req)
-		req->reply = errUnknownCommand("Unknown", req->_command);
-	if (req->req_validity == invalid_body)
-		req->reply = "Invalid message\n";
-	if (req->req_validity == notEnough_params)
-		req->reply = errNeedMoreParams(cli->getNickName(), req->_command);
-	if (req->req_validity == incorrect_pwd)
-		req->reply = errPasswMismatch(cli->getNickName(),cli->getNickName());
-	if (req->req_validity == already_registered)
-		req->reply = errAlreadyRegistered(cli->getNickName(),cli->getNickName());
-	if (req->req_validity == omitted_cmd)
-		req->reply = "Please enter the password or Nickname first\n";
-	if (req->req_validity == invisible_man)
-		req->reply = "To Invisible man, you can't send message!\n";
-	// else if (req->req_validity == erroneous_nickname)
-	// 	req->response = errErroneusNickname(cli, req);
-	if (req->req_validity == nickname_exists)
-		req->reply = errNicknameInUse(cli->getNickName(), req->entries[1]);
-	if (req->req_validity == welcome_msg)
-	{
-		replied = false;
-		req->reply = "001 " + cli->getNickName() + " :Welcome to the Internet Relay Network " + cli->setPrefix() + "\r\n";
-		
-	}
-	if (req->req_validity == empty_req)
-	{
-	} /* DO nothing */
-	if (replied == false && _client_events[*i].fd != req->_origin->getFdClient())
-	{
-		if (send(_client_events[*i].fd, req->response.c_str(), req->response.length(), 0) == -1)
-			return (perror("Problem in sending from server ")); // a t on le droit ??
-	}
-	if (replied == false && _client_events[*i].fd == req->_origin->getFdClient())
-	{
-		if (req->reply != "UNDEFINED")
-		{
-			if (send(req->_origin->getFdClient(), req->reply.c_str(), strlen(req->reply.c_str()), 0) == -1)
-				return (perror("Problem in sending from server "));
-		}
 	}
 }
-
-int Server::is_charset(char c)
-{
-	if (isalpha(c))
-		return 0;
-	else
-		return 1;
-}
-
-void Server::check_req_validity(Request **r)
-{
-	Request *req = *r;
-	std::vector<std::string>::iterator it;
-
-	if (req->_raw_req.length() == 1 && (req->_raw_req[0] == '\n' || req->_raw_req[0] == '\r'))
-	{
-		req->req_validity = empty_req;
-		return;
-	}
-	if (req->_raw_req[0] == ' ' || !req->_raw_req[0])
-	{
-		req->req_validity = invalid_req;
-	}
-	for (size_t i = 0; i < req->entries[0].size() - 1; i++)
-	{
-		if (isupper(req->entries[0][i]) == 0 && req->entries[0] != "kill")
-		{
-			req->req_validity = invalid_req;
-			return;
-		}
-	}
-	for (size_t i = 0; i < req->_raw_req.size(); i++)
-	{
-		if ((req->_raw_req[i] == ':' && req->_raw_req[i - 1] != ' ') || (req->_raw_req[i] == ':' && req->_raw_req[i - 1] == ' ' && req->_raw_req[i + 1] == ' '))
-		{
-			req->req_validity = invalid_body;
-			return;
-		}
-
-	}
-	req->entries[req->entries.size() - 1] = req->removing_backslash(req->entries);
-	req->_command = req->entries[0];
-	it = req->entries.begin();
-	req->entries.erase(it);
-};
 
 void	Server::_chan_requests(Request& req)
 {
@@ -331,9 +243,9 @@ void	Server::_chan_requests(Request& req)
 		std::vector<Client*>::iterator it;
 		while (i < req.target.size())
 		{
-			it = req._findFd(req.target[i]->getFdClient(), this);
+			it = req._find(req.target[i]->getNickName(), this);
 			if (send((*it)->getFdClient(), req.response.c_str(), req.response.length(), MSG_DONTWAIT) == -1)
-					return (perror("Problem in sending from server "));
+					return (perror("Send"));
 			i++;
 		}
 	}
@@ -341,16 +253,13 @@ void	Server::_chan_requests(Request& req)
 	{
 		req.reply += "\r\n";
 		if (send(req._origin->getFdClient(), req.reply.c_str(), req.reply.length(), 0) == -1)
-			return (perror("Problem in sending from server "));
+			return (perror("Send"));
 	}
-	replied = true;
 }
 
 void Server::_killing_cli(Client& cli)
 {
 	std::vector<Client*>::iterator ita;
-	if (close(cli.getFdClient()) < 0)
-		std::cout << "Socket couldn't be closed" << std::endl;
 	std::vector<Channel*>::iterator it = all_chanels.begin();
 	while (it != all_chanels.end())
 	{
@@ -366,4 +275,6 @@ void Server::_killing_cli(Client& cli)
 	}
 	ita = find(all_clients.begin(), all_clients.end(), &cli);
 	all_clients.erase(ita);	
+	if (close(cli.getFdClient()) < 0)
+		return (perror("Close"));
 }

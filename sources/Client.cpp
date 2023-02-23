@@ -17,6 +17,7 @@ _host("IRC with love"), _id()
 {
 	initModes();
 	loggedIn = false;
+	callToMode = 0;
 	// _isInChan = 0;
 }
 

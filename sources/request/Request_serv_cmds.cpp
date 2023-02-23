@@ -16,26 +16,26 @@ int Request::_pass(Client *cli, Server *serv)
 {
 	if ((entries.size() + 1) > 2 || (entries.size() + 1) < 2)
 	{
-		req_validity = notEnough_params;
+		//  = notEnough_params;
 		return 1;
 	}
 	else if (cli->getNickName() != "UNDEFINED")
 	{
-		req_validity = already_registered;
+		//  = already_registered;
 		return 1;
 	}
 	else if ((entries.size() + 1) == 2)
 	{
 		if (entries[0] == serv->get_pass() && cli->loggedIn == false)
 		{
-			req_validity = valid_req; // A changer
+			//  = valid_req; // A changer
 			cli->setPwd(serv->get_pass());
 			// std::cout << "je rentre ici  pWD" << cli->getPwd() << std::endl;
 			return 1;
 		}
 		else
 		{
-			req_validity = incorrect_pwd;
+			//  = incorrect_pwd;
 			return 1;
 		}
 	}
@@ -46,22 +46,22 @@ int Request::_nick(Client *cli, Server *serv)
 {
 	if (entries.size() > 1 || entries.size() < 1)
 	{
-		req_validity = notEnough_params;
+		//  = notEnough_params;
 		return 1;
 	}
 	else if (cli->getPwd() == "UNDEFINED")
 	{
-		req_validity = omitted_cmd;
+		//  = omitted_cmd;
 		return 1;
 	}
-	else if ((_find(entries[0], serv)) != *(serv->all_clients.end()))
+	else if ((_find(entries[0], serv)) != (serv->all_clients.end()))
 	{
-		req_validity = nickname_exists;
+		//  = nickname_exists;
 		return 1;
 	}
 	else if (wrong_nickname() == 0)
 	{
-		req_validity = erroneous_nickname;
+		//  = erroneous_nickname;
 		return 1;
 	}
 	cli->setNickname(entries[0]);
@@ -74,12 +74,12 @@ int Request::_user(Client *cli, Server *serv)
 
 	if (entries.size() < 4 || entries.size() > 4)
 	{
-		req_validity = notEnough_params;
+		//  = notEnough_params;
 		return 1;
 	}
 	else if ((cli->getPwd() == "UNDEFINED" || cli->getNickName() == "UNDEFINED"))
 	{
-		req_validity = omitted_cmd;
+		//  = omitted_cmd;
 		return 1;
 	}
 	else if (cli->loggedIn == false)
@@ -88,7 +88,7 @@ int Request::_user(Client *cli, Server *serv)
 		cli->setUsername(entries[0]);
 		cli->setRealname(entries[3]);
 		std::vector<Client *>::iterator it;
-		it = _findFd(cli->getFdClient(), serv);
+		it = _find(cli->getNickName(), serv);
 		if (it != serv->all_clients.end())
 		{
 			serv->all_clients.erase(it);
@@ -96,7 +96,7 @@ int Request::_user(Client *cli, Server *serv)
 			serv->all_clients.push_back(cli);
 			if (cli->getNickName().empty() || cli->getNickName() == "UNDEFINED")
 				cli->setNickname("*");
-			req_validity = welcome_msg;
+			//  = welcome_msg;
 		}
 		message.clear();
 	}
@@ -114,13 +114,12 @@ int Request::_privmsg(Client *cli, Server *serv)
 			std::vector<std::string>::iterator it = entries.begin();
 			std::string dest = entries[0];
 			std::string message;
-			if (_find(dest, serv) != *(serv->all_clients.end()))
+			if (_find(dest, serv) != (serv->all_clients.end()))
 			{
 				entries.erase(it);
-				if ((_find(dest, serv))->checkMode('a') == 1)
+				if ((*(_find(dest, serv)))->checkMode('a') == 1)
 				{
-					message = (_find(dest, serv))->getAwayMessage();
-					std::cout << "AWAY message " <<  message << std::endl;
+					message = (*(_find(dest, serv)))->getAwayMessage();
 					if (send(_origin->getFdClient(), message.c_str(), message.length(), 0) == -1)
 					return (-1);
 					return 0;
@@ -140,11 +139,11 @@ int Request::_privmsg(Client *cli, Server *serv)
 					message.append("\n");
 				}
 				std::string ToSend =  ":" + _origin->getNickName() + " " + _command + " " + dest + " " + &message[1];
-				if (send(_find(dest, serv)->getFdClient(), ToSend.c_str(), ToSend.length(), 0) == -1)
+				if (send((*_find(dest, serv))->getFdClient(), ToSend.c_str(), ToSend.length(), 0) == -1)
 					return (-1);
-				serv->replied = true;
+				//serv->//replied = true;
 			}
-			else if (_find(dest, serv) == *(serv->all_clients.end()) && _command == "PRIVMSG")
+			else if (_find(dest, serv) == (serv->all_clients.end()) && _command == "PRIVMSG")
 				reply = errNoSuchNick(_origin->getNickName(), entries[0]);
 			return 0;
 		}
@@ -155,7 +154,7 @@ int Request::_privmsg(Client *cli, Server *serv)
 			if (!tmp && _command == "PRIVMSG")
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[0]);
-				serv->replied = true;
+				//serv->//replied = true;
 			}
 			else
 			{
@@ -270,7 +269,7 @@ int Request::_invite(Client *cli, Server *serv)
 	else
 		reply = errNoSuchChannel(_origin->getNickName(), entries[0]);
 	serv->_chan_requests(*this);
-	serv->replied = true;
+	//serv->//replied = true;
 	return 0;
 }
 
@@ -305,14 +304,15 @@ int Request::_kill(Client *cli, Server *serv)
 		reply = errNoPrivileges(_origin->setPrefix() + " :Permission Denied - You're not an IRC operator\n", "opti");
 	else
 	{
-		Client *tmp = _find(entries[0], serv);
-		if (!tmp)
+		std::vector<Client* >::iterator it;
+		it = _find(entries[0], serv);
+		if (it == serv->all_clients.end())
 			reply = errNoSuchNick(entries[0], entries[0]);
 		else
 		{
 			if (entries.size() >= 2)
 				req_getComments(entries, 1);
-			req_killingProcess(tmp, serv);			
+			req_killingProcess((*it), serv);			
 		}
 	}
 	return 0;

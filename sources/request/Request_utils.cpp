@@ -17,31 +17,31 @@ static bool sortClients(Client* a, Client* b)
 	return a->getChanNbr() < b->getChanNbr();
 }
 
-Client* Request::_find(std::string dest, Server *serv)
+std::vector<Client* >::iterator Request::_find(std::string dest, Server *serv)
 {
 	std::vector<Client *>::iterator it = serv->all_clients.begin();
 
 	while (it != serv->all_clients.end())
 	{
 		if	((*it)->getNickName() == dest)
-			return *it;
-		it++;
-	}
-	return *(serv->all_clients.end());
-}
-
-std::vector<Client* >::iterator Request::_findFd(int dest, Server *serv)
-{
-	std::vector<Client *>::iterator it = serv->all_clients.begin();
-
-	while (it != serv->all_clients.end())
-	{
-		if	((*it)->getFdClient() == dest)
 			return it;
 		it++;
 	}
 	return (serv->all_clients.end());
 }
+
+// std::vector<Client* >::iterator Request::_findFd(int dest, Server *serv)
+// {
+// 	std::vector<Client *>::iterator it = serv->all_clients.begin();
+
+// 	while (it != serv->all_clients.end())
+// 	{
+// 		if	((*it)->getFdClient() == dest)
+// 			return it;
+// 		it++;
+// 	}
+// 	return (serv->all_clients.end());
+// }
 
 int Request::wrong_nickname()
 {
@@ -133,7 +133,7 @@ void Request::oneChan(Client* cli, Server *serv)
 		{
 			reply = errBadChannelKey(_origin->getNickName(), tmp->getName());
 			return ;
-			// serv->replied = true;
+			//
 		}
 		else
 			tmp->join(*this, serv);
@@ -182,7 +182,6 @@ void Request::multiChan(Client* cli,Server *serv)
 			else 
 				to_add = new Channel((serv->all_clients), entries[i], *cli);
 			serv->all_chanels.push_back(to_add);
-			status =  ongoing;
 			to_add->join(*this, serv);
 		}
 		else
@@ -198,15 +197,14 @@ void Request::multiChan(Client* cli,Server *serv)
 				else
 				{
 					reply = errNeedMoreParams("bad value", this->_command);
-					serv->replied = true;
+				
 				}
 			}
 			else
 			{
 				if (jo_nb_keys != 0)
 				{
-					reply = errNeedMoreParams("bad value", this->_command);
-					serv->replied = true;					
+					reply = errNeedMoreParams("bad value", this->_command);			
 				}
 				else
 				{
@@ -217,8 +215,7 @@ void Request::multiChan(Client* cli,Server *serv)
 			this->target.clear();
 		}
 		i++;
-	}
-	
+	}	
 }
 
 void Request::_mode_for_chans(Client* cli, Server* serv)
@@ -229,7 +226,6 @@ void Request::_mode_for_chans(Client* cli, Server* serv)
 	else
 	{
 		reply = errNoSuchChannel(cli->getNickName(), entries[0]);
-		serv->replied = true;
 	}
 	serv->_chan_requests(*this);
 }
@@ -243,12 +239,13 @@ std::string		Request::retrieve_cliModes(Client* tmp)
 
 void Request::_mode_for_clis(Client* cli, Server* serv)
 {
-	Client* tmp = _find(entries[0], serv);
-	if (tmp != NULL)
+	std::vector<Client* >::iterator it;
+	it = _find(entries[0], serv);
+	if (it != serv->all_clients.end())
 	{
-		if (tmp->callToMode == 0) /* TO deal with MODE + i from the client, at the beginning*/
+		if ((*it)->callToMode == 0) /* TO deal with MODE + i from the client, at the beginning*/
 		{
-			tmp->callToMode++;
+			(*it)->callToMode++;
 			return ;
 		}
 		if (mode_validity() == 0)
@@ -257,20 +254,19 @@ void Request::_mode_for_clis(Client* cli, Server* serv)
 		{
 			if (entries[1][1] == 'o')
 				return ;
-			tmp->setMode(entries[1][1], true);
+			(*it)->setMode(entries[1][1], true);
 		}
 		else if (entries[1][0] == '-')
 		{
 			if (entries[1][1] == 'r')
 				return ;
-			tmp->setMode(entries[1][1], false);
+			(*it)->setMode(entries[1][1], false);
 		}
-		reply = rpl_umodeis(retrieve_cliModes(tmp), tmp->getNickName());
-		tmp->callToMode ++;
+		reply = rpl_umodeis(retrieve_cliModes((*it)), (*it)->getNickName());
 	}
 	else
 		reply = errUsersDontMatch(cli->getNickName(), ":Cannot change mode for other users\n");
-	// serv->replied = true;
+	serv->_chan_requests(*this);
 }
 
 int Request::mode_validity()
@@ -434,4 +430,30 @@ void Request::names_params(Server* serv)
 		}
 		i++;
 	}	
+}
+
+void Request::format_entries()
+{
+	std::vector<std::string>::iterator it;
+
+	this->entries[this->entries.size() - 1] = removing_backslash(this->entries);
+	this->_command = this->entries[0];
+	it = this->entries.begin();
+	this->entries.erase(it);
+}
+
+int Request::check_validity() const
+{
+	std::vector<std::string>::iterator it;
+
+	if (this->raw_input.size() == 1 && (this->raw_input[0] == '\n' || this->raw_input[0] == '\r'))
+		return 1;
+	if (this->raw_input.size() == 0 || this->raw_input[0] == ' ')
+		return 2;
+	for (size_t i = 0; i < this->entries[0].size() - 1; i++)
+	{
+		if (isupper(this->entries[0][i]) == 0)
+			return 2;
+	}
+	return 0;
 }

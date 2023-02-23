@@ -20,7 +20,7 @@ typedef std::string	(*err)(string, string);
 void Channel::errInCmd(Request& request, string err)
 {
 	request.reply = err;
-	request.status = treated;
+	//request.status = treated;
 }
 
 void Channel::removeUser(Client * client)
@@ -117,7 +117,7 @@ void Channel::join(Request &request, Server* serv)
 		request.reply.clear();
 		request.reply = rpl_endofnames(request, this->getName(), "option");
 		request._origin->addChanToList(this);
-		request.status = treated;
+		//request.status = treated;
 	}
 	serv->_chan_requests(request);
 }
@@ -146,7 +146,7 @@ void Channel::invite(Request& request, Server* serv)
 	request.target.push_back(to_add);
 	request.response += request._origin->setPrefix() + " INVITE " + request.entries[0] + " #" + this->getName() + '\n';
 	request.reply = rpl_inviting(request.entries[0], this->getName());
-	request.status = treated;
+	//request.status = treated;
 }
 
 void Channel::topic(Request& request, Server* serv)
@@ -186,7 +186,7 @@ void Channel::topic(Request& request, Server* serv)
 		}
 	}
 	serv->_chan_requests(request);
-	request.status = treated;
+	//request.status = treated;
 }
 
 void Channel::part(Request& request, Server* serv)
@@ -207,7 +207,7 @@ void Channel::part(Request& request, Server* serv)
 		serv->_chan_requests(request);
 		removeUser(request._origin);
 		request._origin->removeChanFromList(this);
-		request.status = treated;
+		//request.status = treated;
 	}
 }
 
@@ -229,7 +229,7 @@ void Channel::privmsg(Request& request, Server* serv)
 	request.target.erase(it=find(request.target.begin(), request.target.end(), request._origin));
 	request.response = ":" + request._origin->getNickName() + " " + request._command + " #" + this->getName() + " " + request.message;  /* A jouté par Amina*/
 	// std::cout << "response " << request.response << std::endl;
-	request.status = treated;
+	//request.status = treated;
 }
 
 // work in progress
@@ -264,7 +264,7 @@ void Channel::kick(Request& request, Server* serv)
 	serv->_chan_requests(request);
 	removeUser(to_kick);
 	to_kick->removeChanFromList(this);
-	request.status = treated;
+	//request.status = treated;
 	request.target.clear();
 }
 
@@ -309,6 +309,6 @@ void Channel::names(Request& request,Server* serv)
 // 	serv->_chan_requests(request);
 // 	removeUser(to_kick);
 // 	to_kick->removeChanFromList(this);
-// 	request.status = treated;
+// 	//request.status = treated;
 // 	request.target.clear();
 // }

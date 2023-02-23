@@ -13,9 +13,7 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-
-#include "Server.hpp"
-# include "./Colors.hpp"
+# include <map>
 # include <vector>
 # include <iostream>
 # include <string>
@@ -25,12 +23,12 @@
 # include <poll.h>
 # include <utility>
 # include "Socket.hpp"
-# include <map>
 # include "Client.hpp"
 # include "Request.hpp"
 # include "Channel.hpp"
-# include "./numeric_replies/numeric_replies.hpp"
+# include "numeric_replies.hpp"
 #include "sig.hpp"
+# include "Colors.hpp"
 
 class Client;
 class Request;
@@ -69,30 +67,18 @@ public:
 	int											routine();
 	void										new_client();
 	void										read_client_req(Client* cli, int *i);
-	std::string									welcoming_newClients();
-
-	/* Utils */							
-	int											is_charset(char c);
 
 	/* Receiving and handling re				quest */
 	bool										contld(char* buf, int nci);
-	void										handle_request(char *buf, int *i, Client *cli, int nci);
-	void										_treating_req(Request *request, Client* cli, int* i);
-	void										check_req_validity(Request **req);
+	void										handle_request(char *buf, Client *cli, int nci);
+	void										_treating_req(Request *request, Client* cli);
 	void										_chan_requests(Request& req);
 	void										_killing_cli(Client& cli);
 
-	std::string									name; // limited to 63 characters
 	Socket*										server_socket;
-
 	struct pollfd*								_client_events;
-	char 										read_buffer[30000 + 1];
-	int											max_c;
-	std::string 								client_buffer;	
-	std::string 								client_welcoming;
 	std::vector<Client* > 						all_clients;
 	std::vector<Channel*>						all_chanels;
-	bool										replied;
 	std::map<std::string, std::string>			opers;
 
 
