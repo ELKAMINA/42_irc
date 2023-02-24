@@ -109,34 +109,29 @@ void Request::removing_sharp(std::vector<std::string>& en)
 
 void Request::oneChan(Client* cli, Server *serv)
 {
-	Channel *tmp;
+	Channel *to_add;
 
-	tmp = existing_chan(entries[0], serv);
-	if(jo_nb_keys > jo_nb_chan)
-		reply = errNeedMoreParams("bad value", this->_command);
-	if (tmp != NULL) /* Channel existe */
+	to_add = existing_chan(entries[0], serv);
+	// if(jo_nb_keys > jo_nb_chan)
+	// 	reply = errNeedMoreParams("bad value", this->_command);
+	if (to_add != NULL) /* Channel existe */
 	{
-		if ((tmp->activeMode('k') == true && entries.size() == 1)
-		|| (tmp->activeMode('k') == false && entries.size() > 1))
+		if ((to_add->activeMode('k') == true && entries.size() == 1)
+		|| (to_add->activeMode('k') == false && entries.size() > 1))
 		{
-			reply = errBadChannelKey(_origin->getNickName(), tmp->getName());
-			return ;
-			//
+			reply = errBadChannelKey(_origin->getNickName(), to_add->getName());
+			serv->_chan_requests(*this);
 		}
 		else
-			tmp->join(*this, serv);
+			to_add->join(*this, serv);
 	}
 	else
 	{
-		Channel *to_add;
 		if (entries.size() == 1)
 			to_add = new Channel((serv->all_clients), entries[0],  *cli);
 		else
-		{
-			std::cout << "oui oui " << entries[1] << std::endl;
 			to_add = new Channel((serv->all_clients), entries[0], entries[1], *cli);
-		}
-		// NOPE -> il devient oper IRC avec ca, il est déja operateur a la création du chan
+		// // NOPE -> il devient oper IRC avec ca, il est déja operateur a la création du chan
 		_origin->setMode('o', true); /* Set the first user to operator*/
 		serv->all_chanels.push_back(to_add);
 		to_add->join(*this, serv);

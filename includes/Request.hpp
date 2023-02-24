@@ -103,6 +103,7 @@ class Request
 		int			_kill(Client* cli, Server* serv);
 		int			_ping(Client* cli, Server* serv);
 		int			_whois(Client* cli, Server* serv);
+		int 		_quit(Client *cli, Server *serv);
 
 		/* Channel commands */
 		int			_join(Client* cli, Server *serv);

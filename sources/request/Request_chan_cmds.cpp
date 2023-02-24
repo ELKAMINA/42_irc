@@ -15,13 +15,9 @@
 int Request::_join(Client *cli, Server *serv)
 {
 
-	// if (entries[0] == "#0") /*A faire ? IRSSI reinterprete le join 0 en join #0 et donc ca cree un nouveau channel */
-	// 	_origin->leaveAllChans();
 	if (_check_lists() != 0)
 	{
 		removing_sharp(entries);
-		// if (entries.size() < 1)
-		// 	reply = errNeedMoreParams(cli->getNickName(), _command);
 		if (jo_nb_chan > 1)
 			multiChan(cli, serv);
 		else

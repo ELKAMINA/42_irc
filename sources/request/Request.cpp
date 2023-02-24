@@ -143,27 +143,24 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::_kill);
 	_request_cmds.push_back(&Request::_ping);
 	_request_cmds.push_back(&Request::_whois);
+	_request_cmds.push_back(&Request::_quit);
 }
 
 int Request::requestLexer(Client* cli, Server* serv)
 {
 	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "NOTICE", "JOIN",
-					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "kill", "PING", "WHOIS"};
+					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "kill", "PING", "WHOIS", "QUIT"};
 	size_t i = 0;
 
 	for (; i < _request_cmds.size(); i++){
 		if (this->_command == cmds[i])
-		{
 				return ((this->*(_request_cmds[i]))(cli, serv));
-		}
 	}
 	if (i == _request_cmds.size())
 	{
 		reply = errUnknownCommand(_origin->getNickName(), _command);
-		std::cerr<<"requestLexer ca va seg sa race"<<std::endl;
 		if (send(_origin->getFdClient(), reply.c_str(), strlen(reply.c_str()), 0) == -1)
 				perror("Send ");
-		std::cerr<<"request lexer: on ne verra jamais ce message car ca a seg sa race"<<std::endl;
 	}
 	return 0;
 }

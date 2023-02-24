@@ -277,3 +277,9 @@ int Request::_whois(Client *cli, Server *serv) /* A modifier avec les bonnes rep
 	(void)cli;
 	return 0;
 }
+
+int Request::_quit(Client *cli, Server *serv) /* A modifier avec les bonnes replies */
+{
+	serv->_killing_cli(*cli);
+	return 0;
+}
