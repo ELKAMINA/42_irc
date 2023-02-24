@@ -17,6 +17,7 @@ int Request::_join(Client *cli, Server *serv)
 
 	if (_check_lists() != 0)
 	{
+
 		removing_sharp(entries);
 		if (jo_nb_chan > 1)
 			multiChan(cli, serv);
@@ -47,74 +48,38 @@ int Request::_part(Client *cli, Server *serv)
 			if (!tmp)
 			{
 				reply = errNoSuchChannel(cli->getNickName(), entries[i]);
-				return 1;
+				serv->_chan_requests(*this);
 			}
 			else
 			{
 				tmp->part(*this, serv);
-				// temporary solution, need to improve it
 				if (tmp->getOnlineCount() == 0)
 				{
 					for (size_t j = 0; j < serv->all_chanels.size(); j++)
 					{
-						if (serv->all_chanels[i]->getName() == tmp->getName())
-							serv->all_chanels.erase(serv->all_chanels.begin() + i);
+						if (serv->all_chanels[j]->getName() == tmp->getName())
+							serv->all_chanels.erase(serv->all_chanels.begin() + j);
 					}
 				}
 			}
 			i++;
 		}
 	}
-	// else
-		// serv->_chan_requests(*this);
 	return 0;
 }
 
 int Request::_kick(Client *cli, Server *serv)
 {
-	// sleep(10);
 	if (_check_lists() != 0)
 	{
 		jo_nb_chan = 0;
-		std::vector<std::string>::iterator ita = entries.begin();
-		while (ita != entries.end())
-		{
-			std::cout << "Entriiies " << (*ita) << std::endl;
-			ita++;
-		}
 		beginning_with_diez(entries);
 		removing_sharp(entries);
 		if (reply == "UNDEFINED")
 		{
-			size_t users_toKick = 0;
-			if (entries.size() > jo_nb_chan)
-			{
-				std::vector<std::string>::iterator it = entries.begin() + jo_nb_chan;
-				bool comment = false;
-				size_t nb = 0;
-				while (it != entries.end())
-				{
-					if ((*it)[0] == ':')
-					{
-						while (it != entries.end())
-						{
-							message.clear();
-							message += *it;
-							message += ' ';
-							it++;
-							comment = true;
-							nb++;
-						}
-					}
-					if (comment == false)
-						it++;
-				}
-				users_toKick = entries.size() - jo_nb_chan - nb;
-			}
-			if ((jo_nb_chan >= 1 && !users_toKick))
-				reply = errNeedMoreParams(cli->getNickName(), _command);
+			if (entries.size() >= jo_nb_chan + 2)
+				req_get_comments(entries, jo_nb_chan + 1);
 			size_t i = 0;
-			// std::cout << "nb of channels " << jo_nb_chan << std::endl;
 			while (i < jo_nb_chan)
 			{
 				Channel *tmp = existing_chan(&entries[i][1], serv);

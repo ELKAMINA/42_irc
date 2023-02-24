@@ -64,7 +64,7 @@ int Request::beginning_with_diez(std::vector<std::string> entries)
 		it++;
 		jo_nb_chan++; /* Counting nb of diez in the req to check it with the nb of keys*/
 	}
-	return 1;
+	return 0;
 }
 
 void Request::resizing_chan(std::vector<std::string> entries)
@@ -112,8 +112,6 @@ void Request::oneChan(Client* cli, Server *serv)
 	Channel *to_add;
 
 	to_add = existing_chan(entries[0], serv);
-	// if(jo_nb_keys > jo_nb_chan)
-	// 	reply = errNeedMoreParams("bad value", this->_command);
 	if (to_add != NULL) /* Channel existe */
 	{
 		if ((to_add->activeMode('k') == true && entries.size() == 1)
@@ -131,8 +129,6 @@ void Request::oneChan(Client* cli, Server *serv)
 			to_add = new Channel((serv->all_clients), entries[0],  *cli);
 		else
 			to_add = new Channel((serv->all_clients), entries[0], entries[1], *cli);
-		// // NOPE -> il devient oper IRC avec ca, il est déja operateur a la création du chan
-		_origin->setMode('o', true); /* Set the first user to operator*/
 		serv->all_chanels.push_back(to_add);
 		to_add->join(*this, serv);
 	}	 
@@ -140,17 +136,11 @@ void Request::oneChan(Client* cli, Server *serv)
 
 void Request::multiChan(Client* cli,Server *serv)
 {
-	(void)serv;
 	(void)cli;
 	Channel* tmp;
 	size_t i = 0;
 	size_t k = jo_nb_chan;
 
-	if(jo_nb_keys > jo_nb_chan)
-	{
-		reply = errBadChannelKey(_origin->getNickName(), "One of them");
-		return ;
-	}
 	while (i < k)
 	{
 		tmp = existing_chan(entries[i], serv);
@@ -171,29 +161,27 @@ void Request::multiChan(Client* cli,Server *serv)
 		{
 			if (tmp->activeMode('k') == true)
 			{
+				std::cout << "tmp " << tmp->getName() << jo_nb_keys << std::endl;
 				if (jo_nb_keys != 0)
 				{
 					jo_nb_keys--;
 					tmp->join(*this, serv);
-					cli->addChanToList(tmp);
 				}
 				else
 				{
-					reply = errNeedMoreParams("bad value", this->_command);
-				
+					reply = errBadChannelKey(_origin->getNickName(), tmp->getName());
+					serv->_chan_requests(*this);
 				}
 			}
 			else
 			{
 				if (jo_nb_keys != 0)
 				{
-					reply = errNeedMoreParams("bad value", this->_command);			
+					reply = errBadChannelKey(_origin->getNickName(), tmp->getName());
+					serv->_chan_requests(*this);	
 				}
 				else
-				{
 					tmp->join(*this, serv);
-					cli->addChanToList(tmp);
-				}
 			}
 			this->target.clear();
 		}
@@ -324,6 +312,7 @@ int Request::_verifications()
 		if (_else.size() >= 1)
 		{
 			jo_nb_keys = _else.size();
+			// std::cout << "NB of keys " << jo_nb_keys << std::endl;
 			if (_command == "PART")
 			{
 				if (_else[0][0] != '\0' && (_else[0][0] != ':'))
