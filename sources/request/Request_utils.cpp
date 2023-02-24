@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:14:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/22 18:07:33 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/24 10:39:54 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,27 +30,15 @@ std::vector<Client* >::iterator Request::_find(std::string dest, Server *serv)
 	return (serv->all_clients.end());
 }
 
-// std::vector<Client* >::iterator Request::_findFd(int dest, Server *serv)
-// {
-// 	std::vector<Client *>::iterator it = serv->all_clients.begin();
-
-// 	while (it != serv->all_clients.end())
-// 	{
-// 		if	((*it)->getFdClient() == dest)
-// 			return it;
-// 		it++;
-// 	}
-// 	return (serv->all_clients.end());
-// }
-
 int Request::wrong_nickname()
 {
-	for (size_t i = 0; i < entries[0].size() - 1; i++)
+	
+	for (size_t i = 0; i < entries[0].size(); i++)
 	{
-		if	((isalnum(entries[0][i]) == 0 || entries[0].size() > 9) && entries[0][i]  != '-')
-			return 0;
+		if	((isalnum(entries[0][i]) == 0) && entries[0][i]  != '-')
+			return 1;
 	}
-	return 1;
+	return (entries[0].size() <= 9);
 }
 
 Channel* Request::existing_chan(std::string name, Server *serv)
@@ -375,7 +363,7 @@ int Request::_transformations()
 	return 1;
 }
 
-void Request::req_getComments(std::vector<std::string> &entries, size_t j)
+void Request::req_get_comments(std::vector<std::string> &entries, size_t j)
 {
 	if (message == "")
 	{
@@ -390,7 +378,7 @@ void Request::req_getComments(std::vector<std::string> &entries, size_t j)
 	}
 }
 
-void Request::req_killingProcess(Client* tmp, Server* serv)
+void Request::req_killing_process(Client* tmp, Server* serv)
 {
 	user_to_kick = entries[0];
 	reply = ":" + _origin->setPrefix() + " KILL " + tmp->getNickName() + " :" + message + "\n";

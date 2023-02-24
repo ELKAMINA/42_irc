@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/22 17:53:40 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/24 10:02:15 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,13 +220,9 @@ void Channel::privmsg(Request& request, Server* serv)
 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
 	if (clientAcceSs(*(request._origin)) == true&&  request._command == "PRIVMSG")
 		return (errInCmd(request, errCannotSendToChan(user, this->getName())));
-	// request.response = ": " + request._origin->setPrefix() + " PRIVMSG "
-	// +  " " + request.message; /* Commenté par Amina */
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
 	request.target.erase(it=find(request.target.begin(), request.target.end(), request._origin));
-	request.response = ":" + request._origin->getNickName() + " " + request._command + " #" + this->getName() + " " + request.message;  /* A jouté par Amina*/
-	// std::cout << "response " << request.response << std::endl;
-	//request.status = treated;
+	request.response = ":" + request._origin->getNickName() + " " + request._command + " #" + this->getName() + " " + request.message;
 }
 
 // work in progress

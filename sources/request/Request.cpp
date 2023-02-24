@@ -160,8 +160,10 @@ int Request::requestLexer(Client* cli, Server* serv)
 	if (i == _request_cmds.size())
 	{
 		reply = errUnknownCommand(_origin->getNickName(), _command);
+		std::cerr<<"requestLexer ca va seg sa race"<<std::endl;
 		if (send(_origin->getFdClient(), reply.c_str(), strlen(reply.c_str()), 0) == -1)
 				perror("Send ");
+		std::cerr<<"request lexer: on ne verra jamais ce message car ca a seg sa race"<<std::endl;
 	}
 	return 0;
 }

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/22 17:41:41 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/24 10:51:49 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ void Server::read_client_req(Client *cli, int *i)
 	if (readBytes <= 0)
 	{
 		if (readBytes == 0)
-			std::cout << "The client which fd is " << cli->getFdClient() << " sent an empty_req request " << std::endl;
+			std::cout << cli->getFdClient() << " sent an empty_req request " << std::endl;
 		else
 			perror("recv error");
 		close(_client_events[*i].fd);
@@ -219,7 +219,7 @@ void Server::handle_request(char *buf, Client *cli, int nci, int*i)
 	{
 		input = client_buffer.substr(0, pos + 1);
 		client = input.c_str();
-		req = new Request(client, cli);
+		req = new Request(client, cli); // ne pas allouer
 		client = NULL;
 		if (_treating_req(req, cli) == 1)
 		{
@@ -287,7 +287,14 @@ void Server::_killing_cli(Client& cli)
 		}
 	}
 	ita = find(all_clients.begin(), all_clients.end(), &cli);
-	all_clients.erase(ita);	
-	if (close(cli.getFdClient()) < 0)
-		return (perror("Close"));
+	for (int i = 0; i < _online_clients; i++){
+		if (_client_events[i].fd == cli.getFdClient())
+		{
+			close(_client_events[i].fd);
+			_client_events[i] = _client_events[_online_clients - 1];
+			_online_clients--;
+			break ;
+		}
+	}
+	all_clients.erase(ita);
 }

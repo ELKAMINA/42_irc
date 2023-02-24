@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:20:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/22 18:11:39 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/24 10:39:35 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,14 @@ int Request::_nick(Client *cli, Server *serv)
 	(void)serv;
 	if (cli->getPwd() != serv->get_pass())
 		reply = errNotRegistered(cli->getNickName(), "not registered");
-	if ((_find(entries[0], serv)) != (serv->all_clients.end()))
+	else if ((_find(entries[0], serv)) != (serv->all_clients.end()))
 	{
 		reply = errNicknameInUse(entries[0], "option");
-		cli->setNickname("*");
+		cli->setNickname("Guest");
 
 	}
-	// else if (wrong_nickname() == 0)
-	// 	reply = err
+	else if (wrong_nickname() == 0)
+		reply = errErroneusNickname(entries[0], "Erronus nickname");
 	else
 		cli->setNickname(entries[0]);
 	serv->_chan_requests(*this);
@@ -52,7 +52,7 @@ int Request::_nick(Client *cli, Server *serv)
 int Request::_user(Client *cli, Server *serv)
 {
 
-	if (cli->loggedIn == false)
+	if (cli->loggedIn == false && cli->getNickName() != "UNDEFINED")
 	{
 		cli->setUsername(entries[0]);
 		cli->setRealname(entries[3]);
@@ -69,75 +69,37 @@ int Request::_user(Client *cli, Server *serv)
 int Request::_privmsg(Client *cli, Server *serv)
 {
 	(void)cli;
-	(void)serv;
-	if (entries.size() >= 2)
+
+	if (entries[0][0] != '&' && entries[0][0] != '#')
 	{
-		if (entries[0][0] != '&' && entries[0][0] != '#')
+		if (_find(entries[0], serv) != (serv->all_clients.end()))
 		{
-			std::vector<std::string>::iterator it = entries.begin();
-			std::string dest = entries[0];
-			std::string message;
-			if (_find(dest, serv) != (serv->all_clients.end()))
-			{
-				entries.erase(it);
-				if ((*(_find(dest, serv)))->checkMode('a') == 1)
-				{
-					message = (*(_find(dest, serv)))->getAwayMessage();
-					if (send(_origin->getFdClient(), message.c_str(), message.length(), 0) == -1)
-					return (-1);
-					return 0;
-				} // à tester pour NOTICE
-				else
-				{
-					if (entries.size() >= 1)
-					{
-						size_t i = 0;
-						while (i < entries.size())
-						{
-							message.append(entries[i]);
-							message.append(" ");
-							i++;
-						}
-					}
-					message.append("\n");
-				}
-				std::string ToSend =  ":" + _origin->getNickName() + " " + _command + " " + dest + " " + &message[1];
-				if (send((*_find(dest, serv))->getFdClient(), ToSend.c_str(), ToSend.length(), 0) == -1)
-					return (-1);
-				//serv->//replied = true;
-			}
-			else if (_find(dest, serv) == (serv->all_clients.end()) && _command == "PRIVMSG")
-				reply = errNoSuchNick(_origin->getNickName(), entries[0]);
-			return 0;
-		}
-		if (entries[0][0] == '&' || entries[0][0] == '#')
-		{
-			beginning_with_diez(entries);
-			Channel *tmp = existing_chan(&entries[0][1], serv);
-			if (!tmp && _command == "PRIVMSG")
-			{
-				reply = errNoSuchChannel(cli->getNickName(), entries[0]);
-				//serv->//replied = true;
-			}
+			if ((*(_find(entries[0], serv)))->checkMode('a') == 1 && _command == "PRIVMSG")
+				reply = (*(_find(entries[0], serv)))->getAwayMessage();
 			else
 			{
-				if (message == "")
-				{
-					message.clear();
-					size_t i = jo_nb_chan;
-					while (i < entries.size())
-					{
-						message.append(entries[i]);
-						message.append(" ");
-						i++;
-					}
-				}
-				tmp->privmsg(*this, serv);
+				req_get_comments(entries, 1);
+				message.append("\n");
+				target.push_back(*(_find(entries[0], serv)));
+				response =  ":" + _origin->getNickName() + " " + _command + " " + entries[0] + " " + &message[1];
 			}
-			serv->_chan_requests(*this);
-			return 0;
+		}
+		else if (_find(entries[0], serv) == (serv->all_clients.end()) && _command == "PRIVMSG")
+			reply = errNoSuchNick(_origin->getNickName(), entries[0]);
+	}
+	else
+	{
+		beginning_with_diez(entries);
+		Channel *tmp = existing_chan(&entries[0][1], serv);
+		if (!tmp && _command == "PRIVMSG")
+			reply = errNoSuchChannel(cli->getNickName(), entries[0]);
+		else
+		{
+			req_get_comments(entries, 1);
+			tmp->privmsg(*this, serv);
 		}
 	}
+	serv->_chan_requests(*this);
 	return 0;
 }
 
@@ -145,7 +107,7 @@ int Request::_away(Client *cli, Server *serv)
 {
 	(void)serv;
 	(void)cli;
-	if (entries.size() == 0 || (entries.size() == 1 && entries[0] == "")) /* Marche pas sur IRC */
+	if (entries.size() == 0) /* Marche pas sur IRC */
 	{
 		if (_origin->checkMode('a') == 1)
 		{
@@ -173,7 +135,7 @@ int Request::_away(Client *cli, Server *serv)
 	return 0;
 }
 
-int Request::_list(Client *cli, Server *serv)
+int Request::_list(Client *cli, Server *serv) /* A voir si on garde*/
 {
 
 	(void)cli;
@@ -232,7 +194,6 @@ int Request::_invite(Client *cli, Server *serv)
 	else
 		reply = errNoSuchChannel(_origin->getNickName(), entries[0]);
 	serv->_chan_requests(*this);
-	//serv->//replied = true;
 	return 0;
 }
 
@@ -274,8 +235,8 @@ int Request::_kill(Client *cli, Server *serv)
 		else
 		{
 			if (entries.size() >= 2)
-				req_getComments(entries, 1);
-			req_killingProcess((*it), serv);			
+				req_get_comments(entries, 1);
+			req_killing_process((*it), serv);			
 		}
 	}
 	return 0;

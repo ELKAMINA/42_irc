@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 17:33:19 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/05 09:55:10 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/24 08:43:33 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ string	            errCannotSendToChan(string nickName, string channel);
 string				errTooManyTarget(string nickName, string target);
 string				errUnknownCommand(string nickName, string command);
 string				errNoNicknameGiven(string nickName, string message);
+string				errErroneusNickname(string nickName, string message);
 string				errNicknameInUse(string nickName, string message);
 string				errUserNotOnChannel(string nickName, string channel);
 string				errNotOnChannel(string nickName, string channel);

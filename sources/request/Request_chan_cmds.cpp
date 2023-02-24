@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:23:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/22 17:58:46 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/24 11:07:40 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,19 @@
 
 int Request::_join(Client *cli, Server *serv)
 {
-	(void)cli;
-	(void)serv;
+
 	// if (entries[0] == "#0") /*A faire ? IRSSI reinterprete le join 0 en join #0 et donc ca cree un nouveau channel */
 	// 	_origin->leaveAllChans();
 	if (_check_lists() != 0)
 	{
 		removing_sharp(entries);
-		if (entries.size() < 1)
-			reply = errNeedMoreParams(cli->getNickName(), _command);
+		// if (entries.size() < 1)
+		// 	reply = errNeedMoreParams(cli->getNickName(), _command);
 		if (jo_nb_chan > 1)
 			multiChan(cli, serv);
-		if ((jo_nb_chan == 1 && jo_nb_keys == 0) || (jo_nb_chan == 1 && jo_nb_keys == 1))
+		else
 			oneChan(cli, serv);
 	}
-	else
-		reply = "Invalid request \n";
 	return 0;
 }
 
@@ -39,26 +36,11 @@ int Request::_part(Client *cli, Server *serv)
 	if (_check_lists() != 0)
 	{
 		if (entries.size() > jo_nb_chan)
-		{
-			if (message == "")
-			{
-				message.clear();
-				size_t i = jo_nb_chan;
-				while (i < entries.size())
-				{
-					message += entries[i];
-					message += ' ';
-					i++;
-				}
-			}
-		}
+			req_get_comments(entries, jo_nb_chan);
 	}
 	else
-	{
-		reply = errUnknownCommand(cli->getNickName(), _command);
-		return 1; /* on checke si larg apres les chan sil existe commence bien par : qui est le part message*/
-		// //serv->//replied = true;
-	}
+		reply = errNoSuchChannel(cli->getNickName(), entries[0]);
+	serv->_chan_requests(*this);
 	size_t i = 0;
 	if (reply == "UNDEFINED")
 	{
@@ -87,8 +69,8 @@ int Request::_part(Client *cli, Server *serv)
 			i++;
 		}
 	}
-	else
-		serv->_chan_requests(*this);
+	// else
+		// serv->_chan_requests(*this);
 	return 0;
 }
 

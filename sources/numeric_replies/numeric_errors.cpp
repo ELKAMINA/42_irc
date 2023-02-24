@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 14:34:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/16 14:47:48 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/24 11:12:35 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ string	errNoSuchChannel(string senderNick, string wrongChan)
 {
 	(void)senderNick;
 	string reply;
-	reply = "#" + wrongChan + " 403 * :No such channel\n";
+	reply = ":403 " + wrongChan + " :No such channel\n";
 	return (reply);
 }
 
@@ -63,11 +63,19 @@ string errNoNicknameGiven(string nickName, string message)
 	return (reply);
 }
 
+string errErroneusNickname(string nickName, string message)
+{
+	(void)message;
+	string reply;
+	reply = ":432 " + nickName + " :Erroneous nickname\n";
+	return (reply);
+}
+
 string	errNicknameInUse(string nickName, string message)
 {
 	(void)message;
 	string reply;
-	reply = ":433 *" + nickName + " :Nickname already in use\n";
+	reply = ":433 " + nickName + " :Nickname already in use\n";
 	return (reply);
 } 
 
@@ -82,7 +90,7 @@ string errNotOnChannel(string nickName, string channel)
 {
 	(void)nickName;
 	string reply;
-	reply = channel + " 442 * :You're not on that channel\n";
+	reply = channel + " 442  :You're not on that channel\n";
 	return (reply);
 }
 
