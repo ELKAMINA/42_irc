@@ -38,6 +38,8 @@ int Request::_nick(Client *cli, Server *serv)
 	if ((_find(entries[0], serv)) != (serv->all_clients.end()))
 	{
 		reply = errNicknameInUse(entries[0], "option");
+		cli->setNickname("*");
+
 	}
 	// else if (wrong_nickname() == 0)
 	// 	reply = err
@@ -50,7 +52,7 @@ int Request::_nick(Client *cli, Server *serv)
 int Request::_user(Client *cli, Server *serv)
 {
 
-	if (cli->loggedIn == false && cli->getNickName() != "UNDEFINED")
+	if (cli->loggedIn == false)
 	{
 		cli->setUsername(entries[0]);
 		cli->setRealname(entries[3]);
@@ -306,4 +308,11 @@ int Request::_ping(Client *cli, Server *serv) /* For later */
 	else
 		reply = ":" + cli->setPrefix() + "PONG: " + entries[0] + "\r\n";
 	return 0;
-} 
+}
+
+int Request::_whois(Client *cli, Server *serv) /* A modifier avec les bonnes replies */
+{
+	(void)serv;
+	(void)cli;
+	return 0;
+}

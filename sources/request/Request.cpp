@@ -142,13 +142,13 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::_wallops);
 	_request_cmds.push_back(&Request::_kill);
 	_request_cmds.push_back(&Request::_ping);
-	// _request_cmds.push_back(&Request::_notice);
+	_request_cmds.push_back(&Request::_whois);
 }
 
 int Request::requestLexer(Client* cli, Server* serv)
 {
 	string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "NOTICE", "JOIN",
-					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "kill", "PING"};
+					"PART", "KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES", "CAP", "INVITE", "OPER", "WALLOPS", "kill", "PING", "WHOIS"};
 	size_t i = 0;
 
 	for (; i < _request_cmds.size(); i++){

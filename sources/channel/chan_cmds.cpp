@@ -60,7 +60,7 @@ void Channel::join(Request &request, Server* serv)
 {
 	string user = request._origin->getNickName();
 	vector<Client *>::iterator it;
-	int matching_param;
+	int matching_param = 0;
 	bool yes = false;
 	
 	// request.target.clear();
