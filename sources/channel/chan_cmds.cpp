@@ -226,7 +226,6 @@ void Channel::mode(Request& request, Server* serv)
 
 void Channel::kick(Request& request, Server* serv)
 {
-
 	Client* to_kick = NULL;
 	string user = request._origin->getNickName();
 	if (request.user_to_kick != "UNDEFINED")

@@ -147,7 +147,7 @@ void Request::multiChan(Client* cli,Server *serv)
 		if (tmp == NULL)
 		{
 			Channel *to_add;
-			if (jo_nb_keys != 0) /* cela veut dire quil ya des mdp pr les chans*/
+			if (jo_nb_keys != 0)
 			{
 				to_add = new Channel((serv->all_clients), entries[i], ((entries[i + jo_nb_chan])), *cli);
 				jo_nb_keys--;
@@ -161,7 +161,6 @@ void Request::multiChan(Client* cli,Server *serv)
 		{
 			if (tmp->activeMode('k') == true)
 			{
-				std::cout << "tmp " << tmp->getName() << jo_nb_keys << std::endl;
 				if (jo_nb_keys != 0)
 				{
 					jo_nb_keys--;
@@ -174,15 +173,7 @@ void Request::multiChan(Client* cli,Server *serv)
 				}
 			}
 			else
-			{
-				if (jo_nb_keys != 0)
-				{
-					reply = errBadChannelKey(_origin->getNickName(), tmp->getName());
-					serv->_chan_requests(*this);	
-				}
-				else
 					tmp->join(*this, serv);
-			}
 			this->target.clear();
 		}
 		i++;
@@ -312,7 +303,6 @@ int Request::_verifications()
 		if (_else.size() >= 1)
 		{
 			jo_nb_keys = _else.size();
-			// std::cout << "NB of keys " << jo_nb_keys << std::endl;
 			if (_command == "PART")
 			{
 				if (_else[0][0] != '\0' && (_else[0][0] != ':'))
