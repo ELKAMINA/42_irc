@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:20:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/26 17:45:56 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 22:03:00 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,4 +280,17 @@ int Request::_quit(Client *cli, Server *serv) /* A modifier avec les bonnes repl
 {
 	serv->_killing_cli(*cli);
 	return 0;
+}
+
+int Request::_restart(Client *cli, Server *serv)
+{
+	if (cli->checkMode('o') == false)
+		reply = errNoOperHost(":No O-lines for your host\n", "op");
+	else
+	{
+		serv->disconnectAll();
+		std::cout<<"Disconnecting every clients\n";
+		serv->status = restart;
+	}
+	serv->_chan_requests(*this);
 }

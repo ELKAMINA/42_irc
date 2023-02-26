@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:37:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/26 17:44:20 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 23:58:21 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,13 @@ class Client;
 class Request;
 class Channel;
 class Socket;
+
+enum state
+{
+	ongoing,
+	restart,
+	shutdown
+};
 
 class Server
 {
@@ -74,7 +81,9 @@ public:
 	int											_treating_req(Request& request, Client* cli);
 	void										_chan_requests(Request& req);
 	void										_killing_cli(Client& cli);
+	void										disconnectAll();
 
+	// int											status;
 	Socket*										server_socket;
 	struct pollfd*								_client_events;
 	std::vector<Client* > 						all_clients;

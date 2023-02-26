@@ -1,11 +1,11 @@
 #include "sig.hpp"
-
+#include "externStatus.hpp"
 
 void handle_sig(int sig)
 {
     (void)sig;
     std::cout << "\r";
-    gstatus = 0;
+    status = shutdown;
 }
 
 void ctl_d(int sig)

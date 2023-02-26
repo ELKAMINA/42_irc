@@ -6,11 +6,12 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/26 17:44:26 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 22:15:31 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "numeric_replies.hpp"
+#include "externStatus.hpp"
 #include <unistd.h>
 
 int gstatus = 0;
@@ -124,11 +125,14 @@ int Server::start_server()
 	return 0;
 }
 
+
+
 int Server::routine()
 {
 	int active_co;
 
-	while (1)
+	status = ongoing;
+	while (status == ongoing)
 	{
 		active_co = poll(_client_events, _online_clients, -1);
 		if (active_co <= 0)
@@ -296,4 +300,14 @@ void Server::_killing_cli(Client& cli)
 		}
 	}
 	all_clients.erase(ita);
+}
+
+void Server::disconnectAll()
+{
+	for (size_t i = 1; i < _online_clients; i++){
+		close(_client_events[i].fd);
+	}
+	all_clients.clear();
+	all_chanels.clear();
+	opers.clear();
 }
