@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 17:48:06 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/08 13:17:08 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 10:03:34 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,9 @@ std::string	rpl_topic(Request& req, std::string channel, std::string topic )
 std::string	rpl_channelmodeis(std::string channel, std::string mode ) // Modifier "unregistered client par le vrai client user"
 { 
 	/* <channel><mode><modeparams> */
-	std::ostringstream oss;
-	oss << channel << " " << mode << "\n";
-	std::string var = oss.str();
-	return (var);
+	std::string reply;
+	reply = "324 " + channel + " " + mode + '\n';
+	return (reply);
 }
 
 std::string	rpl_namereply(std::string message, std::string op ) // Modifier "unregistered client par le vrai client user"

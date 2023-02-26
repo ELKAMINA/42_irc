@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 12:17:09 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 19:37:41 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 10:36:48 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,8 @@ void Channel::modeLimite(Request& request, pair<string, string> command)
 	if (command.first[0] == '+')
 	{
 		int max = atoi(command.second.c_str());
-		if (max == 0)
+		if (max <= 0)
 		{
-			cout<<"bad value"<<endl;
 			return;
 		}
 		this->_maxUsers = max;
@@ -92,7 +91,10 @@ void Channel::changeUserMode(Request& request, pair<string, string> command, vec
 	vector<Client*>::iterator it;
 	
 	if(command.first.size() != 2)
-		return (errInCmd(request, errUModeUnknownFlag(user, this->getName())));
+	{
+		request.reply = errUModeUnknownFlag(user, this->getName());
+		return;
+	}
 	else
 	{
 		it = find(_users.begin(), _users.end(), to_add);
@@ -118,22 +120,21 @@ static int isInSet(char c, string set)
 	return 0;
 }
 
-static uint checkModes(string params)
+static int checkModes(Request& request, string params)
 {
 	bool userMode = false;
 	bool chanMode = false;
 	int count = 0;
 	string found = "";
 	if ((params[0] != '-' && params[0] != '+') || params.size() < 2)
-		return 0;
-	for (uint i = 1; i < params.size(); i++){
+		return -1;
+	for (size_t i = 1; i < params.size(); i++){
 		if (!isInSet(params[i], "biklopstv"))
-			return 0;
+			return (request.reply = errUModeUnknownFlag("wrong", "flag"), -1);
 		else if (!isInSet(params[i], found))
 		{
 			if ((params[i] == 'b' || params[i] == 'o' || params[i] == 'v') && !chanMode)
 			{
-				count = 1;
 				userMode = true;
 				found += params[i];
 			}
@@ -145,16 +146,15 @@ static uint checkModes(string params)
 				found += params[i];
 			}
 			else
-				return 0;
+				return -1;
 		}
 	}
 	return count;
 }
 
-static map<string, string> splitModes(vector<string>params)
+static map<string, string> splitModes(vector<string>params, int countParams)
 {
 	map<string, string>modes;
-	uint countParams = 0;
 	for (uint i = 1; i < params[1].size(); i++){
 		string mode = "";
 		mode += params[1][0];
@@ -166,8 +166,7 @@ static map<string, string> splitModes(vector<string>params)
 			if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'
 			|| params[1][i] == 't'))
 			{
-				modes.insert(make_pair(mode, params[2 + countParams]));
-				countParams += 1;
+				modes.insert(make_pair(mode, params[2 + i]));
 			}
 			else
 				modes.insert(make_pair(mode, ""));
@@ -178,17 +177,16 @@ static map<string, string> splitModes(vector<string>params)
 
 int Channel::addMode(Request& request, vector<string>params)
 {
-	uint countParams;
+	int countParams;
 	map<string, string>modes;
 
 	if (params.size() == 1)
-		request.reply = '#' + this->getName() + ": " + this->getModes() + '\n';
-	else
+		request.reply = rpl_channelmodeis(this->getName(), this->getModes());
+	else if ((countParams = checkModes(request, params[1])) != -1)
 	{
-		countParams = checkModes(params[1]);
-		if (countParams != params.size() - 2)
-			return (request.response = errNeedMoreParams(request._origin->getNickName(), request._command), 1);
-		modes = splitModes(params);
+		// if (countParams != params.size() - 2)
+		// 	return (request.reply = errNeedMoreParams(request._origin->getNickName(), request._command), 1);
+		modes = splitModes(params, countParams);
 		for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){
 			if (it->first[1] == 'o')
 				changeUserMode(request, *it, _operators);
@@ -198,6 +196,5 @@ int Channel::addMode(Request& request, vector<string>params)
 				changeChanMode(request, *it);
 		}
 	}
-	//request.status = treated;
 	return 0;
 }

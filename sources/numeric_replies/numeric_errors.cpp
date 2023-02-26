@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 14:34:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/24 11:12:35 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 09:35:13 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ string errUModeUnknownFlag(string nickName, string channel)
 	(void)nickName;
 	(void)channel;
 	string reply;
-	reply = "501 * :Unknown MODE flag";
+	reply = ":501 * :Unknown MODE flag\n";
 	return (reply);
 }
 
