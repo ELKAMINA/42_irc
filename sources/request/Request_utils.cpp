@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/08 18:14:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/24 10:39:54 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 17:40:17 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,7 +246,6 @@ void Request::chan_names(Server* serv)
 	std::vector<Channel*>::iterator it = serv->all_chanels.begin();
 	while (it != serv->all_chanels.end())
 	{
-		// std::cout << "je rentre ici 2 " << std::endl;
 		if ((*it)->activeMode('s') == false)
 		{
 			(*it)->names(*this, serv);
@@ -400,6 +399,7 @@ void Request::format_entries()
 
 	this->entries[this->entries.size() - 1] = removing_backslash(this->entries);
 	this->_command = this->entries[0];
+	std::transform(this->_command.begin(), this->_command.end(), this->_command.begin(), ::toupper);
 	it = this->entries.begin();
 	this->entries.erase(it);
 }

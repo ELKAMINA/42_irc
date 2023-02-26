@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/22 17:54:25 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 17:49:44 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ bool Channel::isInServ(string const& user, vector<Client *>&users)
 	return false;
 }
 
-bool Channel::clientAcceSs(Client& cli)
+bool Channel::clientAccess(Client& cli)
 {
 	std::vector<Client*>::iterator it = _banned.begin();
 	while (it != _banned.end())

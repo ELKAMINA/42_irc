@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 11:31:04 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/24 10:02:15 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 18:47:31 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,8 @@ void Channel::join(Request &request, Server* serv)
 			errInCmd(request, errInviteOnlyChan(user, this->getName()));
 			yes = true;
 		}
-		_invited.erase(it=find(_invited.begin(), _invited.end(), request._origin));
+		else
+			_invited.erase(it=find(_invited.begin(), _invited.end(), request._origin));
 	}
 	if ( yes == false)
 	{
@@ -207,7 +208,7 @@ void Channel::privmsg(Request& request, Server* serv)
 	request.response.clear();
 	if (!isInChanList((request._origin), _users) && request._command == "PRIVMSG")
 		return (errInCmd(request, errNotOnChannel(user, this->getName())));
-	if (clientAcceSs(*(request._origin)) == true&&  request._command == "PRIVMSG")
+	if (clientAccess(*(request._origin)) == true&&  request._command == "PRIVMSG")
 		return (errInCmd(request, errCannotSendToChan(user, this->getName())));
 	request.target.insert(request.target.begin(), _users.begin(), _users.end());
 	request.target.erase(it=find(request.target.begin(), request.target.end(), request._origin));

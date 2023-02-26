@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 14:34:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/26 09:35:13 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 17:46:33 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,6 +204,6 @@ string		errNoPrivileges(string message, string me)
 {
 	(void)me;
 	string reply;
-	reply =  "481 " + message;
+	reply =  ":481 " + message;
 	return (reply);
 }

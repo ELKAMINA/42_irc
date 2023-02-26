@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:37:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/22 17:19:09 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 17:44:20 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ public:
 	/* Receiving and handling re				quest */
 	bool										contld(char* buf, int nci);
 	void										handle_request(char *buf, Client *cli, int nci, int *i);
-	int											_treating_req(Request *request, Client* cli);
+	int											_treating_req(Request& request, Client* cli);
 	void										_chan_requests(Request& req);
 	void										_killing_cli(Client& cli);
 

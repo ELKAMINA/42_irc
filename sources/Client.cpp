@@ -34,6 +34,7 @@ Client & Client::operator=( const Client& rhs )
 		this->_pass = rhs._pass;
 		this->_id = rhs._id;
 		this->_mode = rhs._mode;
+		this->chans = rhs.chans;
 	}
 	return *this;
 };
@@ -90,7 +91,7 @@ std::string Client::getPwd() const
 
 size_t Client::getChanNbr() const
 {
-	return this->_chans.size();
+	return this->chans.size();
 }
 void Client::setFdClient(int fd)
 {
@@ -143,7 +144,7 @@ Client::~Client()
 {
 	this->_mode.clear();
 	this->all_req.clear();
-	this->_chans.clear();
+	this->chans.clear();
 }
 
 void Client::setAwayMessage(std::string message)
@@ -159,18 +160,18 @@ std::string Client::getAwayMessage() const
 
 void Client::addChanToList(Channel * chan)
 {
-	this->_chans.insert(chan);
+	this->chans.insert(chan);
 }
 
 void Client::removeChanFromList(Channel * chan)
 {
-	this->_chans.erase(chan);
+	this->chans.erase(chan);
 }
 
 void Client::leaveAllChans()
 {
-	set<Channel *>::iterator it = _chans.begin();
-	for (; it != _chans.end(); it++){
+	set<Channel *>::iterator it = chans.begin();
+	for (; it != chans.end(); it++){
 		(*it)->removeUser(this);
 	}
 }

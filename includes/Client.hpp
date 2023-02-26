@@ -70,6 +70,8 @@ class Client
 
 		bool			loggedIn;
 		int				callToMode;
+		set<Channel *>				chans;
+
 	private:
 
 		void						initModes();
@@ -82,7 +84,6 @@ class Client
 		std::string					_away_msg;
 		std::string					_id;
 		std::map<char, bool>		_mode;
-		set<Channel *>				_chans;
 		std::map<int, Request>		all_req;
 
 

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/22 17:54:06 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 18:30:08 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ class Channel
 		void changeChanMode(Request& request, pair<string, string> command);
 		void modeLimite(Request& request, pair<string, string> command);
 		int addMode(Request& request, vector<string>params);
-		// void modeBan(Request& request, pair<string, string> command);
+		void modeBan(Request& request, pair<string, string> command);
 
 		/* COMMANDS */
 		void errInCmd(Request& request, string err);
@@ -72,7 +72,7 @@ class Channel
 		bool	isInChanList(Client const *user, vector<Client*>& list);
 		bool	isInServ(string const& user, vector<Client *>&users);
 		Client*	found(string nickname, vector<Client*>&list);
-		bool	clientAcceSs(Client& cli);
+		bool	clientAccess(Client& cli);
 		/* CHAN MODE CHECKER */
 		
 		bool activeMode(char mode);
@@ -95,7 +95,7 @@ class Channel
 		string				_name;
 		string				_key;
 
-		vector<Client *>	_operators; // separated from users or duplicated ?
+		vector<Client *>	_operators;
 		vector<Client *>	_invited;
 		vector<Client *>	_vocal;
 		vector<Client *>	_banned;

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:41:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/24 10:51:49 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/26 17:44:26 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,7 +207,6 @@ bool Server::contld(char* buf, int nci)
 void Server::handle_request(char *buf, Client *cli, int nci, int*i)
 {
 	size_t		pos;
-	Request		*req;
 	std::string input;
 	std::string client_buffer = "";
 	const char	*client = NULL;
@@ -219,16 +218,15 @@ void Server::handle_request(char *buf, Client *cli, int nci, int*i)
 	{
 		input = client_buffer.substr(0, pos + 1);
 		client = input.c_str();
-		req = new Request(client, cli); // ne pas allouer
+		Request req = Request(client, cli);
 		client = NULL;
 		if (_treating_req(req, cli) == 1)
 		{
 			close(_client_events[*i].fd);
 			_client_events[*i] = _client_events[_online_clients - 1];
 			_online_clients--;
-			std::vector<Client*>::iterator it = req->_find(req->_origin->getNickName(), this);
+			std::vector<Client*>::iterator it = req._find(req._origin->getNickName(), this);
 			all_clients.erase(it);
-			delete req;
 			break ;
 		}
 		client_buffer.erase(0, pos + 2);
@@ -237,12 +235,12 @@ void Server::handle_request(char *buf, Client *cli, int nci, int*i)
 	return ;
 }
 
-int Server::_treating_req(Request* req, Client* cli)
+int Server::_treating_req(Request& req, Client* cli)
 {
-	if (req->check_validity() != 1)
+	if (req.check_validity() != 1)
 	{
-		req->format_entries();
-		return (req->requestLexer(cli, this));
+		req.format_entries();
+		return (req.requestLexer(cli, this));
 	}
 	return 0;
 }
@@ -273,25 +271,26 @@ void	Server::_chan_requests(Request& req)
 void Server::_killing_cli(Client& cli)
 {
 	std::vector<Client*>::iterator ita;
-	std::vector<Channel*>::iterator it = all_chanels.begin();
-	while (it != all_chanels.end())
+	std::set<Channel*>::iterator it = cli.chans.begin();
+	while (it != cli.chans.end())
 	{
-		if((*it)->isInChanList(&cli, (*it)->_users) == true)
+		std::vector<Channel*>::iterator target = find(all_chanels.begin(), all_chanels.end(), *it);
+		if((*target)->isInChanList(&cli, (*target)->_users) == true)
 		{
-			(*it)->removeUser(&cli);
+			(*target)->removeUser(&cli);
 			if ((*it)->getOnlineCount() == 0)
 			{
-				all_chanels.erase(it);
-			}	
-			it++;
+				all_chanels.erase(target);
+			}
 		}
+		it++;
 	}
 	ita = find(all_clients.begin(), all_clients.end(), &cli);
 	for (int i = 0; i < _online_clients; i++){
 		if (_client_events[i].fd == cli.getFdClient())
 		{
 			close(_client_events[i].fd);
-			_client_events[i] = _client_events[_online_clients - 1];
+			_client_events[i] = _client_events[0];
 			_online_clients--;
 			break ;
 		}
