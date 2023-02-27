@@ -13,6 +13,6 @@
 #ifndef EXTERNSTATUS_HPP
 # define EXTERNSTATUS_HPP
 
-extern int status = 0;
+extern int gstatus;
 
 #endif

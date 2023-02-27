@@ -86,6 +86,8 @@ class Channel
 		std::string	getKey() const;
 			
 		vector<Client *>	_users;
+		map<char, bool>		_mods;
+		vector<Client *>	_operators;
 	private:
 
 		int					_onlineUsers;
@@ -94,14 +96,10 @@ class Channel
 		string				_topic;
 		string				_name;
 		string				_key;
-
-		vector<Client *>	_operators;
 		vector<Client *>	_invited;
 		vector<Client *>	_vocal;
 		vector<Client *>	_banned;
-
 		vector<Client *>&	_allUsers;
-		map<char, bool>		_mods;
 
 };
 

@@ -5,7 +5,6 @@
 #include <iostream>
 #include <cstdlib>
 #include "Server.hpp"
-#include "status.hpp"
+#include "externStatus.hpp"
 
 void handle_sig(int sig);
-void ctl_d(int sig);

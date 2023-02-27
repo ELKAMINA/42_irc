@@ -144,6 +144,7 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::_ping);
 	_request_cmds.push_back(&Request::_whois);
 	_request_cmds.push_back(&Request::_quit);
+	_request_cmds.push_back(&Request::_restart);
 }
 
 int Request::requestLexer(Client* cli, Server* serv)

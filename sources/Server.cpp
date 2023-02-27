@@ -14,8 +14,6 @@
 #include "externStatus.hpp"
 #include <unistd.h>
 
-int gstatus = 0;
-
 Server::Server(int domain, int service, int protocol, int port, u_long interface, int max_co, std::string name, std::string pass) : _domain(domain), _service(service), _protocol(protocol), _port(port), _interface(interface), _max_co(max_co), _name(name), _pass(pass)
 {
 	_online_clients = 0;
@@ -125,40 +123,80 @@ int Server::start_server()
 	return 0;
 }
 
-
+int gstatus = 0;
 
 int Server::routine()
 {
 	int active_co;
-
-	status = ongoing;
-	while (status == ongoing)
+	gstatus = 1;
+	while (gstatus != 0)
 	{
-		active_co = poll(_client_events, _online_clients, -1);
-		if (active_co <= 0)
-			return (perror("poll error"), 1);
-		for (int i = 0; i < _online_clients; i++)
+		while (gstatus == 1)
 		{
-			if (_client_events[i].revents != 0 && _client_events[i].revents & POLLIN)
+			active_co = poll(_client_events, _online_clients, -1);
+			// if (active_co <= 0)
+			// {
+			// 	return (perror("poll error"), 1);
+
+			// }
+			for (int i = 0; i < _online_clients; i++)
 			{
-				if (_client_events[i].fd == server_socket->get_sock())
+				if (_client_events[i].revents != 0 && _client_events[i].revents & POLLIN)
 				{
-					std::cout << "Online Clients " << _online_clients << std::endl;
-					new_client();
-				}
-				else
-				{
-					for (std::vector<Client *>::iterator it = all_clients.begin();it != all_clients.end(); it++){
-						if ((*it)->getFdClient() == _client_events[i].fd)
-						{
-							read_client_req(*it, &(i));
-							break ;
+					if (_client_events[i].fd == server_socket->get_sock())
+					{
+						std::cout << "Online Clients " << _online_clients << std::endl;
+						new_client();
+					}
+					else
+					{
+						for (std::vector<Client *>::iterator it = all_clients.begin();it != all_clients.end(); it++){
+							if ((*it)->getFdClient() == _client_events[i].fd)
+							{
+								read_client_req(*it, &(i));
+								break ;
+							}
 						}
 					}
 				}
 			}
+
+		}
+		if (gstatus == 2)
+		{
+			std::vector<Client*>::iterator it = all_clients.begin();
+			// std::string rep = "ERROR : Server is shutting down...";
+			while (it != all_clients.end())
+			{
+				// if (send((*it)->getFdClient(), rep.c_str(), rep.length(), 0) == -1)
+				// 	return (perror("Problem in sending from server "), 1); // a t on le droit ?
+				(*it)->_mode.clear();
+				close((*it)->getFdClient());
+				all_clients.erase(it);
+				std::cout << RED << "Client " <<  (*it)->getNickName() << " disconnected" << RESET << std::endl;
+				delete (*it);
+				it = all_clients.begin();
+			}
+			delete [] _client_events;
+			// all_clients.clear();
+			opers.clear();
+			// rep.clear();
+			// std::vector<Channel*>::iterator ita = all_chanels.begin();
+			// while (ita != all_chanels.end())
+			// {
+			// 	all_chanels.erase(ita);
+			// 	delete (*ita);
+			// 	std::vector<Channel*>::iterator ita = all_chanels.begin();
+			// 	ita++;
+			// }
+			// all_chanels.clear();
+			close(server_socket->get_sock());
+			delete server_socket;
+			delete this;
+			exit(1);
 		}
 	}
+	return 0;
 }
 
 void Server::new_client()
@@ -184,7 +222,10 @@ void Server::read_client_req(Client *cli, int *i)
 	if (readBytes <= 0)
 	{
 		if (readBytes == 0)
-			std::cout << cli->getFdClient() << " sent an empty_req request " << std::endl;
+		{
+			std::cout << cli->getFdClient() << " sent an empty_req 	request " << std::endl;
+			// handle_sig(cli->getFdClient());
+		}
 		else
 			perror("recv error");
 		close(_client_events[*i].fd);
@@ -304,7 +345,7 @@ void Server::_killing_cli(Client& cli)
 
 void Server::disconnectAll()
 {
-	for (size_t i = 1; i < _online_clients; i++){
+	for (int i = 1; i < _online_clients; i++){
 		close(_client_events[i].fd);
 	}
 	all_clients.clear();

@@ -37,9 +37,9 @@ class Socket;
 
 enum state
 {
-	ongoing,
+	ongoing = 1,
 	restart,
-	shutdown
+	shtdown
 };
 
 class Server
@@ -89,6 +89,7 @@ public:
 	std::vector<Client* > 						all_clients;
 	std::vector<Channel*>						all_chanels;
 	std::map<std::string, std::string>			opers;
+	int											status;
 
 
 	

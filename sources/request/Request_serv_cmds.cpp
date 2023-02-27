@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "Request.hpp"
+// #include "externStatus.hpp"
 
 int Request::_pass(Client *cli, Server *serv)
 {
@@ -23,6 +24,7 @@ int Request::_pass(Client *cli, Server *serv)
 		}
 		else
 		{
+			std::cout << "je rentre ici " << std::endl;
 			reply = errPasswMismatch(entries[0], "");
 			serv->_chan_requests(*this);
 		}
@@ -293,4 +295,5 @@ int Request::_restart(Client *cli, Server *serv)
 		serv->status = restart;
 	}
 	serv->_chan_requests(*this);
+	return 0;
 }
