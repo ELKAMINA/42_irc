@@ -26,7 +26,7 @@ Internet Relay Chat is a protocol for real-time text messaging between internet-
 	
 	- **USER**: Setting an username and realname.
  
- 2. *Rooms and Chat* : Available for regulat users
+ 2. *Rooms & Chat* : Available for regulat users
  
 	- **PRIVMSG**: Sending message for a one-to-one chat or to all chan users without receiving errors if something's wrong.
 	
@@ -48,7 +48,7 @@ Internet Relay Chat is a protocol for real-time text messaging between internet-
 	
 	- **QUIT**: Terminating a user session.
 
-3. *Administration/Operations* : Only for Operators
+3. *Administration & Operations* : Only for Operators
 
 	- **MODE**: Implementing modes for joining some rooms/chans.
 	
@@ -78,8 +78,16 @@ To compile the program, use:
   
   - Let the game begin
 
+# 💪 Contributers
 
-# #####
+[J-M Cervoni](https://github.com/ElRealMitch)<br/>
+
+[Amina EL KHATTABI](https://github.com/ELKAMINA)<br/>
+
+
+
+
+# #############
 
 
   
@@ -367,3 +375,5 @@ Quick answer : Ports below 1024 are considered to be privileged in Linux,
 > netstat -pn (deprecated, replace by SS) : lists all the connections made by Unix Sockets or netstat -lpn for listenning sockets
 
 > lsof : list open files on unix system
+
+
