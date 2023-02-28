@@ -1,24 +1,82 @@
-# Introdution to "Webserv" project
+# Introdution to "ft_irc" project
 
-**Goal** : 
+**Goal** : This project is about understanding how an Internet Relay Chat server works.
 
-This project is about writing our own HTTP server and test it with an actual browser.
-
+Internet Relay Chat is a protocol for real-time text messaging between internet-connected computers created in **1988**. It is mainly used for group discussion in chat rooms called “**channels**” although it supports private messages between two users, data transfer, and various client-side commands.
+ 
 **Project requirements**
 
+	- Implement IRC server in C++ 98.
+	- Implement multiple clients without hanging.
+	- Use only 1 poll() (or equivalent)
+	- Implement Non-blocking sockets
+	- Implement authentification, registration (nick/username..), joining rooms/channels, sending and receiving private messages.
+	- Implement operators and regular users.
+	- Adapt to a specifi IRC Client (we chose IRSSI)
 
 
+# Commands implemented
 
-**Requirements**
+1. *Athentification & Registration* : Available for regular users
+
+	- **PASS**: Entering a password.
+	
+	- **NICK**: Setting a nickname.
+	
+	- **USER**: Setting an username and realname.
+ 
+ 2. *Rooms and Chat* : Available for regulat users
+ 
+	- **PRIVMSG**: Sending message for a one-to-one chat or to all chan users without receiving errors if something's wrong.
+	
+	- **NOTICE**: Sending message for a one-to-one chat or to all chan users without receiving errors if something's wrong.
+	
+	- **JOIN**: Accessing/joining a room.
+	
+	- **TOPIC**: Giving information about a room topic.
+	
+	- **MODE**: Implementing modes for users.
+	
+	- **AWAY**: Implementing an away message.
+	
+	- **INVITE**: Inviting users to join a certain room/chans.
+	
+	- **NAMES**: Giving information about all users present in a room/chan.
+	
+	- **PART**: Quitting a chan.
+	
+	- **QUIT**: Terminating a user session.
+
+3. *Administration/Operations* : Only for Operators
+
+	- **MODE**: Implementing modes for joining some rooms/chans.
+	
+	- **OPER**: Giving privileges to a certain user.
+	
+	- **KICK**: Kicking a user from channels.
+	
+	- **KILL**: Killing a user from the server.
+	
+
+# ⚙️ How to use our IRC Server (With IRSSI Client)
+To compile the program, use:
+  - `make -j re`
   
+**To start the Server, use:**
+
+  - `./ircserv <port> <password>`
   
+    - **port**: The port number on which your IRC server will be listening to for incoming IRC connections.
+    
+    - **password**: The connection password. It will be needed by any IRC client that tries to connect to your server.
+    
+**To connect to the server :**
+  - gcl IRSSI in your terminal : (https://github.com/irssi/irssi.git)
+  
+  - Connect as : irssi --connect 127.0.0.1 --port=<port> --password=<password> --nickname="X" (do it with as many client as you want, don't forget to give different nicknames)
+  
+  - Let the game begin
 
-# Steps to follow :
-
-1. Implementing TCP Server
-2. Creating a client request
-3. Parsing the request 
-4. 
 
 # #####
 
@@ -28,10 +86,6 @@ Links that helped
 -----------
 | Subject | Link |
 |:--------------|:----------------|
-
-| HTTP server from scratch |  https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa / https://bhch.github.io/posts/2017/11/writing-an-http-server-from-scratch/ |
-
-| Nginx Server and Location block | https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms |
 
 | AF_INET & struct address | https://stackoverflow.com/questions/1593946/what-is-af-inet-and-why-do-i-need-it |
 
@@ -47,12 +101,7 @@ Links that helped
 
 | Binding to any available port | https://www.baeldung.com/cs/binding-available-ports |
 
-| Simple HTTP Server | https://trungams.github.io/2020-08-23-a-simple-http-server-from-scratch/ |
-
-
 | C10K | [https://trungams.github.io/2020-08-23-a-simple-http-server-from-scratch/](http://www.kegel.com/c10k.html) |
-
-| HTTP Benchmarking Tool | https://github.com/wg/wrk |
 
 | ePoll | https://suchprogramming.com/epoll-in-3-easy-steps/ |
 
@@ -185,16 +234,7 @@ Link : https://stackoverflow.com/questions/11129212/tcp-can-two-different-socket
 
 # Main RFCs for basic HTTP 
 
-**7230** : 
-
-**793** : TCP/IP and Sockets
-  > *Idea 1* : TCP is to provide reliable, securable logical circuit or connection service between pairs of processes. To provide this services, there are 6 basics :
-    - Basic Data Transfer : The TCP is able to transfer a continuous stream of octets in each direction between its users by packaging some       number of octets into segments for transmission through the internet system ( see push function)
-    - Reliability
-    - Flow control
-    - Multiplexing
-    - Connections
-    - Precedence and Security
+RFC 2812 
 
 # Questionning
 
@@ -243,9 +283,48 @@ Blocking is a normal behavior but we need to take this behavior into account to 
 6. Difference TCP / UDP :
   TCP server needs multiple sockets (The listening socket and a separate socket for each client)  to handle multiple clients whereas UDP needs one socket to handle multiple clients but can't do anything while waiting for the next diagram.
 
-7. Why choosing ePoll for handling multi-client server ? 
+7. Difference between POLL/EPOLL/SELECT ?  
+	**/!\ They basically provide the same global functionnality (managing multiple sockets and informing when a particular event happens : I/O multiplexing)**
 
-**epoll** is a new system call introduced in Linux 2.6. It is designed to replace the **deprecated select** (and also poll). Unlike these earlier system calls, which are O(n), epoll is an O(1) algorithm – this means that it scales well as the number of watched file descriptors increase. select uses a linear search through the list of watched file descriptors, which causes its O(n) behaviour, whereas epoll uses callbacks in the kernel file structure.
+If we classify them by order of appearance :
+
+	- **Select** was the first one to appear in BSD UNIX to check for file descriptor readiness. 
+	
+	- **Poll** : In each syscall invoke poll() thus needs to copy a lot more over to kernel space. 
+	
+	- **EPOLL** is a new system call introduced in Linux 2.6. It is designed to replace the **deprecated select** (and also poll). Unlike these earlier system calls, which are O(n), epoll is an O(1) algorithm – this means that it scales well as the number of watched file descriptors increase. select uses a linear search through the list of watched file descriptors, which causes its O(n) behaviour, whereas epoll uses callbacks in the kernel file structure.
+	
+=> POLL VS SELECT
+	
+	a) poll( ) does not require that the user calculate the value of the highest- numbered file descriptor +1.
+	
+	b) poll( ) is more efficient for large-valued file descriptors. Imagine watching a single file descriptor with the value 900 via select()—the kernel would have to check each bit of each passed-in set, up to the 900th bit.
+	
+	c) select( )’s file descriptor sets are statically sized.
+	
+	d) With select( ), the file descriptor sets are reconstructed on return, so each subsequent call must reinitialize them. The poll( ) system call separates the input (events field) from the output (revents field), allowing the array to be reused without change.
+	
+	e) The timeout parameter to select( ) is undefined on return. Portable code needs to reinitialize it. This is not an issue with pselect( ).
+	
+	f) select( ) is more portable, as some Unix systems do not support poll( )
+
+-> Good resource comparaing poll and select : (https://daniel.haxx.se/docs/poll-vs-select.html#:~:text=select()%20only%20uses%20(at,more%20over%20to%20kernel%20space)
+
+=> EPOLL VS POLL/SELECT
+	
+	a) We can add and remove file descriptor while waiting.
+	
+	b) epoll_wait returns only the objects with ready file descriptors.
+	
+	c) epoll has better performance – O(1) instead of O(n).
+	
+	d) epoll can behave as level triggered or edge triggered (see man page).
+	
+	e) epoll is Linux specific so non portable
+	
+Why did we choose Poll ?
+
+Following the requirements of the subject, we needed an API that can manage multiple file descriptors sets with a good performance and a simpler functionning so Poll was the best option for us.
 
 # Issues
 
