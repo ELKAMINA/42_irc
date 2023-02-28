@@ -10,7 +10,7 @@ Internet Relay Chat is a protocol for real-time text messaging between internet-
 	- Implement multiple clients without hanging.
 	- Use only 1 poll() (or equivalent)
 	- Implement Non-blocking sockets
-	- Using TCP/IP for Client/Server communication
+	- Use TCP/IP for Client/Server communication
 	- Implement authentification, registration (nick/username..), joining rooms/channels, sending and receiving private messages.
 	- Implement operators and regular users.
 	- Adapt to a specifi IRC Client (we chose IRSSI)
