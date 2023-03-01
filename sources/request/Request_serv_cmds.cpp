@@ -15,6 +15,7 @@
 
 int Request::_pass(Client *cli, Server *serv)
 {
+	std::cout << "je rentre ici 2" << std::endl;
 	if (entries.size() == 1)
 	{
 		if (entries[0] == serv->get_pass() && cli->loggedIn == false)
@@ -24,7 +25,7 @@ int Request::_pass(Client *cli, Server *serv)
 		}
 		else
 		{
-			std::cout << "je rentre ici " << std::endl;
+			std::cout << "je rentre ici " << entries[0] << entries[0].size() <<  std::endl;
 			reply = errPasswMismatch(entries[0], "");
 			serv->_chan_requests(*this);
 		}

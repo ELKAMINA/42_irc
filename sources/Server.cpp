@@ -127,8 +127,8 @@ int gstatus = 0;
 
 int Server::routine()
 {
-	int active_co;
 	gstatus = 1;
+	int active_co;
 	while (gstatus != 0)
 	{
 		while (gstatus == 1)
@@ -139,6 +139,7 @@ int Server::routine()
 			// 	return (perror("poll error"), 1);
 
 			// }
+			std::cout << active_co << std::endl;
 			for (int i = 0; i < _online_clients; i++)
 			{
 				if (_client_events[i].revents != 0 && _client_events[i].revents & POLLIN)
@@ -255,13 +256,16 @@ void Server::handle_request(char *buf, Client *cli, int nci, int*i)
 	std::string input;
 	std::string client_buffer = "";
 	const char	*client = NULL;
-
 	buf[nci] = '\0';
 	client_buffer += buf;
-	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
-	while ((pos = client_buffer.find("\r\n")) != std::string::npos)
+	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
-		input = client_buffer.substr(0, pos + 1);
+		// std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
+		if ( client_buffer[pos - 1] == '\r')
+			input = client_buffer.substr(0, pos);
+			// std::cout << "input " << input.size() << std::endl;
+		else
+			input = client_buffer.substr(0, pos + 1);
 		client = input.c_str();
 		Request req = Request(client, cli);
 		client = NULL;
@@ -274,7 +278,7 @@ void Server::handle_request(char *buf, Client *cli, int nci, int*i)
 			all_clients.erase(it);
 			break ;
 		}
-		client_buffer.erase(0, pos + 2);
+		client_buffer.erase(0, pos + 1);
 	}
 	client_buffer.clear();
 	return ;
