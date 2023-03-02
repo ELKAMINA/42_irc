@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/23 15:13:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/26 17:49:44 by jcervoni         ###   ########.fr       */
+/*   Created: 2023/03/01 12:35:05 by jcervoni          #+#    #+#             */
+/*   Updated: 2023/03/02 13:01:42 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,29 +18,31 @@
 /* *** COPLIEN STUFF ************ */
 /* ****************************** */
 
-Channel::Channel( vector<Client*>& allUsers, string channelName, Client& owner ) :
-_name(channelName), _allUsers(allUsers)
+Channel::Channel(string channelName, Client& owner ) :
+_name(channelName)
 {
 	initModes();
-	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
+	initLexer();
+	_operators.push_back(&owner);
 	_onlineUsers = 0;
 	_maxUsers = -1;
 	_topic = "";
 	_key = "";
 }
 
-Channel::Channel( vector<Client*>& allUsers, string channelName, string channelKey, Client& owner ) :
-_name(channelName), _key(channelKey), _allUsers(allUsers)
+Channel::Channel(string channelName, string channelKey, Client& owner ) :
+_name(channelName), _key(channelKey)
 {
 	initModes();
-	_operators.push_back(&owner); // Client doesn't has a nickName getter yet
+	initLexer();
+	_operators.push_back(&owner);
 	_onlineUsers = 0;
 	_maxUsers = -1;
 	_mods['k'] = true;
 	_topic = "";
 }
 
-Channel::Channel(const Channel& rhs) : _allUsers(rhs._allUsers)
+Channel::Channel(const Channel& rhs)
 {
 	*this = rhs;
 }
@@ -49,28 +51,34 @@ Channel& Channel::operator=(const Channel& rhs)
 {
 	if (this != &rhs)
 	{
-		this->_prefix = rhs._prefix;
-		this->_onlineUsers = rhs._onlineUsers;
-		this->_name = rhs._name;
-		this->_key = rhs._key;
-		this->_topic = rhs._topic;
-		this->_users = rhs._users;
-		this->_operators = rhs._operators;
-		this->_vocal = rhs._vocal;
-		this->_banned = rhs._banned;
-		this->_mods = rhs._mods;
+		this->_prefix		= rhs._prefix;
+		this->_onlineUsers	= rhs._onlineUsers;
+		this->_name			= rhs._name;
+		this->_key			= rhs._key;
+		this->_topic		= rhs._topic;
+		this->users			= rhs.users;
+		this->_operators	= rhs._operators;
+		this->_vocal		= rhs._vocal;
+		this->_banned		= rhs._banned;
+		this->_mods			= rhs._mods;
 	}
 	return *this;
 }
 
+bool Channel::operator==(const Channel &rhs)
+{
+	return this->getName() == rhs.getName();
+}
+
 Channel::~Channel()
 {
-	this->_users.clear();
+	this->users.clear();
 	this->_operators.clear();
 	this->_vocal.clear();
 	this->_banned.clear();
 	this->_invited.clear();
 	this->_mods.clear();
+	this->_cmds.clear();
 }
 
 void Channel::initModes()
@@ -84,86 +92,25 @@ void Channel::initModes()
 	_mods.insert(make_pair('t', false));
 }
 
-/* ****************************** */
-/* *** CHAN INFO CHECKERS ******* */
-/* ****************************** */
-
-bool Channel::isInChanList(Client const *user, vector<Client*>& list)
+void Channel::initLexer()
 {
-	vector<Client*>::iterator it;
-
-	it = find(list.begin(), list.end(), user);
-	return (it != list.end());
+	_cmds.push_back(&Channel::join);
+	_cmds.push_back(&Channel::invite);
+	_cmds.push_back(&Channel::topic);
+	_cmds.push_back(&Channel::part);
+	_cmds.push_back(&Channel::privmsg);
+	_cmds.push_back(&Channel::kick);
+	_cmds.push_back(&Channel::names);
+	_cmds.push_back(&Channel::mode);
 }
 
-Client* Channel::found(string nickname, vector<Client*>&list)
+/* ***************** */
+/* **** GETTERS **** */
+/* ***************** */
+int Channel::getOnlineCount() const
 {
-	vector<Client*>::iterator it = list.begin();
-	while (it != list.end())
-	{
-		if	((*it)->getNickName() == nickname)
-			return *(it);
-		it++;
-	}
-	return NULL;
+	return this->_onlineUsers;
 }
-
-bool Channel::isInServ(string const& user, vector<Client *>&users)
-{
-	vector<Client *>::iterator it;
-
-	for (size_t i = 0; i < users.size(); i++){
-		if (users[i]->getNickName() == user)
-			return true;
-	}
-	return false;
-}
-
-bool Channel::clientAccess(Client& cli)
-{
-	std::vector<Client*>::iterator it = _banned.begin();
-	while (it != _banned.end())
-	{
-		if ((*it)->getNickName() == cli.getNickName())
-			return true;
-	}
-	if (this->activeMode('m'))
-	{
-		std::vector<Client*>::iterator ita = _operators.begin();
-		while (ita != _operators.end())
-		{
-			if ((*ita)->getNickName() == cli.getNickName())
-			return true;
-		}
-		std::vector<Client*>::iterator ito = _vocal.begin();
-		while (ito != _vocal.end())
-		{
-			if ((*ito)->getNickName() == cli.getNickName())
-			return false;
-		}
-		return true;
-	}
-	return false;
-}
-
-
-
-/* ****************************** */
-/* *** CHAN MODE CHECKERS ******* */
-/* ****************************** */
-
-bool Channel::activeMode(char mode)
-{
-	map<char, bool>::iterator it;
-	it = _mods.find(mode);
-	if (it != _mods.end())
-		return it->second;
-	return false;
-}
-
-/* ****************************** */
-/* *** ACCESSORS **************** */
-/* ****************************** */
 
 string Channel::getName() const
 {
@@ -190,12 +137,47 @@ string Channel::getModes() const
 	return rep;
 }
 
-int Channel::getOnlineCount() const
-{
-	return this->_onlineUsers;
-}
-
 std::string Channel::getKey() const
 {
 	return this->_key;
+}
+
+bool Channel::isInChanList(Client& user, vector<Client *>& list)
+{
+	for (size_t i = 0; i < list.size(); i++){
+		if (user == *(list[i]))
+			return true;
+	}
+	return false;
+}
+
+vector<Client>::iterator Channel::find_user(string target, vector<Client>& list)
+{
+	vector<Client>::iterator it;
+
+	for (it = list.begin(); it != list.end(); it++){
+		if (target == it->getName())
+			return it;
+	}
+	return list.end();
+}
+
+vector<Client*>::iterator Channel::existing_user(vector<Client*>& list, string name)
+{
+	vector<Client*>::iterator it;
+
+	for (it = list.begin(); it != list.end(); it++){
+		if ((*it)->getName() == name)
+			return it;
+	}
+	return list.end();
+}
+
+bool Channel::activeMode(char mode)
+{
+	map<char, bool>::iterator it;
+	it = _mods.find(mode);
+	if (it != _mods.end())
+		return it->second;
+	return false;
 }

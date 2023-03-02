@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   externStatus.hpp                                   :+:      :+:    :+:   */
+/*   ServerStatus.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/26 22:12:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/26 22:13:44 by jcervoni         ###   ########.fr       */
+/*   Created: 2023/02/28 09:02:55 by jcervoni          #+#    #+#             */
+/*   Updated: 2023/02/28 09:03:38 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXTERNSTATUS_HPP
-# define EXTERNSTATUS_HPP
+#ifndef SERVERSTATUS_HPP
+# define SERVERSTATUS_HPP
 
-extern int gstatus;
+extern int status;
 
 #endif

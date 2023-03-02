@@ -1,39 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Epoll.cpp                                          :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/17 10:26:53 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/19 11:12:16 by jcervoni         ###   ########.fr       */
+/*   Created: 2023/02/28 10:46:03 by jcervoni          #+#    #+#             */
+/*   Updated: 2023/03/02 10:03:34 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Epoll.hpp"
+#include "utils.hpp"
+#include <string>
+#include <vector>
 
-Epoll::Epoll()
+int wrong_nickname(std::string nickname)
 {
-	_instance = epoll_create(1024);
-	_events.events = EPOLLIN;
+	
+	for (size_t i = 0; i < nickname.size(); i++)
+	{
+		if	((isalnum(nickname[i]) == 0) && nickname[i]  != '-')
+			return 1;
+	}
+	return (nickname.size() <= 9);
 }
 
-Epoll::Epoll(const Epoll& rhs)
-{
-	*this = rhs;
-}
-
-Epoll::~Epoll()
-{
-
-}
-
-Epoll& Epoll::operator=(const Epoll& rhs)
-{
-
-}
-
-int Epoll::wait()
-{
-	this->_nfds = epoll_wait(this->_instance, &(this->_events), 20, 5000);
-}

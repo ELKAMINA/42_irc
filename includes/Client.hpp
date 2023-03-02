@@ -1,18 +1,27 @@
-#pragma once
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/27 22:12:48 by jcervoni          #+#    #+#             */
+/*   Updated: 2023/03/02 09:24:12 by jcervoni         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-# include "Colors.hpp"
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
+
+// # include "Colors.hpp"
 # include <vector>
 # include <iostream>
 # include <string>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <poll.h>
-# include "Socket.hpp"
 # include <map>
 # include <set>
-// # include "Channels.hpp"
+# include "Channel.hpp"
 # include "Request.hpp"
-# include "./numeric_replies/numeric_replies.hpp"
+# include "numeric_replies.hpp"
 
 class Request;
 class Channel;
@@ -39,54 +48,56 @@ class Client
 		// int	_isInChan;
 	
 	/* OPERATOR OVERLOADS */
-		Client & operator= ( const Client & rhs );
-		int				getFdClient();
-		void			setFdClient(int fd);
-		std::string 	getNickName() const;
-		std::string 	getUserName() const;
-		std::string 	getRealName() const;
-		std::string		getmode() const;
-		std::string 	getPwd() const;
-		std::string		getHost() const;
-		size_t			getChanNbr() const;
+		Client&	operator= ( const Client & rhs );
+		bool	operator==(const Client& rhs);
+	
+	/* ***************** */
+	/* **** GETTERS **** */
+	/* ***************** */
+		int						getFdClient();
+		std::string 			getPwd() const;
+		std::string				getmode() const;
+		size_t					getChanNbr() const;
+		std::string 			getName() const;
+		std::string 			getUserName() const;
+		std::string 			getRealName() const;
+		std::string				getAwayMessage() const;
 
-	/* SETTERS */
-		std::string			setPrefix();
-		void				setPwd(std::string passwd);
-		void				setNickname(std::string name);
-		void				setUsername(std::string name);
-		void				setRealname(std::string name);
-		void				setMode(char mode, bool state);
-		void				setAwayMessage(std::string message);
-		std::string			getAwayMessage() const;
+	/* ***************** */
+	/* **** SETTERS **** */
+	/* ***************** */
+		std::string				setPrefix();
+		void					setFdClient(int fd);
+		void					setPwd(std::string passwd);
+		void					setNickname(std::string name);
+		void					setUsername(std::string name);
+		void					setRealname(std::string name);
+		void					setMode(char mode, bool state);
+		void					setAwayMessage(std::string message);
 
 	/* METHODS */
-		void			errInCmd(Request& request, string err);
-		bool			checkMode(char mode) const;
-		void			addChanToList(Channel * chan);
-		void			removeChanFromList(Channel * chan);
-		void			leaveAllChans();
-		// void receiveMessage(Message& message);
+		bool					checkMode(char mode) const;
+		void					addChanToList(Channel& chan);
+		void					removeChanFromList(Channel& chan);
+		void					leaveAllChans();
 
-		bool			loggedIn;
-		int				callToMode;
-		set<Channel *>				chans;
-		std::map<char, bool>		_mode;
+		bool					loggedIn;
+		int						callToMode;
+		std::vector<Channel *>		chans;
 
 	private:
 
-		void						initModes();
-		int				            _clientFd;
-		std::string					_nickName; //rfc: MAX 9 caracteres
-		std::string					_userName;
-		std::string					_realName;
-        std::string					_pass;
-		const std::string			_host;
-		std::string					_away_msg;
-		std::string					_id;
-		std::map<int, Request>		all_req;
-
+		void					_initModes();
+		int						_clientFd;
+		std::string				_nickName;
+		std::string				_userName;
+		std::string				_realName;
+        std::string				_pass;
+		std::string				_host;
+		std::string				_away_msg;
+		std::map<char, bool>	_mode;
 
 
 };
 
+#endif
