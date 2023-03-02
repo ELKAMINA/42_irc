@@ -46,7 +46,7 @@ int Request::verifications()
 	{
 		if (channels.size() >= 1)
 		{
-			nb_chan = count_chan_nbr(entries);
+			count_chan_nbr(entries);
 			if (nb_chan != channels.size())
 				return 0;
 		}
@@ -87,7 +87,6 @@ int Request::transformations(bool oneChan, bool oneParam)
 
 int	Request::count_chan_nbr(std::vector<std::string> entries)
 {
-	int nb_chan = 1;
 	std::vector<std::string>::iterator it = entries.begin();
 	while (it != entries.end())
 	{
@@ -180,7 +179,9 @@ void Request::oneChan(Server *serv)
 	{
 		creator = find_obj(origin.getName(), serv->all_clients);
 		if (entries.size() == 1)
+		{
 			serv->all_channels.push_back(Channel(entries[0], (*creator)));
+		}
 		else
 			serv->all_channels.push_back(Channel(entries[0], entries[1], (*creator)));
 		serv->all_channels.rbegin()->join(*this, serv);

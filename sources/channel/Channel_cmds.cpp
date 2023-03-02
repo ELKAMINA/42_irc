@@ -55,7 +55,7 @@ void Channel::replyJoining(Request& request, Server* serv)
 	
 	request.reply.clear();
 	for (size_t i = 0; i < this->users.size(); i++){
-		if ((it=existing_user(users, users[i]->getName())) != _operators.end())
+		if ((it=existing_user(_operators, users[i]->getName())) != _operators.end())
 			rep +="@";
 		else
 			rep +=" ";
@@ -63,7 +63,6 @@ void Channel::replyJoining(Request& request, Server* serv)
 		if (i < users.size() -1)
 			rep += " ";
 	}
-	// rep += "\r\n"; /* Commenté par Amina */
 	request.reply = "353 " + request.origin.setPrefix() + " = " + "#" + this->getName() + " :" + rep;
 	rep.clear();
 }
@@ -74,8 +73,6 @@ void Channel::join(Request &request, Server* serv)
 	vector<Client*>::iterator it;
 	int matching_param;
 	bool err = false;
-	
-	// request.target.clear();
 	if (isInChanList(request.origin, users))
 	{
 		errInCmd(request, errUserOnChannel(user,this->getName()));

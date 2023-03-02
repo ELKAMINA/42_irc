@@ -21,12 +21,13 @@ int Request::join(Server *serv)
 
 	if (check_lists() == 0)
 	{
-
 		removing_sharp(entries);
 		if (nb_chan > 1)
 			multiChan(serv);
 		else
+		{
 			oneChan(serv);
+		}
 	}
 	return 0;
 }

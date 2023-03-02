@@ -52,7 +52,11 @@ Client & Client::operator=( const Client& rhs )
 
 bool	Client::operator==(const Client& rhs)
 {
-	return this->_nickName == rhs._nickName;
+	if (this != &rhs)
+	{
+		return this->_nickName == rhs._nickName;
+	}
+	return false;
 }
 
 Client::~Client()
