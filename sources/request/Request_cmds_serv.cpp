@@ -30,13 +30,13 @@ int Request::pass(Server *serv)
 			it_sender->setPwd(serv->get_pass());
 			return 0;
 		}
+		else if (entries[0] == serv->get_pass() && it_sender->loggedIn == true)
+			reply = errAlreadyRegistered();
 		else
-		{
 			reply = errPasswMismatch(entries[0]);
-			serv->chan_requests(*this);
-		}
+		serv->chan_requests(*this);
 	}
-	return 1;
+	return 0;
 }
 
 int Request::nick(Server *serv)

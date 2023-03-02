@@ -73,9 +73,11 @@ int Server::new_client()
 
 void Server::read_client_req(std::vector<Client>::iterator client, int i)
 {
-	char read_buffer[1000];
-	size_t readBytes = recv(client->getFdClient(), read_buffer, 1000, 0);
-	if (readBytes <= 0)
+	char _buffer[1000];
+	bzero(_buffer, 1000);
+	int nci = recv((*client).getFdClient(), _buffer, 1000, 0);
+	readBytes += nci;
+	if (nci <= 0)
 	{
 		if (readBytes == 0)
 			std::cout << client->getFdClient() << " sent an empty_req request " << std::endl;
@@ -84,10 +86,25 @@ void Server::read_client_req(std::vector<Client>::iterator client, int i)
 		close(client_events[i].fd);
 		client_events[i] = client_events[_online_clients - 1];
 		_online_clients--;
+		memset(&read_buffer, 1000, readBytes);
+		readBytes = 0;
+		memset(&_buffer, 1000, nci);
 	}
 	else
+	{
+		if (ctld(_buffer, readBytes) == false)
+		{
+			strcat(read_buffer, _buffer);
+			bzero(&_buffer,1000);
+			return ;
+		}
+		_buffer[nci] = '\0';
+		strcat(read_buffer, _buffer);
 		handle_request(read_buffer, client, readBytes, i);
+	}
 	memset(&read_buffer, 0, readBytes);
+	bzero(&_buffer,1000);
+	readBytes = 0;
 }
 
 int status = 0;

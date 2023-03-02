@@ -21,7 +21,11 @@ int Request::check_lists()
 	if (entries.size() > 1)
 		oneParam = split_entries(entries[1], params);
 	if (verifications() != 0)
-		return (transformations(oneChan, oneParam), 0);
+	{
+		transformations(oneChan, oneParam);
+		return (0);
+
+	}
 	return 1;
 }
 

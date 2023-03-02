@@ -25,3 +25,15 @@ int wrong_nickname(std::string nickname)
 	return (nickname.size() <= 9);
 }
 
+bool ctld(char* buf, int readBytes)
+{
+	int j = 0;
+	while (j < readBytes)
+	{
+		if ((buf[j] == '\n'))
+			return true;
+		j++;
+	}
+	return false;
+}
+

@@ -20,6 +20,8 @@ _port(port), _interface(interface), _max_co(max_co), _name(name), _pass(pass)
 	client_events = new pollfd[_max_co];
 	std::pair<std::string, std::string> pair("oper", "pwdoper");
 	opers.insert(pair);
+	bzero(&read_buffer[0], sizeof(read_buffer));
+	readBytes = 0;
 }
 
 Server::Server(const Server &rhs)

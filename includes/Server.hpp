@@ -94,10 +94,12 @@ public:
 	/*
 	---- CHANNELS AND CLIENTS DATA
 	*/
-	struct pollfd*						client_events;
-	std::vector<Client>					all_clients;
-	std::vector<Channel>				all_channels;
-	std::map<std::string, std::string>	opers;
+	struct pollfd*								client_events;
+	std::vector<Client> 						all_clients;
+	std::vector<Channel>						all_channels;
+	std::map<std::string, std::string>			opers;
+	char 										read_buffer[1000];
+	size_t 										readBytes;
 
 
 	

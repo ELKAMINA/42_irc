@@ -52,6 +52,7 @@ typename std::vector<T>::iterator find_obj(std::string name, std::vector<T>& lis
 }
 
 int		wrong_nickname(std::string nickname);
+bool	ctld(char* buf, int readBytes);
 // void	all_chan_names(Request& requ, Server* serv);
 // int		count_chan_nbr(std::vector<std::string> entries);
 

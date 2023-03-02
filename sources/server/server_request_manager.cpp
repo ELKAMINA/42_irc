@@ -14,18 +14,20 @@
 
 void Server::handle_request(char *buf, std::vector<Client>::iterator client, int readBytes, int i)
 {
-	size_t		pos;
+	size_t pos;
 	std::string input;
 	std::string client_buffer = "";
 	std::vector<Client>::iterator it;
-
 	buf[readBytes] = '\0';
 	client_buffer += buf;
 	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
-	while ((pos = client_buffer.find("\r\n")) != std::string::npos)
+	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
-		input = client_buffer.substr(0, pos + 1);
-		Request req = Request(input.c_str(), client->getName());
+		if (client_buffer[pos - 1] == '\r')
+			input = client_buffer.substr(0, pos);
+		else
+			input = client_buffer.substr(0, pos + 1);
+		Request req = Request(input.c_str(), (*client).getName());
 		if (treating_req(req) == 1)
 		{
 			close(client_events[i].fd);
@@ -33,15 +35,15 @@ void Server::handle_request(char *buf, std::vector<Client>::iterator client, int
 			_online_clients--;
 			it = find_obj(req.origin, all_clients);
 			all_clients.erase(it);
-			break ;
+			break;
 		}
-		client_buffer.erase(0, pos + 2);
+		client_buffer.erase(0, pos + 1);
 	}
 	client_buffer.clear();
-	return ;
+	return;
 }
 
-int Server::treating_req(Request& req)
+int Server::treating_req(Request &req)
 {
 	if (req.check_validity() != 1)
 	{
@@ -51,7 +53,7 @@ int Server::treating_req(Request& req)
 	return 0;
 }
 
-void Server::chan_requests(Request& req)
+void Server::chan_requests(Request &req)
 {
 	size_t i = 0;
 	std::vector<Client>::iterator it;
@@ -65,9 +67,7 @@ void Server::chan_requests(Request& req)
 		{
 			it = find_obj(req.target[i], all_clients);
 			if (send(it->getFdClient(), req.response.c_str(), req.response.length(), MSG_DONTWAIT) == -1)
-			{
 				return (perror("Send"));
-			}
 			i++;
 		}
 	}
