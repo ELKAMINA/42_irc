@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 10:50:32 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/02 22:22:36 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,10 @@ int Server::manage_connections()
 			}
 			else
 			{
-				for (std::vector<Client>::iterator it = all_clients.begin();it != all_clients.end(); it++){
-					if (it->getFdClient() == client_events[i].fd)
+				for (std::map<std::string, Client>::iterator it = all_clients.begin();it != all_clients.end(); it++){
+					if (it->second.getFdClient() == client_events[i].fd)
 					{
-						read_client_req(*it, i);
+						read_client_req(it, i);
 						break ;
 					}
 				}
@@ -64,19 +64,21 @@ int Server::new_client()
 		return -1;
 	client_events[_online_clients].events = POLLIN;
 	client_events[_online_clients].fd = sock;
-	all_clients.push_back(Client(sock));
+	Client tmp = Client(sock);
+	all_clients.insert(std::make_pair("UNDEFINED", Client(tmp)));
+	std::cerr<<"new client, name = "<<tmp.getName()<<std::endl;
 	_online_clients++;
 	return 0;
 }
 
-void Server::read_client_req(Client& cli, int i)
+void Server::read_client_req(std::map<std::string, Client>::iterator client, int i)
 {
 	char read_buffer[1000];
-	size_t readBytes = recv(cli.getFdClient(), read_buffer, 1000, 0);
+	size_t readBytes = recv(client->second.getFdClient(), read_buffer, 1000, 0);
 	if (readBytes <= 0)
 	{
 		if (readBytes == 0)
-			std::cout << cli.getFdClient() << " sent an empty_req request " << std::endl;
+			std::cout << client->second.getFdClient() << " sent an empty_req request " << std::endl;
 		else
 			perror("recv error");
 		close(client_events[i].fd);
@@ -84,7 +86,7 @@ void Server::read_client_req(Client& cli, int i)
 		_online_clients--;
 	}
 	else
-		handle_request(read_buffer, cli, readBytes, i);
+		handle_request(read_buffer, client, readBytes, i);
 	memset(&read_buffer, 0, readBytes);
 }
 
@@ -129,33 +131,28 @@ void Server::disconnectAll()
 	opers.clear();
 }
 
-void Server::removeClient(Client& cli)
+void Server::removeClient(std::map<std::string, Client>::iterator to_remove)
 {
-	std::vector<Client>::iterator ita = find(all_clients.begin(), all_clients.end(), cli);
-	std::vector<Channel *>::iterator it = cli.chans.begin();
-	while (it != cli.chans.end())
-	{
-		std::vector<Channel>::iterator target = find(all_channels.begin(), all_channels.end(), *(*it));
-		if(target->isInChanList(cli, target->users) == true)
-		{
-			target->removeUser(cli.getName());
-			if (target->getOnlineCount() == 0)
-				all_channels.erase(target);
-		}
-		it++;
-	}
-	ita = find(all_clients.begin(), all_clients.end(), cli);
-	for (int i = 0; i < _online_clients; i++){
-		if (client_events[i].fd == cli.getFdClient())
-		{
-			close(client_events[i].fd);
-			client_events[i] = client_events[0];
-			_online_clients--;
-			break ;
-		}
-	}
-	close(cli.getFdClient());
-	all_clients.erase(ita);
+	// std::vector<std::string>::iterator it;
+	// std::map<std::string, Channel>::iterator target;
+
+	// for (it = to_remove->second.chans.begin(); it != to_remove->second.chans.end(); it++)
+	// {
+	// 	target = all_channels.find(*it);
+	// 	target->second.removeUser(to_remove->first);
+	// 	if (target->second.getOnlineCount() == 0)
+	// 		all_channels.erase(target);
+	// }
+	// for (int i = 0; i < _online_clients; i++){
+	// 	if (client_events[i].fd == to_remove->second.getFdClient())
+	// 	{
+	// 		close(client_events[i].fd);
+	// 		client_events[i] = client_events[0];
+	// 		_online_clients--;
+	// 		break ;
+	// 	}
+	// }
+	all_clients.erase(to_remove);
 }
 // a terminer apres chan
 //

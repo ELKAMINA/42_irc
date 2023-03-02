@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:35:05 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 13:01:42 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/02 19:57:48 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,24 +18,24 @@
 /* *** COPLIEN STUFF ************ */
 /* ****************************** */
 
-Channel::Channel(string channelName, Client& owner ) :
+Channel::Channel(string channelName, string owner ) :
 _name(channelName)
 {
 	initModes();
 	initLexer();
-	_operators.push_back(&owner);
+	_operators.push_back(owner);
 	_onlineUsers = 0;
 	_maxUsers = -1;
 	_topic = "";
 	_key = "";
 }
 
-Channel::Channel(string channelName, string channelKey, Client& owner ) :
+Channel::Channel(string channelName, string channelKey, string owner ) :
 _name(channelName), _key(channelKey)
 {
 	initModes();
 	initLexer();
-	_operators.push_back(&owner);
+	_operators.push_back(owner);
 	_onlineUsers = 0;
 	_maxUsers = -1;
 	_mods['k'] = true;
@@ -142,10 +142,10 @@ std::string Channel::getKey() const
 	return this->_key;
 }
 
-bool Channel::isInChanList(Client& user, vector<Client *>& list)
+bool Channel::isInChanList(string user, vector<string>& list)
 {
 	for (size_t i = 0; i < list.size(); i++){
-		if (user == *(list[i]))
+		if (user == list[i])
 			return true;
 	}
 	return false;
@@ -162,12 +162,12 @@ vector<Client>::iterator Channel::find_user(string target, vector<Client>& list)
 	return list.end();
 }
 
-vector<Client*>::iterator Channel::existing_user(vector<Client*>& list, string name)
+vector<string>::iterator Channel::existing_user(vector<string>& list, string name)
 {
-	vector<Client*>::iterator it;
+	vector<string>::iterator it;
 
 	for (it = list.begin(); it != list.end(); it++){
-		if ((*it)->getName() == name)
+		if (*it == name)
 			return it;
 	}
 	return list.end();

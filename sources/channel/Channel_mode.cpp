@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 13:29:52 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/02 20:57:56 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,18 +81,18 @@ void Channel::changeChanMode(Request& request, pair<string, string> command)
 	}
 }
 //modif to do
-void Channel::changeUserMode(Request& request, pair<string, string> command, vector<Client*>& target, Server* serv)
+void Channel::changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv)
 {
-	vector<Client>::iterator it;
-	string user = request.origin.getName();
+	map<string, Client>::iterator it_cli;
+	string user = request.origin;
 
-	it = find_obj(request.entries[2], serv->all_clients);
-	if (it == serv->all_clients.end())
+	it_cli = serv->all_clients.find(request.entries[2]);
+	if (it_cli == serv->all_clients.end())
 	{
-		request.reply = errNoSuchNick(request.origin.getName(), request.entries[2]);
+		request.reply = errNoSuchNick(request.origin, request.entries[2]);
 		return;
 	}
-	if (!isInChanList(*it, users))
+	if (!isInChanList(it_cli->first, users))
 	{
 		request.reply = errUserNotOnChannel(request.entries[2], this->getName());
 		return;
@@ -106,13 +106,13 @@ void Channel::changeUserMode(Request& request, pair<string, string> command, vec
 	{
 		if (command.first[0] == '+')
 		{
-			if (!isInChanList(*it, target))
-				target.push_back(&(*it));
+			if (!isInChanList(it_cli->first, target))
+				target.push_back(it_cli->first);
 		}
 		else
 		{
 			for (size_t i = 0; i < target.size(); i++){
-				if (*it == *target[i])
+				if (it_cli->first == target[i])
 				{
 					target.erase(target.begin() + i);
 					break;

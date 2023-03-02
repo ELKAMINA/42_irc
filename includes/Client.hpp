@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:12:48 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 09:24:12 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/02 19:45:59 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 
 class Request;
 class Channel;
+class Server;
 
 enum valid_modes
 {
@@ -77,13 +78,13 @@ class Client
 
 	/* METHODS */
 		bool					checkMode(char mode) const;
-		void					addChanToList(Channel& chan);
-		void					removeChanFromList(Channel& chan);
-		void					leaveAllChans();
+		void					addChanToList(std::string chan);
+		void					removeChanFromList(std::string chan);
+		void					leaveAllChans(Server *serv);
 
 		bool					loggedIn;
 		int						callToMode;
-		std::vector<Channel *>		chans;
+		std::vector<std::string>		chans;
 
 	private:
 

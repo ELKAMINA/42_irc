@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 13:27:22 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/02 21:01:38 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,8 @@ void Channel::errInCmd(Request& request, string err)
 
 void Channel::removeUser(string user)
 {
-	vector<Client *>::iterator it;
+	vector<string>::iterator it;
 
-	it = existing_user(users, user);
 	users.erase(it = existing_user(users, user));
 	if ((it = existing_user(_operators, user)) != _operators.end())
 		_operators.erase(it);
@@ -51,29 +50,34 @@ void Channel::replyJoining(Request& request, Server* serv)
 {
 	(void)serv;
 	string rep = "";
-	vector<Client*>::iterator it;
-	
+	vector<string>::iterator it;
+	std::map<std::string, Client>::iterator it_sender;
+
+	it_sender = serv->all_clients.find(request.origin);
 	request.reply.clear();
 	for (size_t i = 0; i < this->users.size(); i++){
-		if ((it=existing_user(_operators, users[i]->getName())) != _operators.end())
+		if ((it=existing_user(_operators, users[i])) != _operators.end())
 			rep +="@";
 		else
 			rep +=" ";
-		rep += users[i]->getName();
+		rep += users[i];
 		if (i < users.size() -1)
 			rep += " ";
 	}
-	request.reply = "353 " + request.origin.setPrefix() + " = " + "#" + this->getName() + " :" + rep;
+	request.reply = "353 " + it_sender->second.setPrefix() + " = " + "#" + this->getName() + " :" + rep;
 	rep.clear();
 }
 
 void Channel::join(Request &request, Server* serv)
 {
-	string user = request.origin.getName();
-	vector<Client*>::iterator it;
+	string user = request.origin;
+	vector<string>::iterator it;
+	std::map<std::string, Client>::iterator it_sender;
+
+	it_sender = serv->all_clients.find(request.origin);
 	int matching_param;
 	bool err = false;
-	if (isInChanList(request.origin, users))
+	if (isInChanList(user, users))
 	{
 		errInCmd(request, errUserOnChannel(user,this->getName()));
 		err = true;
@@ -100,7 +104,7 @@ void Channel::join(Request &request, Server* serv)
 	}
 	if (_mods['i'] == true)
 	{
-		if (!isInChanList(request.origin, _invited))
+		if (!isInChanList(user, _invited))
 		{
 			errInCmd(request, errInviteOnlyChan(this->getName()));
 			err = true;
@@ -110,20 +114,20 @@ void Channel::join(Request &request, Server* serv)
 	if ( err == false)
 	{
 		_onlineUsers += 1;
-		users.push_back(&(*find_obj(user, serv->all_clients)));
+		users.push_back(user);
 		request.target.insert(request.target.end(), users.begin(), users.end());
-		request.response = ":" + request.origin.setPrefix() + " JOIN #" + this->getName();
+		request.response = ":" + it_sender->second.setPrefix() + " JOIN #" + this->getName();
 		if (this->_topic.size() > 0)
 		{
-			std::string rep = rpl_topic(request.origin.setPrefix(), this->getName(), this->getTopic());
-			if (send(request.origin.getFdClient(), rep.c_str(), rep.length(), 0) == -1)
+			std::string rep = rpl_topic(it_sender->second.setPrefix(), this->getName(), this->getTopic());
+			if (send(it_sender->second.getFdClient(), rep.c_str(), rep.length(), 0) == -1)
 				return (perror("Problem in sending from server ")); // a t on le droit ?
 		}
 		replyJoining(request, serv);
 		serv->chan_requests(request);
 		request.response = "UNDEFINED";
 		request.reply.clear();
-		request.reply = rpl_endofnames(request.origin.setPrefix(), this->getName());
+		request.reply = rpl_endofnames(it_sender->second.setPrefix(), this->getName());
 		// request.origin.addChanToList(this);
 	}
 	serv->chan_requests(request);
@@ -131,10 +135,12 @@ void Channel::join(Request &request, Server* serv)
 
 void Channel::invite(Request& request, Server* serv)
 {
-	string user = request.origin.getName();
+	string user = request.origin;
 	vector<string>::iterator it;
-	vector<Client>::iterator target = find_user(request.entries[0], serv->all_clients);
-	
+	map<string, Client>::iterator target = serv->all_clients.find(request.entries[0]);
+	std::map<std::string, Client>::iterator it_sender;
+
+	it_sender = serv->all_clients.find(request.origin);
 	request.response.clear();
 	if (request.entries.size() < 2)
 		return (errInCmd(request, errNeedMoreParams(user, request.command)));
@@ -144,33 +150,34 @@ void Channel::invite(Request& request, Server* serv)
 		return (errInCmd(request, errChannelIsFull(this->getName())));
 	if (_mods['i'] == true)
 	{
-		if (!isInChanList(request.origin, _operators))
+		if (!isInChanList(user, _operators))
 			return (errInCmd(request, errChanPrivsNeeded(user, this->getName())));
 		request.response = "@";
 	}
-	if (!isInChanList(*target, _invited))
-		_invited.push_back(&(*target));
+	if (!isInChanList(target->first, _invited))
+		_invited.push_back(target->first);
 	
-	request.target.push_back(&(*target));
-	request.response += request.origin.setPrefix() + " INVITE " + request.entries[0] + " #" + this->getName() + '\n';
+	request.target.push_back(target->first);
+	request.response += it_sender->second.setPrefix() + " INVITE " + request.entries[0] + " #" + this->getName() + '\n';
 	request.reply = rpl_inviting(request.entries[0], this->getName());
 	
 }
 
 void Channel::topic(Request& request, Server* serv)
 {
-	string user = request.origin.getName();
-	size_t size = request.entries.size();
+	string user = request.origin;
+	std::map<std::string, Client>::iterator it_sender;
 
-	if (size == 1)
+	it_sender = serv->all_clients.find(request.origin);
+	if (request.entries.size() == 1)
 	{
 		if (this->_topic.size() > 0)
-			request.reply = rpl_topic(request.origin.setPrefix(), this->getName(), this->getTopic());
+			request.reply = rpl_topic(it_sender->second.setPrefix(), this->getName(), this->getTopic());
 		else
-			request.reply = rpl_notopic(request.origin.setPrefix(), this->getName());
+			request.reply = rpl_notopic(it_sender->second.setPrefix(), this->getName());
 		return ;
 	}
-	else if (!isInChanList(request.origin, _operators))
+	else if (!isInChanList(user, _operators))
 		errInCmd(request, errChanPrivsNeeded(user, this->getName()));
 	else
 	{
@@ -188,7 +195,7 @@ void Channel::topic(Request& request, Server* serv)
 					this->_topic += " " + request.entries[i];
 				}
 				request.target.insert(request.target.end(), users.begin(), users.end());
-				request.response = ":" + request.origin.setPrefix() + " " + "TOPIC #" + this->getName() + " " + _topic;
+				request.response = ":" + it_sender->second.setPrefix() + " " + "TOPIC #" + this->getName() + " " + _topic;
 			}
 		}
 	}
@@ -198,21 +205,22 @@ void Channel::topic(Request& request, Server* serv)
 
 void Channel::part(Request& request, Server* serv)
 {
-	(void)serv;
-	string user = request.origin.getName();
+	string user = request.origin;
 	vector<Client*>::iterator it;
-	
+	std::map<std::string, Client>::iterator it_sender;
+
+	it_sender = serv->all_clients.find(request.origin);
 	request.response.clear();
-	if (!isInChanList(request.origin, users))
+	if (!isInChanList(user, users))
 		errInCmd(request, errNotOnChannel(this->getName()));
 	else
 	{
 		request.target.insert(request.target.end(), users.begin(), users.end());
 		// request.response = user + " leaves #" + this->getName() + " " + request.message + '\n';
-		request.response = ":" + request.origin.setPrefix() + " PART #" + this->getName() + " " + request.message;
+		request.response = ":" + it_sender->second.setPrefix() + " PART #" + this->getName() + " " + request.message;
 		serv->chan_requests(request);
 		removeUser(user);
-		// request.origin.removeChanFromList(this);
+		it_sender->second.removeChanFromList(this->getName());
 		
 	}
 }
@@ -220,14 +228,14 @@ void Channel::part(Request& request, Server* serv)
 void Channel::privmsg(Request& request, Server* serv)
 {
 	(void)serv;
-	string user = request.origin.getName();
-	vector<Client*>::iterator it;
+	string user = request.origin;
+	vector<string>::iterator it;
 
 	request.target.clear();
 	request.response.clear();
-	if (!isInChanList(request.origin, users) && request.command == "PRIVMSG")
+	if (!isInChanList(user, users) && request.command == "PRIVMSG")
 		return (errInCmd(request, errNotOnChannel(this->getName())));
-	if (activeMode('m') && (!isInChanList(request.origin, _operators) || !isInChanList(request.origin, _vocal)))
+	if (activeMode('m') && (!isInChanList(user, _operators) || !isInChanList(user, _vocal)))
 		return (errInCmd(request, errCannotSendToChan(user, this->getName())));
 	request.target.insert(request.target.begin(), users.begin(), users.end());
 	request.target.erase(it=existing_user(request.target, user));
@@ -239,26 +247,29 @@ void Channel::privmsg(Request& request, Server* serv)
 void Channel::mode(Request& request, Server* serv)
 {
 	(void)serv;
-	string user = request.origin.getName();
-	if (!isInChanList(request.origin, this->_operators))
+	string user = request.origin;
+	
+	if (!isInChanList(user, this->_operators))
 		return(errInCmd(request, errChanPrivsNeeded(user, this->getName())));
 	addMode(request, request.entries, serv);
 }
 
 void Channel::kick(Request& request, Server* serv)
 {
-	string user = request.origin.getName();
-	vector<Client*>::iterator it;
+	string user = request.origin;
+	vector<string>::iterator it;
+	std::map<std::string, Client>::iterator it_sender;
 
+	it_sender = serv->all_clients.find(request.origin);
 	request.response.clear();
-	if (!isInChanList(request.origin, users))
+	if (!isInChanList(user, users))
 		return (errInCmd(request, errNotOnChannel(this->getName())));
-	if (!isInChanList(request.origin, _operators))
+	if (!isInChanList(user, _operators))
 		return(errInCmd(request, errChanPrivsNeeded(user, this->getName())));
 	if ((it = existing_user(users, request.user_to_kick)) == users.end())
 		return(errInCmd(request, errNoSuchNick(user, request.entries[1])));
 	request.target.insert(request.target.end(), users.begin(), users.end());
-	request.response = ":" + request.origin.setPrefix() + " KICK #" + this->getName() + " " + request.user_to_kick + " :" + request.message;
+	request.response = ":" + it_sender->second.setPrefix() + " KICK #" + this->getName() + " " + request.user_to_kick + " :" + request.message;
 	serv->chan_requests(request);
 	removeUser(request.user_to_kick);
 	request.target.clear();
@@ -267,17 +278,19 @@ void Channel::kick(Request& request, Server* serv)
 void Channel::names(Request& request,Server* serv)
 {
 	(void)serv;
-	vector<Client*>::iterator it;
+	vector<string>::iterator it;
+	map<string, Client>::iterator it_cli;
 
 	request.reply += this->getName() + ":\n";
 	for (it = users.begin(); it != users.end(); it++){
-		if ((*it)->checkMode('i') == false)
+		it_cli = serv->all_clients.find(*it);
+		if (it_cli->second.checkMode('i') == false)
 		{
 			if (find(_operators.begin(), _operators.end(), (*it)) != _operators.end())
 				request.reply += '@';
 			else
 				request.reply += ':';
-			request.reply += (*it)->getName() + ", ";
+			request.reply += *it + ", ";
 		}
 	}
 	request.reply.replace(request.reply.size() -2, 2, "\n");

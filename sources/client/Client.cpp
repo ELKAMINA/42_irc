@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:18:08 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 13:31:02 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/02 20:46:39 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ Client::Client(int fd): _clientFd(fd), _nickName("UNDEFINED"), _userName("UNDEFI
 _host("IRC_with_love")
 {
 	_initModes();
+	_away_msg = "";
 	loggedIn = false;
 	callToMode = 0;
 }
@@ -61,8 +62,8 @@ bool	Client::operator==(const Client& rhs)
 
 Client::~Client()
 {
-	this->_mode.clear();
-	this->chans.clear();
+	// this->_mode.clear();
+	// this->chans.clear();
 }
 
 /* ***************************** */
@@ -184,16 +185,16 @@ bool Client::checkMode(char mode) const
 	return false;
 }
 
-void Client::addChanToList(Channel& chan)
+void Client::addChanToList(std::string chan)
 {
-	this->chans.push_back(&chan);
+	this->chans.push_back(chan);
 }
 
-void Client::removeChanFromList(Channel& chan)
+void Client::removeChanFromList(std::string chan)
 {
-	std::vector<Channel*>::iterator it;
+	std::vector<string>::iterator it;
 	for (it = chans.begin(); it != chans.end(); it++){
-		if ((*it)->getName() == chan.getName())
+		if (*it == chan)
 		{
 			chans.erase(it);
 			break ;
@@ -201,10 +202,12 @@ void Client::removeChanFromList(Channel& chan)
 	}
 }
 
-void Client::leaveAllChans()
+void Client::leaveAllChans(Server *serv)
 {
-	std::vector<Channel*>::iterator it = chans.begin();
+	std::vector<string>::iterator it = chans.begin();
+	std::map<string, Channel>::iterator it_cha;
 	for (; it != chans.end(); it++){
-		(*it)->removeUser(this->getName());
+		it_cha = serv->all_channels.find(*it);
+		it_cha->second.removeUser(this->getName());
 	}
 }
