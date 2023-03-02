@@ -48,7 +48,6 @@ SRCS 		= 			main.cpp \
 						server_request_manager.cpp \
 						)\
 						$(addprefix $(SRCS_UTLS_PATH),	\
-						commands.cpp \
 						request_utils.cpp \
 						utils.cpp \
 						signal.cpp \

@@ -22,6 +22,8 @@ int main(int ac, char *av[])
 	if (ac != 3)
 		return (std::cout << "<exec> <port> <password> format expected" << std::endl, 1);
 	int port = atoi(av[1]);
+	if (port < 1024 || port > 65536)
+		return (std::cout << "wrong port format expected" << std::endl, 1);
 	std::string pass(av[2]);
 	std::string name = "Our IRC";
 	Server* myServ = new Server(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, 10, name, pass);

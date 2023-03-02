@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "Request.hpp"
-#include "commands.hpp"
 
 Request::Request(const char* buffer, Client& cli) : origin(cli)
 {

@@ -22,7 +22,6 @@ void Server::init_pollfd_struct()
 		client_events[i].fd = _socket;
 		client_events[i].revents = POLLIN;
 	}
-	std::cerr<<"Init_pollFd, client_events[0].fd = "<< client_events[0].fd<<std::endl;
 }
 
 int Server::manage_connections()
