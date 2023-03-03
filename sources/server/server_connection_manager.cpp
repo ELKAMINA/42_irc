@@ -80,12 +80,14 @@ void Server::read_client_req(std::vector<Client>::iterator client, int i)
 	if (nci <= 0)
 	{
 		if (readBytes == 0)
-			std::cout << client->getFdClient() << " sent an empty_req request " << std::endl;
+			std::cout << (*client).getFdClient() << " Quitted! Bye " << std::endl;
 		else
 			perror("recv error");
 		close(client_events[i].fd);
 		client_events[i] = client_events[_online_clients - 1];
 		_online_clients--;
+		std::vector<Client>::iterator it = find_obj((*client).getName(), all_clients);
+		all_clients.erase(it);
 		memset(&read_buffer, 1000, readBytes);
 		readBytes = 0;
 		memset(&_buffer, 1000, nci);
