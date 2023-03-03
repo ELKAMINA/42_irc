@@ -219,9 +219,15 @@ int Request::kill(Server *serv)
 		{
 			if (entries.size() >= 2)
 				set_reason_msg(1);
+<<<<<<< HEAD
 			killing_process(it_cli, serv);
+=======
+			killing_process(*it, serv);
+			return 0;
+>>>>>>> Changts :
 		}
 	}
+	serv->chan_requests(*this);
 	return 0;
 }
 
