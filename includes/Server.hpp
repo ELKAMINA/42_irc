@@ -23,6 +23,7 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <poll.h>
+# include <fcntl.h>
 # include <unistd.h>
 # include <stdio.h>
 # include "Client.hpp"
