@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 23:26:24 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 21:04:12 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/04 08:25:10 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ class Request
 		int			verifications();
 		int			transformations(bool oneChan, bool oneParam);
 		void		req_get_comments(std::vector<std::string>& entries, size_t i);
-		void		killing_process(std::map<std::string, Client>::iterator to_kill, Server* serv);
+		void		killing_process(std::vector<Client>::iterator to_kill, Server* serv);
 		bool		split_entries(std::string entry, std::vector<std::string>&target);
 
 		/* Server Commands */

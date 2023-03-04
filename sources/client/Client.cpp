@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:18:08 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 20:46:39 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/04 08:34:01 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,9 +205,9 @@ void Client::removeChanFromList(std::string chan)
 void Client::leaveAllChans(Server *serv)
 {
 	std::vector<string>::iterator it = chans.begin();
-	std::map<string, Channel>::iterator it_cha;
+	std::vector<Channel>::iterator it_cha;
 	for (; it != chans.end(); it++){
-		it_cha = serv->all_channels.find(*it);
-		it_cha->second.removeUser(this->getName());
+		it_cha = find_obj(*it, serv->all_channels);
+		it_cha->removeUser(this->getName());
 	}
 }

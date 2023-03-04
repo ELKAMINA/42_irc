@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 20:57:56 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/04 08:35:20 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,16 +83,16 @@ void Channel::changeChanMode(Request& request, pair<string, string> command)
 //modif to do
 void Channel::changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv)
 {
-	map<string, Client>::iterator it_cli;
+	vector<Client>::iterator it_cli;
 	string user = request.origin;
 
-	it_cli = serv->all_clients.find(request.entries[2]);
+	it_cli = find_obj(request.entries[2], serv->all_clients);
 	if (it_cli == serv->all_clients.end())
 	{
 		request.reply = errNoSuchNick(request.origin, request.entries[2]);
 		return;
 	}
-	if (!isInChanList(it_cli->first, users))
+	if (!isInChanList(it_cli->getName(), users))
 	{
 		request.reply = errUserNotOnChannel(request.entries[2], this->getName());
 		return;
@@ -106,13 +106,13 @@ void Channel::changeUserMode(Request& request, pair<string, string> command, vec
 	{
 		if (command.first[0] == '+')
 		{
-			if (!isInChanList(it_cli->first, target))
-				target.push_back(it_cli->first);
+			if (!isInChanList(it_cli->getName(), target))
+				target.push_back(it_cli->getName());
 		}
 		else
 		{
 			for (size_t i = 0; i < target.size(); i++){
-				if (it_cli->first == target[i])
+				if (it_cli->getName() == target[i])
 				{
 					target.erase(target.begin() + i);
 					break;
@@ -208,7 +208,7 @@ int Channel::addMode(Request& request, vector<string>params, Server* serv)
 				changeUserMode(request, *it, _operators, serv);
 			else if (it->first[1] == 'v')
 				changeUserMode(request, *it, _vocal, serv);
-			// else if (it->first[1] == 'b')
+			// else if (it->getName()[1] == 'b')
 			// 	modeBan(request, *it);
 			else
 				changeChanMode(request, *it);

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 21:24:14 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/04 08:12:36 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,23 +81,23 @@ public:
 	void							init_pollfd_struct();
 	int								manage_connections();
 	// void							close_and_remove_user(Client& cli);
-	void							read_client_req(std::map<std::string, Client>::iterator client, int i);
+	void							read_client_req(std::vector<Client>::iterator client, int i);
 	void							chan_requests(Request& req);
 	int								treating_req(Request& req);
-	void							handle_request(char *buf, std::map<std::string, Client>::iterator client, int readBytes, int i);
+	void							handle_request(char *buf, std::vector<Client>::iterator client, int readBytes, int i);
 	// bool							contld(char* buf, int nci);
 	/*
 	---- DISCONNECT METHODS 
 	*/
 	void							disconnectAll();
-	void							removeClient(std::map<std::string, Client>::iterator to_remove);
+	void							removeClient(std::vector<Client>::iterator to_remove);
 	/*
 	---- CHANNELS AND CLIENTS DATA
 	*/
-	struct pollfd*								client_events;
-	std::map<std::string, Client>				all_clients;
-	std::map<std::string, Channel>				all_channels;
-	std::map<std::string, std::string>			opers;
+	struct pollfd*						client_events;
+	std::vector<Client>					all_clients;
+	std::vector<Channel>				all_channels;
+	std::map<std::string, std::string>	opers;
 
 
 	
