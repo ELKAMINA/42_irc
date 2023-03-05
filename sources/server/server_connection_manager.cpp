@@ -141,6 +141,7 @@ void Server::disconnectAll()
 	all_clients.clear();
 	all_channels.clear();
 	opers.clear();
+	_online_clients = 1;
 }
 
 void Server::removeClient(std::vector<Client>::iterator to_remove)

@@ -85,16 +85,16 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::ping);
 	_request_cmds.push_back(&Request::whois);
 	_request_cmds.push_back(&Request::quit);
+	_request_cmds.push_back(&Request::who);
+	_request_cmds.push_back(&Request::restart);
 }
 
 int Request::requestLexer(Server* serv)
 {
 	std::string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "NOTICE", "JOIN", "PART",
-	"KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES","CAP", "INVITE", "OPER", "KILL", "PING", "WHOIS", "QUIT"};
+	"KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES","CAP", "INVITE", "OPER", "KILL", "PING", "WHOIS", "QUIT", "WHO", "RESTART"};
 	size_t i = 0;
-	// std::vector<Client>::iterator it_sender;
 
-	// it_sender = find_obj(origin, serv->all_clients);
 	for (; i < _request_cmds.size(); i++){
 		if (this->command == cmds[i])
 				return ((this->*(_request_cmds[i]))(serv));

@@ -105,6 +105,7 @@ class Request
 		int		kill(Server* serv);
 		int		ping(Server* serv);
 		int		whois(Server* serv);
+		int		who(Server* serv);
 		int 	quit(Server *serv);
 		int		restart(Server *serv);
 

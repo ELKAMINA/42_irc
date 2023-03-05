@@ -59,7 +59,7 @@ void Channel::modeLimite(Request& request, pair<string, string> command)
 	}
 }
 
-void Channel::changeChanMode(Request& request, pair<string, string> command)
+void Channel::changeChanMode(Request& request, pair<string, string> command, Server* serv)
 {
 	(void)request;
 	cout<< "command = " << command.first << ", param = "<<command.second<<endl;
@@ -81,6 +81,8 @@ void Channel::changeChanMode(Request& request, pair<string, string> command)
 	}
 	request.target.insert(request.target.end(), users.begin(), users.end());
 	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() + " " + command.first + (command.second == "" ? "" : " " + command.second);
+	serv->chan_requests(request);
+	request.target.clear();
 }
 //modif to do
 void Channel::changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv)
@@ -149,13 +151,11 @@ static int checkModes(Request& request, string params)
 		{
 			if ((params[i] == 'b' || params[i] == 'o' || params[i] == 'v') && !chanMode)
 			{
-				std::cout << "flaaag utilisateur " << std::endl;
 				userMode = true;
 				found += params[i];
 			}
 			else if (!userMode)
 			{
-				std::cout << "flaaag channel " << std::endl;
 				if (params[0] == '+' && (params[i] == 'k' || params[i] == 'l' || params[i] == 't'))
 					count += 1;
 				chanMode = true;
@@ -165,8 +165,6 @@ static int checkModes(Request& request, string params)
 				return -1;
 		}
 	}
-	if (params.size() - count != 2)
-		return -1;
 	return count;
 }
 
@@ -223,7 +221,7 @@ int Channel::addMode(Request& request, vector<string>params, Server* serv)
 			// 	modeBan(request, *it);
 			else
 			{
-				changeChanMode(request, *it);
+				changeChanMode(request, *it, serv);
 				// serv->chan_requests(request);
 			}
 		}

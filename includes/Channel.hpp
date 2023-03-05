@@ -54,7 +54,7 @@ class Channel
 		
 		/* MODES MANAGEMENT */
 		void	changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv);
-		void	changeChanMode(Request& request, pair<string, string> command);
+		void	changeChanMode(Request& request, pair<string, string> command, Server *serv);
 		void	modeLimite(Request& request, pair<string, string> command);
 		int		addMode(Request& request, vector<string>params, Server* serv);
 		// void modeBan(Request& request, pair<string, string> command);

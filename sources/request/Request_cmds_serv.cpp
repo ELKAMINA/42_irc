@@ -49,14 +49,22 @@ int Request::nick(Server *serv)
 	std::cerr<<"dans nick, origin ="<<origin->getName()<<std::endl;
 	std::cerr<<"dans nick, pass = "<<origin->getPwd()<<std::endl;
 	if (origin->getPwd() != serv->get_pass())
+	{
 		reply = errNotRegistered();
+		serv->chan_requests(*this);
+		return 1;
+	}
 	else if (find_obj(entries[0], serv->all_clients) != serv->all_clients.end())
 	{
 		reply = errNicknameInUse(entries[0]);
 		origin->setNickname("Guest");
 	}
 	else if (wrong_nickname(entries[0]) == 0)
+	{
 		reply = errErroneusNickname(entries[0]);
+		serv->chan_requests(*this);
+		return 1;	
+	}
 	else
 	{
 		origin->setNickname(entries[0]);
@@ -165,19 +173,21 @@ int Request::cap(Server *serv)
 
 int Request::ping(Server *serv)
 {
-	(void)serv;
-	// std::vector<Client>::iterator it_sender;
-
-	// it_sender = find_obj(origin, serv->all_clients);
 	if (entries.size() < 1)
 		reply = errNeedMoreParams(origin->getName(), command);
 	else
-		reply = ":" + origin->setPrefix() + "PONG: " + entries[0] + "\r\n";
-	// serv->chan_requests(*this);
+		reply = "PONG :" + entries[0];
+	serv->chan_requests(*this);
 	return 0;
 }
 
 int Request::whois(Server *serv) /* A modifier avec les bonnes replies */
+{
+	(void)serv;
+	return 0;
+}
+
+int Request::who(Server *serv) /* A modifier avec les bonnes replies */
 {
 	(void)serv;
 	return 0;
@@ -272,10 +282,8 @@ int Request::oper(Server *serv)
 int Request::mode(Server *serv)
 {
 	count_chan_nbr(entries);
-	std::cout << "Bibiii " << nb_chan << std::endl;
 	if (nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&'))
 	{
-		std::cout << "herrrreeee hdhd " << nb_chan << std::endl;
 		if (entries.size() > 1)
 		{
 			mode_for_chans(serv);

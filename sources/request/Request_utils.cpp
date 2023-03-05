@@ -14,8 +14,8 @@
 
 int Request::check_lists()
 {
-	bool oneChan;
-	bool oneParam;
+	bool oneChan = true;
+	bool oneParam = true;
 
 	oneChan = split_entries(entries[0], channels);
 	if (entries.size() > 1)
@@ -50,7 +50,7 @@ int Request::verifications()
 	{
 		if (channels.size() >= 1)
 		{
-			count_chan_nbr(entries);
+			count_chan_nbr(channels);
 			if (nb_chan != channels.size())
 				return 0;
 		}
@@ -76,6 +76,7 @@ int Request::transformations(bool oneChan, bool oneParam)
 {
 	if (oneChan == false && oneParam == true)
 	{
+		std::cout << "premiere condition " << std::endl;
 		entries.erase(entries.begin());
 		entries.insert(entries.begin(), channels.begin(), channels.end());
 	}
@@ -250,8 +251,8 @@ void Request::mode_for_chans(Server* serv)
 	else
 	{
 		reply = errNoSuchChannel(origin->getName());
+		serv->chan_requests(*this);
 	}
-	serv->chan_requests(*this);
 }
 
 std::string		Request::retrieve_cliModes(Client& tmp)

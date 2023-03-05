@@ -25,10 +25,7 @@ int Request::join(Server *serv)
 		if (nb_chan > 1)
 			multiChan(serv);
 		else
-		{
-			// std::cout << "heroos " << std::endl;
 			oneChan(serv);
-		}
 	}
 	return 0;
 }
@@ -37,10 +34,7 @@ int Request::invite(Server *serv)
 {
 	std::vector<Channel>::iterator it = find_obj(&entries[1][1], serv->all_channels);
 	if (it != serv->all_channels.end())
-	{
-		std::cerr<<"channel found: "<<it->getName()<<std::endl;
 		it->invite(*this, serv);
-	}
 	else
 		reply = errNoSuchChannel(origin->getName());
 	serv->chan_requests(*this);

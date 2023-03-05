@@ -20,7 +20,7 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 	// std::vector<Client>::iterator it;
 	buf[readBytes] = '\0';
 	client_buffer += buf;
-	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << "avec le FD " << fd_client << std::endl;
+	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
 	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
 		// std::cout << "test " << std::endl;
