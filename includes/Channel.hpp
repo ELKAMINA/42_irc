@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/23 15:06:37 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 19:25:20 by jcervoni         ###   ########.fr       */
+/*   Created: 2023/03/01 12:31:13 by jcervoni          #+#    #+#             */
+/*   Updated: 2023/03/02 19:58:02 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,31 +18,34 @@
 # include <string>
 # include <algorithm>
 # include <map>
-# include "Colors.hpp"
-# include "ServerSocket.hpp"
+// # include "Colors.hpp"
 # include "Request.hpp"
 # include "Client.hpp"
+# include "utils.hpp"
 # include "numeric_replies.hpp"
+# include "utils.hpp"
 
 using namespace std;
 
 class Request;
 class Client;
+class Server;
 
 
 class Channel
 {
 	public:
-	typedef void	(Channel::*cmds)(Request&);
+	typedef void	(Channel::*cmds)(Request&, Server* serv);
 
 	/* CONSTRUCTORS */
-		Channel( vector<Client*>& allUsers, string channelName, Client& owner );
-		Channel( vector<Client*>& allUsers, string channelName, string channelKey, Client& owner );
+		Channel(string channelName, string owner );
+		Channel(string channelName, string channelKey, string owner );
 		Channel( const Channel& rhs );
 		~Channel();
 
 	/* OPERATORS OVERLOAD */
 		Channel &operator=( const Channel& rhs );
+		bool	operator==(const Channel &rhs);
 	
 	/* METHODS */
 
@@ -50,34 +53,34 @@ class Channel
 		void initLexer();
 		
 		/* MODES MANAGEMENT */
-		void changeUserMode(Request& request, pair<string, string> command,vector<Client*>& target);
-		void changeChanMode(Request& request, pair<string, string> command);
-		void modeLimite(Request& request, pair<string, string> command);
-		int addMode(Request& request, vector<string>params);
+		void	changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv);
+		void	changeChanMode(Request& request, pair<string, string> command);
+		void	modeLimite(Request& request, pair<string, string> command);
+		int		addMode(Request& request, vector<string>params, Server* serv);
 		// void modeBan(Request& request, pair<string, string> command);
 
 		/* COMMANDS */
 		void errInCmd(Request& request, string err);
-		void reply_joining(Request& request);
-		void removeUser(Client * client);
-		void cmd_lexer(Request& request);
-		void privmsg(Request& request);
-		void invite(Request& request);
-		void topic(Request& request);
-		void names(Request& request);
-		void join(Request& request);
-		void part(Request& request);
-		void mode(Request& request);
-		void kick(Request& request);
+		void replyJoining(Request& request, Server* serv);
+		void removeUser(string user);
+		void cmd_lexer(Request& request, Server* serv);
+		void privmsg(Request& request, Server* serv);
+		void invite(Request& request, Server* serv);
+		void topic(Request& request, Server* serv);
+		void names(Request& request, Server* serv);
+		void join(Request& request, Server* serv);
+		void part(Request& request, Server* serv);
+		void mode(Request& request, Server* serv);
+		void kick(Request& request, Server* serv);
 		
 		/* CHAN INFO CHECKERS */
-		bool	isInChanList(Client const *user, vector<Client*>& list);
-		bool	isInServ(string const& user, vector<Client *>&users);
-		Client*	found(string nickname, vector<Client*>&list);
-
-		/* CHAN MODE CHECKER */
+		std::vector<Client>::iterator	find_user(string target, vector<Client>& list);
+		std::vector<string>::iterator existing_user(vector<string>& list, string name);
+		bool	isInChanList(string user, vector<string>& list);
 		
-		bool activeMode(char mode);
+		bool	clientAccess(Client& cli);
+		bool	activeMode(char mode);
+		
 
 
 	/* ACCESSORS */
@@ -87,6 +90,7 @@ class Channel
 		string		getName() const;
 		std::string	getKey() const;
 			
+		vector<string>	users;
 	private:
 
 		int					_onlineUsers;
@@ -96,13 +100,10 @@ class Channel
 		string				_name;
 		string				_key;
 
-		vector<Client *>	_operators; // separated from users or duplicated ?
-		vector<Client *>	_invited;
-		vector<Client *>	_users;
-		vector<Client *>	_vocal;
-		vector<Client *>	_banned;
-
-		vector<Client *>&	_allUsers;
+		vector<string>		_operators;
+		vector<string>		_invited;
+		vector<string>		_vocal;
+		vector<string>		_banned;
 		map<char, bool>		_mods;
 		vector<cmds>		_cmds;
 

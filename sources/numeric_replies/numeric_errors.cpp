@@ -6,197 +6,128 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 14:34:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/05 09:47:20 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/02/28 09:41:41 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "numeric_replies.hpp"
 
-string	errNoSuchNick(string senderNick, string wrongNick)
+std::string	errNoSuchNick(std::string senderNick, std::string wrongNick)
 {
-	(void)senderNick;
-	string reply;
-	reply = wrongNick + " 401 * :No such nick/chan\n";
-	return (reply);
+	return ("401 " + senderNick + " " + wrongNick + " :No such nickname\n");
 }
 
-string	errNoSuchChannel(string senderNick, string wrongChan)
+std::string	errNoSuchChannel(std::string wrongChan)
 {
-	(void)senderNick;
-	string reply;
-	reply = wrongChan + " 403 * :No such channel\n";
-	return (reply);
+	return (":403 " + wrongChan + " :No such channel\n");
 }
 
-string	errCannotSendToChan(string nickName, string channel)
+std::string	errCannotSendToChan(std::string nickName, std::string channel)
 {
-	(void)nickName;
-	string reply;
-	reply = "404 * " + channel + " :Cannot send to channel\n";
-	return (reply);
+	return ("404 " + nickName + " #" + channel + " :Cannot send to channel\n");
 }
 
-string errTooManyTarget(string nickName, string target)
+std::string errTooManyTarget()
 {
-	(void)nickName;
-	(void)target;
-	string reply;
-	reply = "407 * :Too many targets\n";
-	return (reply);
+	return ("407 * :Too many targets\n");
 }
 
-string errUnknownCommand(string nickName, string command)
+std::string errUnknownCommand(std::string command)
 {
-	(void)nickName;
-	string reply;
-	reply = "421 * " + command + " :Unknown command\n";
-	return (reply);
+	return ("421 * " + command + " :Unknown command\n");
 }
 
-string errNoNicknameGiven(string nickName, string message)
+std::string errNoNicknameGiven()
 {
-	(void)nickName;
-	(void)message;
-	string reply;
-	reply = "431 * :No nickname given\n";
-	return (reply);
+	return ("431 * :No nickname given\n");
 }
 
-string	errNicknameInUse(string nickName, string message)
+std::string errErroneusNickname(std::string nickName)
 {
-	(void)nickName;
-	string reply;
-	reply = message + " 433 * :Nickname is already in use\n";
-	return (reply);
+	return (":432 " + nickName + " :Erroneous nickname\n");
+}
+
+std::string	errNicknameInUse(std::string nickName)
+{
+	return (":433 " + nickName + " :Nickname already in use\n");
 } 
 
-string errUserNotOnChannel(string nickName, string channel)
+std::string errUserNotOnChannel(std::string nickName, std::string channel)
 {
-	string reply;
-	reply = nickName + " " + channel + " 441 * :They aren't on that channel\n";
-	return (reply);
+	return (nickName + " " + channel + " 441 * :They aren't on that channel\n");
 }
 
-string errNotOnChannel(string nickName, string channel)
+std::string errNotOnChannel(std::string channel)
 {
-	(void)nickName;
-	string reply;
-	reply = channel + " 442 * :You're not on that channel\n";
-	return (reply);
+	return (channel + " 442  :You're not on that channel\n");
 }
 
-string errUserOnChannel(string nickName, string channel)
+std::string errUserOnChannel(std::string nickName, std::string channel)
 {
-	string reply;
-	reply = nickName + " " + channel + " 443 * :is already on channel\n";
-	return (reply);
+	return (nickName + " " + channel + " 443 * :is already on channel\n");
 }
 
-string errNotRegistered(string nickName, string message)
+std::string errNotRegistered()
 {
-	(void)nickName;
-	(void)message;
-	string reply;
-	reply = "451 * :You have not registered\n";
-	return (reply);
+	return ("451 * :You have not registered\n");
 }
 
-string	errNeedMoreParams(string nickName, string command)
+std::string	errNeedMoreParams(std::string nickName, std::string command)
 {
-	(void)nickName;
-	string reply;
-	reply = "461 * " + command + " :Not enough parameters\n";
-	return (reply);
+	return ("461 " + nickName + " " + command + " :Not enough parameters\n");
 }
 
-string	errAlreadyRegistered(string nickName, string message)
+std::string	errAlreadyRegistered()
 {
-	(void)nickName;
-	(void)message;
-	string reply;
-	reply = "462 * :You Unauthorized command (already registered)\n";
-	return (reply);
+	return (":462 * :Unauthorized command (already registered)\n");
 }
 
-string	errPasswMismatch(string nickName, string message)
+std::string	errPasswMismatch(std::string nickName)
 {
-	(void)nickName;
-	(void)message;
-	string reply;
-	reply = "464 * :Password incorrect\n";
-	return (reply);
+	return ("464 " + nickName + " :Password incorrect\n");
 }
 
-string errChannelIsFull(string nickName, string channel)
+std::string errChannelIsFull(std::string channel)
 {
-	(void)nickName;
-	string reply;
-	reply = channel + " 471 * :Cannot join channel (+l)\n";
-	return (reply);
+	return (channel + " 471 * :Cannot join channel (+l)\n");
 }
 
-string errInviteOnlyChan(string nickName, string channel)
+std::string errInviteOnlyChan(std::string channel)
 {
-	(void)nickName;
-	string reply;
-	reply = channel + " 473 * :Cannot join channel (+i)\n";
-	return (reply);
+	return (channel + " 473 * :Cannot join channel (+i)\n");
 }
 
-string errBannedFromChan(string nickName, string channel)
+std::string errBannedFromChan(std::string channel)
 {
-	(void)nickName;
-	string reply;
-	reply = channel + " 474 * :Cannot join channel (+b)\n";
-	return (reply);
+	return (channel + " 474 * :Cannot join channel (+b)\n");
 }
 
-string errBadChannelKey(string nickName, string channel)
+std::string errBadChannelKey(std::string nickName, std::string channel)
 {
-	(void)nickName;
-	string reply;
-	reply = channel + " 475 * :Cannot join channel (+k)\n";
-	return (reply);
+	return ("475 " + nickName + " " + channel +  " :Cannot join channel (+k)\n");
 }
 
-string errChanPrivsNeeded(string nickName, string channel)
+std::string errChanPrivsNeeded(std::string nickName, std::string channel)
 {
-	(void)nickName;
-	string reply;
-	reply = channel + " 482 * :You're not channel operator\n";
-	return (reply);
+	return (nickName + " 482 " + channel + " :You're not channel operator\n");
 }
 
-string errUModeUnknownFlag(string nickName, string channel)
+std::string errUModeUnknownFlag()
 {
-	(void)nickName;
-	(void)channel;
-	string reply;
-	reply = "501 * :Unknown MODE flag";
-	return (reply);
+	return (":501 * :Unknown MODE flag\n");
 }
 
-string errUsersDontMatch(string nickName, string message)
+std::string errUsersDontMatch()
 {
-	(void)nickName;
-	(void)message;
-	string reply;
-	reply = "502 * :Cannot change mode for other users\n";
-	return (reply);
+	return ("502 * :Cannot change mode for other users\n");
 }
 
-string		errNoOperHost(string message, string me)
+std::string		errNoOperHost(std::string message)
 {
-	(void)me;
-	string reply;
-	reply =  " 491 * " + message;
-	return (reply);
+	return (" 491 * " + message);
 }
 
-string		errNoPrivileges(string message, string me)
+std::string		errNoPrivileges(std::string message)
 {
-	(void)me;
-	string reply;
-	reply =  " 481 * " + message;
-	return (reply);
+	return (":481 " + message);
 }

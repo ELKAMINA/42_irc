@@ -6,7 +6,7 @@
 #    By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/17 07:46:31 by jcervoni          #+#    #+#              #
-#    Updated: 2023/02/10 15:19:46 by jcervoni         ###   ########.fr        #
+#    Updated: 2023/03/02 13:27:51 by jcervoni         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,31 +15,42 @@ NAME		=			ircserv
 CC			=			c++
 CPPFLAGS	=			-g3 -MMD -Wall -Werror -Wextra -std=c++98
 
-INC			=			-I ./includes/\
-						-I ./includes/numeric_replies/
+INC			=			-I ./includes/
 
-SRCS_PATH	=			./sources/
+SRCS_PATH		=		./sources/
 SRCS_CHAN_PATH	= 		./channel/
+SRCS_CLTS_PATH	=		./client/
 SRCS_REQU_PATH	=		./request/
+SRCS_SERV_PATH	=		./server/
+SRCS_UTLS_PATH	=		./utils/
 SRCS_RPLY_PATH	=		./numeric_replies/
-OBJS_PATH	=			./objects/
+OBJS_PATH		=		./objects/
 
 SRCS 		= 			main.cpp \
-						Server.cpp \
-						ServerSocket.cpp \
-						Socket.cpp \
-						Client.cpp \
-						sig.cpp \
-						$(addprefix $(SRCS_REQU_PATH),	\
-						Request.cpp \
-						Request_serv_cmds.cpp \
-						Request_chan_cmds.cpp \
-						Request_utils.cpp \
-						)\
 						$(addprefix $(SRCS_CHAN_PATH),	\
 						Channel.cpp \
+						Channel_cmds.cpp \
 						Channel_mode.cpp \
-						chan_cmds.cpp \
+						)\
+						$(addprefix $(SRCS_CLTS_PATH),	\
+						Client.cpp \
+						)\
+						$(addprefix $(SRCS_REQU_PATH),	\
+						Request.cpp \
+						Request_utils.cpp \
+						Request_cmds_chan.cpp \
+						Request_cmds_serv.cpp \
+						)\
+						$(addprefix $(SRCS_SERV_PATH),	\
+						Server.cpp \
+						server_init.cpp \
+						server_connection_manager.cpp \
+						server_request_manager.cpp \
+						)\
+						$(addprefix $(SRCS_UTLS_PATH),	\
+						request_utils.cpp \
+						utils.cpp \
+						signal.cpp \
 						)\
 						$(addprefix $(SRCS_RPLY_PATH),	\
 						numeric_replies.cpp \

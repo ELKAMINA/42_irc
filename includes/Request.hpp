@@ -1,46 +1,29 @@
-#pragma once
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Request.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/02/27 23:26:24 by jcervoni          #+#    #+#             */
+/*   Updated: 2023/03/04 08:25:10 by jcervoni         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-# include "Server.hpp"
-# include "./Colors.hpp"
+#ifndef REQUEST_HPP
+# define REQUEST_HPP
+
+# include <map>
 # include <vector>
 # include <iostream>
 # include <string>
 # include <cstring>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <poll.h>
-# include "ServerSocket.hpp"
-# include <map>
+# include "Server.hpp"
+// # include "Colors.hpp"
 # include "Channel.hpp"
 # include "Client.hpp"
-#include <sstream>
 # include "numeric_replies.hpp"
 
-enum state
-{
-	treated = 1,
-	ongoing,
-	waiting,
-};
-
-enum valid_req
-{
-	valid_req,
-	invalid_req,
-	valid_body,
-	invalid_body,
-	notEnough_params,
-	incorrect_pwd,
-	already_registered,
-	omitted_cmd,
-	nickname_exists,
-	erroneous_nickname,
-	privmsg_one,
-	welcome_msg,
-	joining_chan,
-	invisible_man,
-	empty_req,
-};
 
 enum commas
 {
@@ -48,49 +31,31 @@ enum commas
 	non_commas,
 };
 
-enum cmd
-{
-	PASS,
-	NICK,
-	USER,
-	JOIN,
-	UNKNOWN,
-};
 
 class Client;
 class Server;
 
-typedef int	(Request::*requ_cmds)(Client*, Server*);
 
 class Request
 {
+	typedef int	(Request::*requ_cmds)(Server*);
 	public:
-		int							_id;
-		std::string					_raw_req;
-		std::vector<std::string>	entries; // Params + Commands (entries[0] Max 512 caracteres (including the CR-LF)
-		std::vector<std::string>	_channels;
-		std::vector<std::string>	_else;
-		char						_prefix; // Optional : ":" used by servers to indicate the true origin of the message
-		std::string					_command;
-		enum cmd					_cmd_types;
-		std::string					_body;
-		Client*						_origin;
-		std::string					serv_origin;
-		enum state					status;
-		enum valid_req				req_validity; //Valid request or not
+		std::string					raw_input;
+		std::vector<std::string>	entries;
+		std::vector<std::string>	channels;
+		std::vector<std::string>	params;
+		std::string					command;
+		std::string					origin;
 		std::string					response;
-		std::string					reply; /* Errors or Replies */
+		std::string					reply;
 		std::string					message;
-		// ajouter une reply pour lexpediteur en cas de commande ou lexpediteur attend une réponse 
-		std::vector<Client*>		target;
-		size_t						jo_nb_chan;
-		size_t						jo_nb_keys;
-		bool						commas_c;
-		bool						commas_e;
-		// int							type;
+		std::vector<std::string>	target;
+		size_t						nb_chan;
+		size_t						nb_keys;
+		std::string					user_to_kick;
 
 	public:
-		Request		(char* buf, Client* cli);
+		Request		(const char* buf, std::string cli);
 		~Request	();
 		Request		( const Request &x );
 		Request & 	operator = ( const Request &rhs );
@@ -99,57 +64,63 @@ class Request
 		std::string getEntries(size_t i) const;
 
 		/* Methods */
-		void requestLexer(Client *cli, Server* serv);
+		int requestLexer(Server* serv);
 		void initLexer();
 
+		/* Utils */
+		void		format_entries();
+		int			check_validity() const;
+		void		all_chan_names(Server* serv);
+		int			count_chan_nbr(std::vector<std::string> entries);
+
 		/* Utils for commands*/
-		void		msg_to_user(Client* cli, Server *serv);
-		int			user_existence(std::string dest, Server *serv);
-		Client*		_find(std::string dest, Server *serv);
-		int			wrong_nickname();
-		Channel*	existing_chan(std::string chan_name, Server *serv);
-		int			beginning_with_diez(std::vector<string> entries);
+		void		set_reason_msg(size_t j);
 		void 		resizing_chan(std::vector<std::string> entries);
 		void		counting_keys(std::vector<std::string> entries);
 		std::string	removing_backslash(std::vector<std::string> entries);
 		void		removing_sharp(std::vector<std::string>& entries);
-		void		oneChan(Client* cli, Server *serv);
-		void		multiChan(Client* cli, Server *serv);
-		void		_mode_for_chans(Client* cli, Server* serv);
-		void		_mode_for_clis(Client* cli, Server* serv);
+		void		oneChan(Server *serv);
+		void		multiChan(Server *serv);
+		void		mode_for_chans(Server* serv);
+		void		mode_for_clis(Server* serv);
 		int			mode_validity(void);
-		std::string	retrieve_cliModes(Client* tmp);
-		void		chan_names(Server* serv);
-		void		noChan_names(Server* serv);
-		void		first_arg_for_entries(std::vector<std::string> entries);
-		void		second_arg_for_entries(std::vector<std::string> entries);
-		int			_check_lists();
-		int			_verifications();
-		int			_transformations();
+		std::string	retrieve_cliModes(Client& tmp);
+		int			check_lists();
+		int			verifications();
+		int			transformations(bool oneChan, bool oneParam);
+		void		req_get_comments(std::vector<std::string>& entries, size_t i);
+		void		killing_process(std::vector<Client>::iterator to_kill, Server* serv);
+		bool		split_entries(std::string entry, std::vector<std::string>&target);
 
-	private:
 		/* Server Commands */
-		int			_pass(Client* cli, Server *serv);
-		int			_nick(Client* cli, Server *serv);
-		int			_user(Client* cli, Server *serv);
-		int			_privmsg(Client* cli, Server *serv);
-		int			_notice(Client* cli, Server *serv);
-		int			_away(Client* cli, Server *serv);
-		int			_list(Client* cli, Server* serv);
-		int			_names(Client* cli, Server* serv);
-		int			_cap(Client* cli, Server* serv);
-		int			_oper(Client* cli, Server* serv);
-		int			_wallops(Client* cli, Server* serv);
-		int			_kill(Client* cli, Server* serv);
+		int		pass(Server *serv);
+		int		nick(Server *serv);
+		int		user(Server *serv);
+		int		privmsg(Server *serv);
+		int		away(Server *serv);
+		int		list(Server* serv);
+		int		names(Server* serv);
+		int		cap(Server* serv);
+		int		oper(Server* serv);
+		int		kill(Server* serv);
+		int		ping(Server* serv);
+		int		whois(Server* serv);
+		int 	quit(Server *serv);
+		int		restart(Server *serv);
 
 		/* Channel commands */
-		int			_join(Client* cli, Server *serv);
-		int			_part(Client* cli, Server *serv);
-		int			_kick(Client* cli, Server *serv);
-		int			_topic(Client* cli, Server *serv);
-		int			_mode(Client* cli, Server *serv);
-		int			_invite(Client* cli, Server *serv);
+		int		join(Server *serv);
+		int		part(Server *serv);
+		int		kick(Server *serv);
+		int		kickingEach(Server *serv);
+		int		topic(Server *serv);
+		int		mode(Server *serv);
+		int		invite(Server *serv);
+	private:
 
-		vector<requ_cmds>	_request_cmds;
+		std::vector<requ_cmds>	_request_cmds;
 
 };
+
+
+#endif

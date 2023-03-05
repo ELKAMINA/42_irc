@@ -1,34 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ServerSocket.hpp                                   :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/18 13:01:27 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/18 13:57:26 by jcervoni         ###   ########.fr       */
+/*   Created: 2023/02/28 10:46:03 by jcervoni          #+#    #+#             */
+/*   Updated: 2023/03/02 10:03:34 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVERSOCKET_HPP
-# define SERVERSOCKET_HPP
-# include "Socket.hpp"
+#include "utils.hpp"
+#include <string>
+#include <vector>
 
-class ServerSocket : public Socket
+int wrong_nickname(std::string nickname)
 {
-public:
-
-	ServerSocket(int domain, int service, int protocol, int port, u_long interface, int bg);
-	ServerSocket(const ServerSocket& rhs);
-
-	~ServerSocket();
-
-	int connect_to_network(int sock, sockaddr_in add);
-	void start_listening();
 	
-private:
+	for (size_t i = 0; i < nickname.size(); i++)
+	{
+		if	((isalnum(nickname[i]) == 0) && nickname[i]  != '-')
+			return 1;
+	}
+	return (nickname.size() <= 9);
+}
 
-	int 	_backlog;
-	int		_listening;
-};
-#endif

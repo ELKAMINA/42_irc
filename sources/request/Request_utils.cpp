@@ -5,73 +5,87 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/08 18:14:59 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/13 18:23:44 by jcervoni         ###   ########.fr       */
+/*   Created: 2023/03/01 18:26:05 by jcervoni          #+#    #+#             */
+/*   Updated: 2023/03/04 08:24:54 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-static bool sortClients(Client* a, Client* b)
+int Request::check_lists()
 {
-	return a->getChanNbr() < b->getChanNbr();
+	bool oneChan;
+	bool oneParam;
+
+	oneChan = split_entries(entries[0], channels);
+	if (entries.size() > 1)
+		oneParam = split_entries(entries[1], params);
+	if (verifications() != 0)
+		return (transformations(oneChan, oneParam), 0);
+	return 1;
 }
 
-int Request::user_existence(std::string dest, Server *serv)
+bool Request::split_entries(std::string entry, std::vector<std::string>&target)
 {
-	// std::map<Client*, std::vector<Request*> >::key_compare my_comp = serv->_req_per_id.key_comp();
-	std::map<Client*, std::vector<Request*> >::iterator it = serv->_req_per_id.begin();
-
-	size_t i = 0;
-	while (i < serv->_req_per_id.size())
+	size_t sharp = 0;
+	std::string tmp = entry;
+	bool commas = true;
+	while ((sharp = tmp.find(',')) != std::string::npos)
 	{
-		if	((*it).first->getNickName() == dest)
-			return 0;
-		i++;
-		it++;
+		target.push_back(tmp.substr(0, sharp));
+		tmp.erase(0, sharp + 1);
+		commas = false;
+	}
+	target.push_back(tmp);
+	return commas;
+}
+
+int Request::verifications()
+{
+	if (command == "JOIN" || command == "PART" || command == "NAMES" || command == "LIST" || command == "KICK")
+	{
+		if (channels.size() >= 1)
+		{
+			count_chan_nbr(entries);
+			if (nb_chan != channels.size())
+				return 0;
+		}
+		if (params.size() >= 1)
+		{
+			nb_keys = params.size();
+			if (command == "PART")
+			{
+				if (params[0][0] != '\0' && (params[0][0] != ':'))
+					return 0;
+			}
+			else
+			{
+				if (nb_keys > nb_chan)
+					return 0;
+			}
+		}
 	}
 	return 1;
 }
 
-Client* Request::_find(std::string dest, Server *serv)
+int Request::transformations(bool oneChan, bool oneParam)
 {
-	// std::map<Client*, std::vector<Request*> >::key_compare my_comp = serv->_req_per_id.key_comp();
-	std::map<Client*, std::vector<Request*> >::iterator it = serv->_req_per_id.begin();
-
-	// size_t i = 0;
-	while (it != serv->_req_per_id.end())
+	if (oneChan == false && oneParam == true)
 	{
-		if	((*it).first->getNickName() == dest)
-			return it->first;
-		it++;
+		entries.erase(entries.begin());
+		entries.insert(entries.begin(), channels.begin(), channels.end());
 	}
-	return NULL; // returning the end of the tree
-}
-
-int Request::wrong_nickname()
-{
-	for (size_t i = 0; i < entries[0].size() - 1; i++)
+	else if (oneChan == false && oneParam == false)
 	{
-		if	((isalnum(entries[0][i]) == 0 || entries[0].size() > 9) && entries[0][i]  != '-')
-			return 0;
+		entries.erase(entries.begin());
+		entries.erase(entries.begin() + 1);
+		entries.insert(entries.begin(), channels.begin(), channels.end());
+		entries.insert(entries.begin() + channels.size(), params.begin(), params.end());
 	}
 	return 1;
 }
 
-Channel* Request::existing_chan(std::string name, Server *serv)
-{
-	std::vector<Channel *>::iterator it = serv->_all_chanels.begin();
-	while(it != serv->_all_chanels.end())
-	{
-		// std::cout << "nammmeees " << (*it)->getName() << "argg " << name << std::endl; 
-		if ((*it)->getName() == name)
-			return *it;
-		it++;
-	}
-	return NULL;
-}
-
-int Request::beginning_with_diez(std::vector<std::string> entries)
+int	Request::count_chan_nbr(std::vector<std::string> entries)
 {
 	std::vector<std::string>::iterator it = entries.begin();
 	while (it != entries.end())
@@ -79,30 +93,36 @@ int Request::beginning_with_diez(std::vector<std::string> entries)
 		if ((*it)[0] != '#' && (*it)[0] != '&')
 			return 0;
 		it++;
-		jo_nb_chan++; /* Counting nb of diez in the req to check it with the nb of keys*/
+		nb_chan++;
 	}
-	return 1;
+	return nb_chan;
 }
 
-void Request::resizing_chan(std::vector<std::string> entries)
+void Request::format_entries()
 {
-	std::vector<std::string>::iterator it = entries.begin();
-	while (it != entries.end())
-	{
-		(*it).erase(0,1);
-		it++;
-	}
+	std::vector<std::string>::iterator it;
+
+	this->entries[this->entries.size() - 1] = removing_backslash(this->entries);
+	this->command = this->entries[0];
+	std::transform(this->command.begin(), this->command.end(), this->command.begin(), ::toupper);
+	it = this->entries.begin();
+	this->entries.erase(it);
 }
 
-void Request::counting_keys(std::vector<std::string> entries)
+int Request::check_validity() const
 {
-	std::vector<std::string>::iterator it = entries.begin() + (jo_nb_chan - 1);
-	while (it != entries.end())
+	std::vector<std::string>::iterator it;
+
+	if (this->raw_input.size() == 1 && (this->raw_input[0] == '\n' || this->raw_input[0] == '\r'))
+		return 1;
+	if (this->raw_input.size() == 0 || this->raw_input[0] == ' ')
+		return 2;
+	for (size_t i = 0; i < this->entries[0].size() - 1; i++)
 	{
-		it++;
-		jo_nb_keys++; /* Counting nb of diez in the req to check it with the nb of keys*/
+		if (isupper(this->entries[0][i]) == 0)
+			return 2;
 	}
-	return ;
+	return 0;
 }
 
 std::string Request::removing_backslash(std::vector<std::string> entries)
@@ -115,188 +135,158 @@ std::string Request::removing_backslash(std::vector<std::string> entries)
 void Request::removing_sharp(std::vector<std::string>& en)
 {
 	size_t i = 0;
-	while (i < jo_nb_chan)
+	while (i < nb_chan)
 	{
-		if ((en[i][0] == '#' || en[i][0] == '&') && (_command == "JOIN" || _command == "PART"))
+		if ((en[i][0] == '#' || en[i][0] == '&') && (command == "JOIN" || command == "PART"))
 			en[i].erase(0,1);
 		i ++;
 	}
 }
 
-
-void Request::oneChan(Client* cli, Server *serv)
+void Request::req_get_comments(std::vector<std::string> &entries, size_t j)
 {
-	Channel *tmp;
-	tmp = existing_chan(entries[0], serv);
-	// std::cout << "tmp " << jo_nb_keys << std::endl;
-	this->status = ongoing;
-	if(jo_nb_keys > jo_nb_chan)
-		reply = errNeedMoreParams("bad value", this->_command);
-	if (tmp != NULL) /* Channel existe */
+	if (message == "")
 	{
-		// std::cout << "jijou " << std::endl;
-		if ((tmp->activeMode('k') == true && entries.size() == 1)
-		|| (tmp->activeMode('k') == false && entries.size() > 1))
+		message.clear();
+		size_t i = j;
+		while (i < entries.size())
 		{
-			reply = errPasswMismatch("Wrong Pwd for the Channel", "Wrong WRONG");
-			serv->_test = true;
+			message.append(entries[i]);
+			message.append(" ");
+			i++;
+		}
+	}
+}
+
+void Request::oneChan(Server *serv)
+{
+	std::vector<Channel>::iterator it_cha;
+	std::vector<Client>::iterator creator;
+
+	it_cha = find_obj(entries[0], serv->all_channels);
+	if (it_cha != serv->all_channels.end()) /* Channel existe */
+	{
+		if ((it_cha->activeMode('k') == true && entries.size() == 1)
+		|| (it_cha->activeMode('k') == false && entries.size() > 1))
+		{
+			reply = errBadChannelKey(origin, it_cha->getName());
+			serv->chan_requests(*this);
 		}
 		else
-		{
-			status = ongoing;
-			tmp->cmd_lexer(*this);
-			cli->addChanToList(tmp);
-		}
-		serv->_chan_requests(this);
+			it_cha->join(*this, serv);
 	}
 	else
 	{
-		// removing_sharp(entries);
-		Channel *to_add;
+		creator = find_obj(origin, serv->all_clients);
+		std::cerr<<"creator's name = "<<creator->getName()<<std::endl;
 		if (entries.size() == 1)
-			to_add = new Channel((serv->_all_clients), entries[0],  *cli);
+		{
+			serv->all_channels.push_back(Channel(entries[0], creator->getName()));
+		}
 		else
-			to_add = new Channel((serv->_all_clients), entries[0], entries[1], *cli);
-		cli->addChanToList(to_add);
-		serv->_all_chanels.push_back(to_add);
-		to_add->cmd_lexer(*this);
-		serv->_chan_requests(this);
+			serv->all_channels.push_back(Channel(entries[0], entries[1], creator->getName()));
+		serv->all_channels.rbegin()->join(*this, serv);
 	}	 
 }
 
-void Request::multiChan(Client* cli,Server *serv)
+void Request::multiChan(Server *serv)
 {
-	(void)serv;
-	(void)cli;
-	Channel* tmp;
-	if(jo_nb_keys > jo_nb_chan)
-	{
-		reply = errNeedMoreParams("bad value", this->_command);
-		serv->_test = false;
-		return ;
-	}
+	std::vector<Channel>::iterator it_cha;
+	std::vector<Client>::iterator creator;
 	size_t i = 0;
-	size_t k = jo_nb_chan;
+	size_t k = nb_chan;
+
 	while (i < k)
 	{
-		tmp = existing_chan(entries[i], serv);
-		// std::cout << "chan name " << tmp << std::endl;
-		if (tmp == NULL)
+		it_cha = find_obj(entries[i], serv->all_channels);
+		if (it_cha == serv->all_channels.end())
 		{
-			Channel *to_add;
-			if (jo_nb_keys != 0) /* cela veut dire quil ya des mdp pr les chans*/
+			creator = find_obj(origin, serv->all_clients);
+			if (nb_keys != 0)
 			{
-				// std::cout << "mdp " << (entries[i + jo_nb_chan]) << std::endl;
-				to_add = new Channel((serv->_all_clients), entries[i], ((entries[i + jo_nb_chan])), *cli);
-				cli->addChanToList(to_add);
-				jo_nb_keys--;
-				// i++;
+				serv->all_channels.push_back(Channel(entries[i], (entries[i + nb_chan]), creator->getName()));
+				nb_keys--;
 			}
 			else 
-			{
-				// std::cout << " pas de mdp " << std::endl;
-				to_add = new Channel((serv->_all_clients), entries[i], *cli);
-				cli->addChanToList(to_add);
-			}
-			serv->_all_chanels.push_back(to_add);
-			status =  ongoing;
-			to_add->cmd_lexer(*this);
-			serv->_chan_requests(this);
-			// std::cout << "jarrive a la fin " << (*(serv->_all_chanels.begin() + i))->getName() << std::endl;
+				serv->all_channels.push_back(Channel(entries[i], creator->getName()));
+			serv->all_channels.rbegin()->join(*this, serv);
 		}
 		else
 		{
-			if (tmp->activeMode('k') == true)
+			if (it_cha->activeMode('k') == true)
 			{
-				if (jo_nb_keys != 0)
+				if (nb_keys != 0)
 				{
-					// std::string pass_to_verify = (entries[i + jo_nb_chan]);
-					// if (pass_to_verify == tmp->getKey())
-					// {
-						jo_nb_keys--;
-						status = ongoing;
-						tmp->cmd_lexer(*this);
-						cli->addChanToList(tmp);
-					}
-					else
-					{
-						reply = errNeedMoreParams("bad value", this->_command);
-						serv->_test = true;
-					}
-				// }
-				// else
-				// {
-				// 	reply = "Key is needed \n";
-				// 	serv->_test = true;
-				// }
-			}
-			else //if (tmp->getKey() == "")
-			{
-				// std::cout << "WALAAAAAAAH " << std::endl;
-				if (jo_nb_keys != 0)
-				{
-					reply = errNeedMoreParams("bad value", this->_command);
-					serv->_test = true;					
+					nb_keys--;
+					it_cha->join(*this, serv);
 				}
 				else
 				{
-					status = ongoing;
-					tmp->cmd_lexer(*this);
-					cli->addChanToList(tmp);
+					reply = errBadChannelKey(origin, it_cha->getName());
+					serv->chan_requests(*this);
 				}
 			}
-			serv->_chan_requests(this);
+			else
+					it_cha->join(*this, serv);
 			this->target.clear();
 		}
 		i++;
-	}
-	
+	}	
 }
 
-void Request::_mode_for_chans(Client* cli, Server* serv)
+void Request::mode_for_chans(Server* serv)
 {
-	Channel *tmp = existing_chan(&entries[0][1], serv);
-	if (tmp)
-		tmp->cmd_lexer(*this);
+	std::vector<Channel>::iterator it;
+
+	it = find_obj(&entries[0][1], serv->all_channels);
+	if (it != serv->all_channels.end())
+		it->mode(*this, serv);
 	else
 	{
-		reply = errNoSuchChannel(cli->getNickName(), entries[0]);
-		serv->_test = true;
+		reply = errNoSuchChannel(origin);
 	}
-	serv->_chan_requests(this);
+	serv->chan_requests(*this);
 }
 
-std::string		Request::retrieve_cliModes(Client* tmp)
+std::string		Request::retrieve_cliModes(Client& tmp)
 {
 	std::string prefix;
-	prefix = tmp->getNickName() + " " + tmp->getmode() + "\n";
+
+	prefix = tmp.getName() + " " + tmp.getmode() + "\n";
 	return prefix;
 }
 
-void Request::_mode_for_clis(Client* cli, Server* serv)
+void Request::mode_for_clis(Server* serv)
 {
-	Client* tmp = _find(entries[0], serv);
-	if (tmp != NULL)
+	std::vector<Client>::iterator it;
+
+	it = find_obj(entries[0], serv->all_clients);
+	if (it != serv->all_clients.end())
 	{
+		if (it->callToMode == 0) /* TO deal with MODE + i from the client, at the beginning*/
+		{
+			it->callToMode++;
+			return ;
+		}
 		if (mode_validity() == 0)
-			reply = errUModeUnknownFlag(cli->getNickName(), ":Unknown MODE flag\n");
+			reply = errUModeUnknownFlag();
 		if (entries[1][0] == '+')
 		{
 			if (entries[1][1] == 'o')
 				return ;
-			tmp->setMode(entries[1][1], true);
+			it->setMode(entries[1][1], true);
 		}
 		else if (entries[1][0] == '-')
 		{
 			if (entries[1][1] == 'r')
 				return ;
-			tmp->setMode(entries[1][1], false);
+			it->setMode(entries[1][1], false);
 		}
-		reply = rpl_umodeis(retrieve_cliModes(tmp), tmp->getNickName());
+		reply = rpl_umodeis(retrieve_cliModes(*it));
 	}
 	else
-		reply = errUsersDontMatch(cli->getNickName(), ":Cannot change mode for other users\n");
-	serv->_test = true;
+		reply = errUsersDontMatch();
+	serv->chan_requests(*this);
 }
 
 int Request::mode_validity()
@@ -304,106 +294,63 @@ int Request::mode_validity()
 	char c = entries[1][1];
 	if (entries[1].size() != 2 || entries[1][0] != '+' || entries[1][0] != '-')
 		return 0;
-	if (c != away && c != invisible && c != localOp && c != restricted && c != op && c != wallops)
+	if (c != 'a' && c != 'i' && c != 'o' && c != 'r' && c != 'O' && c != 'w')
 		return 0;
 	return 1;
 }
 
-void Request::chan_names(Server* serv)
+void Request::killing_process(std::vector<Client>::iterator to_kill, Server* serv)
 {
-	std::vector<Channel*>::iterator it = serv->_all_chanels.begin();
-	while (it != serv->_all_chanels.end())
-	{
-		// std::cout << "je rentre ici 2 " << std::endl;
-		if ((*it)->activeMode('s') == false)
-		{
-			(*it)->cmd_lexer(*this);
-			reply += rpl_endofnames((*it)->getName(), "option");
-		}
-		it++;
+	std::vector<Client*>::iterator it;
+	std::vector<Client>::iterator it_sender;
+	std::vector<Client>::iterator it_cli;
+
+	it_sender = find_obj(origin, serv->all_clients);
+	reply = ":" + it_sender->setPrefix() + " KILL " + to_kill->getName() + " :" + message + "\n";
+	if (send(to_kill->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
+		perror("Send");
+	reply.clear();
+	reply = "ERROR :Killed by " + origin + " (" +  &message[1] + ")\n";
+	if (send(to_kill->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
+		perror("Send");
+	reply = "UNDEFINED";
+	std::string prefix = to_kill->setPrefix();
+	it_cli = serv->all_clients.begin();
+	for (; it_cli != serv->all_clients.end(); it_cli++){
+		if (!(it_cli == to_kill))
+			target.push_back(it_cli->getName());
 	}
+	serv->removeClient(to_kill);
+	response = ":" + prefix + " QUIT :Killed by " + origin + " (" +  &message[1] + ")\n";
+	serv->chan_requests(*this);
 }
 
-void Request::noChan_names(Server* serv)
+void Request::all_chan_names(Server* serv)
 {
-	sort((serv->_all_clients.begin()), (serv->_all_clients.end()), sortClients);
-	std::string rep;
-	if (serv->_all_clients[0]->getChanNbr() == 0)
+	std::vector<Channel>::iterator it_cha = serv->all_channels.begin();
+	std::vector<Client>::iterator it_cli = serv->all_clients.begin();
+	std::vector<Client>::iterator it_sender;
+	size_t end_of_names;
+	
+	it_sender = find_obj(origin, serv->all_clients);
+	for( ;it_cha != serv->all_channels.end(); it_cha++)
 	{
-		reply += "*: \n";
-		size_t i = 0;
-		while(i < serv->_all_clients.size() && serv->_all_clients[i]->getChanNbr() == 0)
+		if (it_cha->activeMode('s') == false)
 		{
-			if (serv->_all_clients[i]->checkMode('i') == false)
-			{
-				rep.clear();
-				rep = serv->_all_clients[i]->getNickName() + ", ";
-				reply += rep;
-			}
-			i++;
+			it_cha->names(*this, serv);
+			reply += rpl_endofnames(it_sender->setPrefix(), it_cha->getName());
+		}
+	}
+	end_of_names = reply.size();
+	if (serv->all_clients[0].getChanNbr() == 0)
+	{
+		for( ;it_cli != serv->all_clients.end(); it_cli++)
+		{
+			if (it_cli->checkMode('i') == false)
+				reply += it_cli->getName() + ", ";
 		}
 		reply.replace(reply.size() - 2, 2, "\n");
-		reply += rpl_endofnames("*", "option");
+		reply += rpl_endofnames(it_sender->setPrefix(), "*");
+		reply.replace(end_of_names, 0, "*: \n");
 	}
-}
-
-int Request::_check_lists()
-{
-	if (entries.size() >= 1)
-		first_arg_for_entries(entries);
-	if (entries.size() >= 2)
-		second_arg_for_entries(entries);
-	if (_verifications() == 0)
-		return 0;
-	return 1;
-}
-
-int Request::_verifications()
-{
-	if (_command == "JOIN" || _command == "PART" || _command == "NAMES" || _command == "LIST" || _command == "KICK")
-	{
-		if (_channels.size() >= 1)
-		{
-			// std::cout << "here " << std::endl;
-			beginning_with_diez(_channels);
-			if (jo_nb_chan != _channels.size())
-				return 0;
-			// removing_sharp(_channels);
-			
-		}
-		if (_else.size() >= 1)
-		{
-			jo_nb_keys = _else.size();
-			if (_command == "PART")
-			{
-				if (_else[0][0] != '\0' && (_else[0][0] != ':'))
-					return 0;
-			}
-			else
-			{
-				if (jo_nb_keys > jo_nb_chan)
-					return 0;
-			}
-		}
-	}
-
-	_transformations();
-	return 1;
-}
-
-int Request::_transformations()
-{
-	if (commas_c == false && commas_e == true)
-	{
-		entries.erase(entries.begin());
-		entries.insert(entries.begin(), _channels.begin(), _channels.end());
-	}
-	else if (commas_c == false && commas_e == false)
-	{
-		entries.erase(entries.begin());
-		entries.erase(entries.begin() + 1);
-		entries.insert(entries.begin(), _channels.begin(), _channels.end());
-		entries.insert(entries.begin() + _channels.size(), _else.begin(), _else.end());
-	}
-	return 1;
 }

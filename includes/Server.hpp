@@ -5,48 +5,37 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/17 07:37:43 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/01/19 12:59:32 by jcervoni         ###   ########.fr       */
+/*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
+/*   Updated: 2023/03/04 08:12:36 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-
-#include "Server.hpp"
-# include "./Colors.hpp"
+# include <map>
 # include <vector>
 # include <iostream>
+# include <algorithm>
 # include <string>
 # include <cstring>
+# include <utility>
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <poll.h>
-# include <utility>
-# include "ServerSocket.hpp"
-# include <map>
+# include <unistd.h>
+# include <stdio.h>
 # include "Client.hpp"
 # include "Request.hpp"
 # include "Channel.hpp"
-# include "./numeric_replies/numeric_replies.hpp"
-#include "sig.hpp"
+# include "numeric_replies.hpp"
+// #include "sig.hpp"
+// # include "Colors.hpp"
 
 class Client;
 class Request;
 class Channel;
-
-
-struct cinfo
-{
-	int fd;
-	char buf[30000 + 1];
-	int n;
-	int state;
-	int	id_requests;
-};
-
-class ServerSocket;
+class Socket;
 
 class Server
 {
@@ -61,63 +50,61 @@ public:
 
 	/* OPERATOR OVERLOAD */
 	Server& operator=(const Server& rhs);
-
-	/* GETTERS */
-	struct sockaddr_in							get_address() const;
-	const int&									get_socket() const;
-	const int&									get_domain() const;
-	const int&									get_service() const;
-	const int&									get_protocol() const;
-	const int&									get_port() const;
-	const u_long&								get_interface() const;
-	const std::string&							get_name() const;
-	const std::string&							get_pass() const;
-
-/* EXCEPTIONS ????*/				
-
-	/* METHODS */				
-	void 										start_server();
-	int											routine();
-	void										new_client();
-	void										read_client_req(Client* cli, int *i);
-	void										write_to_client(struct pollfd client);
-	std::string									welcoming_newClients();
-
-	/* Utils */							
-	int											is_charset(char c);
-	bool										sortClients(Client& a, Client& b);
-
-	/* Receiving and handling re				quest */
-	bool										contld(char* buf, int nci);
-	void										handle_request(char *buf, int *i, Client *cli, int nci);
-	void										check_req_validity(Request **req);
-	void										_parsing(Client *cli, Request *req, std::vector<Request*>);
-	void										_chan_requests(Request *req);
-	void										_killing_cli(Client* cli);
-
-	cinfo										global;
-	std::string									name; // limited to 63 characters
-	ServerSocket*								server_socket;
-
-	struct pollfd*								_client_events;
-	struct pollfd*								_server_events;
-	int 										nb_client_events; // aka nfds
-	char 										read_buffer[30000 + 1];
-	std::string 								bif;
-	int 										n_ci;				
-	int 										fd_ci;				
-	std::string 								client_welcoming;
-	std::vector<Client *> 						_all_clients;
-	std::map<Client*, std::vector<Request*> >	_req_per_id; /* differentiate Clients by their nickname as it is unique*/
-	std::vector<Channel*>						_all_chanels; //list of all existing channels
-	bool										_test;
-	std::map<std::string, std::string>			_opers; /* Configure the usernmae and pwd for operators*/
+	
+	/* ***************** */
+	/* **** GETTERS **** */
+	/* ***************** */
+	// struct sockaddr_in				get_address() const;
+	int								get_socket() const;
+	// int								get_domain() const;
+	// int								get_service() const;
+	// int								get_protocol() const;
+	// int								get_port() const;
+	// const u_long&					get_interface() const;
+	std::string						get_name() const;
+	std::string						get_pass() const;
+			
+	/* ***************** */
+	/* **** METHODS **** */
+	/* ***************** */
+	/*
+	---- INIT METHODS
+	*/
+	struct sockaddr_in				set_socket_datas();
+	int								init_socket_server();
+	/*
+	---- RUNNING METHODS
+	*/
+	int								routine();
+	int								new_client();
+	int 							start_server();
+	void							init_pollfd_struct();
+	int								manage_connections();
+	// void							close_and_remove_user(Client& cli);
+	void							read_client_req(std::vector<Client>::iterator client, int i);
+	void							chan_requests(Request& req);
+	int								treating_req(Request& req);
+	void							handle_request(char *buf, std::vector<Client>::iterator client, int readBytes, int i);
+	// bool							contld(char* buf, int nci);
+	/*
+	---- DISCONNECT METHODS 
+	*/
+	void							disconnectAll();
+	void							removeClient(std::vector<Client>::iterator to_remove);
+	/*
+	---- CHANNELS AND CLIENTS DATA
+	*/
+	struct pollfd*						client_events;
+	std::vector<Client>					all_clients;
+	std::vector<Channel>				all_channels;
+	std::map<std::string, std::string>	opers;
 
 
 	
 private:
 
-	struct sockaddr_in _address;
+	int					_socket;
+	struct sockaddr_in	_address;
 	int					_domain;
 	int					_service;
 	int					_protocol;
