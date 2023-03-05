@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 08:12:36 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 13:31:16 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,10 @@ public:
 	void							init_pollfd_struct();
 	int								manage_connections();
 	// void							close_and_remove_user(Client& cli);
-	void							read_client_req(std::vector<Client>::iterator client, int i);
+	void							read_client_req(int fd_client, int i);
 	void							chan_requests(Request& req);
 	int								treating_req(Request& req);
-	void							handle_request(char *buf, std::vector<Client>::iterator client, int readBytes, int i);
+	void							handle_request(char *buf, int fd_client, int readBytes, int i);
 	// bool							contld(char* buf, int nci);
 	/*
 	---- DISCONNECT METHODS 

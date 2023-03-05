@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 10:18:23 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 08:11:49 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 13:47:21 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,16 @@ void all_chan_names(Request& requ, Server* serv)
 {
 	std::vector<Channel>::iterator it_cha = serv->all_channels.begin();
 	std::vector<Client>::iterator it_cli = serv->all_clients.begin();
-	std::vector<Client>::iterator it_sender;
+	// std::vector<Client>::iterator it_sender;
 
-	it_sender = find_obj(requ.origin, serv->all_clients);
+	// it_sender = find_obj(requ.origin, serv->all_clients);
 
 	while (it_cha != serv->all_channels.end())
 	{
 		if (it_cha->activeMode('s') == false)
 		{
 			it_cha->names(requ, serv);
-			requ.reply += rpl_endofnames(it_sender->setPrefix(), it_cha->getName());
+			requ.reply += rpl_endofnames(requ.origin->setPrefix(), it_cha->getName());
 		}
 		it_cha++;
 	}
@@ -40,6 +40,6 @@ void all_chan_names(Request& requ, Server* serv)
 			i++;
 		}
 		requ.reply.replace(requ.reply.size() - 2, 2, "\n");
-		requ.reply += rpl_endofnames(it_sender->setPrefix(), "*");
+		requ.reply += rpl_endofnames(requ.origin->setPrefix(), "*");
 	}
 }

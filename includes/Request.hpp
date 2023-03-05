@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 23:26:24 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 08:25:10 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 13:26:01 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,22 +40,22 @@ class Request
 {
 	typedef int	(Request::*requ_cmds)(Server*);
 	public:
-		std::string					raw_input;
-		std::vector<std::string>	entries;
-		std::vector<std::string>	channels;
-		std::vector<std::string>	params;
-		std::string					command;
-		std::string					origin;
-		std::string					response;
-		std::string					reply;
-		std::string					message;
-		std::vector<std::string>	target;
-		size_t						nb_chan;
-		size_t						nb_keys;
-		std::string					user_to_kick;
+		std::string						raw_input;
+		std::vector<std::string>		entries;
+		std::vector<std::string>		channels;
+		std::vector<std::string>		params;
+		std::string						command;
+		std::vector<Client>::iterator	origin;
+		std::string						response;
+		std::string						reply;
+		std::string						message;
+		std::vector<std::string>		target;
+		size_t							nb_chan;
+		size_t							nb_keys;
+		std::string						user_to_kick;
 
 	public:
-		Request		(const char* buf, std::string cli);
+		Request		(const char* buf, std::vector<Client>::iterator cli);
 		~Request	();
 		Request		( const Request &x );
 		Request & 	operator = ( const Request &rhs );

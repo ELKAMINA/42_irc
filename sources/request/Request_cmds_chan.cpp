@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:23:52 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 09:54:02 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 13:41:22 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int Request::invite(Server *serv)
 		it->invite(*this, serv);
 	}
 	else
-		reply = errNoSuchChannel(origin);
+		reply = errNoSuchChannel(origin->getName());
 	serv->chan_requests(*this);
 	return 0;
 }
@@ -57,7 +57,7 @@ int Request::part(Server *serv)
 			req_get_comments(entries, nb_chan);
 	}
 	else
-		reply = errNoSuchChannel(origin);
+		reply = errNoSuchChannel(origin->getName());
 	serv->chan_requests(*this);
 	if (reply == "UNDEFINED")
 	{
@@ -67,7 +67,7 @@ int Request::part(Server *serv)
 			it_cha = find_obj(entries[i], serv->all_channels);
 			if (it_cha == serv->all_channels.end())
 			{
-				reply = errNoSuchChannel(origin);
+				reply = errNoSuchChannel(origin->getName());
 				serv->chan_requests(*this);
 			}
 			else
@@ -100,7 +100,7 @@ int Request::kick(Server *serv)
 			{
 				it_cha = find_obj(&entries[i][1], serv->all_channels);
 				if (it_cha == serv->all_channels.end())
-					reply = errNoSuchChannel(origin);
+					reply = errNoSuchChannel(origin->getName());
 				else
 				{
 					user_to_kick.clear();
@@ -123,7 +123,7 @@ int Request::topic(Server *serv)
 		it_cha->topic(*this, serv);
 	else
 	{
-		reply = errNoSuchChannel(origin);
+		reply = errNoSuchChannel(origin->getName());
 		serv->chan_requests(*this);
 		return 1;
 	}
@@ -134,9 +134,9 @@ int Request::names(Server *serv)
 {
 	vector<Channel>::iterator it_cha;
 	size_t i = 0;
-	std::vector<Client>::iterator it_sender;
+	// std::vector<Client>::iterator it_sender;
 
-	it_sender = find_obj(origin, serv->all_clients);
+	// it_sender = find_obj(origin, serv->all_clients);
 	if (check_lists() == 0)
 	{
 		if (reply == "UNDEFINED")
@@ -154,7 +154,7 @@ int Request::names(Server *serv)
 					{
 						if (it_cha->activeMode('s') == false)
 							it_cha->names(*this, serv);
-						reply += rpl_endofnames(it_sender->setPrefix(), it_cha->getName());
+						reply += rpl_endofnames(origin->setPrefix(), it_cha->getName());
 					}
 					i++;
 				}

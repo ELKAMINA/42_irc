@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 10:17:56 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 09:31:23 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 13:07:35 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,15 @@ int existing_obj(std::string name, std::vector<T>&list)
 	return pos;
 }
 
-template<class T>
-int existing_obj(T elem, std::vector<T>&list)
+template<typename T>
+typename std::vector<T>::iterator find_obj(int fd, std::vector<T>& list)
 {
-	int pos = -1;
-	for (size_t i = 0; i < list.size(); i++){
-		if (elem == list[i])
-			return (pos = i);
+	typename std::vector<T>::iterator it = list.begin();
+	for (; it != list.end(); it++){
+		if (fd == it->getFdClient())
+			return it;
 	}
-	return pos;
+	return list.end();
 }
 
 template<typename T>

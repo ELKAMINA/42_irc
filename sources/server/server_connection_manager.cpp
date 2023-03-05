@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 08:18:11 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 13:32:08 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int Server::manage_connections()
 				for (std::vector<Client>::iterator it = all_clients.begin();it != all_clients.end(); it++){
 					if (it->getFdClient() == client_events[i].fd)
 					{
-						read_client_req(it, i);
+						read_client_req(it->getFdClient(), i);
 						break ;
 					}
 				}
@@ -71,16 +71,16 @@ int Server::new_client()
 	return 0;
 }
 
-void Server::read_client_req(std::vector<Client>::iterator client, int i)
+void Server::read_client_req(int fd_client, int i)
 {
 	char _buffer[1000];
 	bzero(_buffer, 1000);
-	int nci = recv((*client).getFdClient(), _buffer, 1000, MSG_DONTWAIT);
+	int nci = recv(fd_client, _buffer, 1000, MSG_DONTWAIT);
 	readBytes += nci;
 	if (nci <= 0)
 	{
 		if (readBytes == 0)
-			std::cout << (*client).getFdClient() << " Quitted! Bye " << std::endl;
+			std::cout << fd_client << " Quitted! Bye " << std::endl;
 		else
 		{
 			readBytes = 0;
@@ -89,7 +89,7 @@ void Server::read_client_req(std::vector<Client>::iterator client, int i)
 		close(client_events[i].fd);
 		client_events[i] = client_events[_online_clients - 1];
 		_online_clients--;
-		std::vector<Client>::iterator it = find_obj((*client).getName(), all_clients);
+		std::vector<Client>::iterator it = find_obj(fd_client, all_clients);
 		all_clients.erase(it);
 		readBytes = 0;
 	}
@@ -103,7 +103,7 @@ void Server::read_client_req(std::vector<Client>::iterator client, int i)
 		}
 		_buffer[nci] = '\0';
 		strcat(read_buffer, _buffer);
-		handle_request(read_buffer, client, readBytes, i);
+		handle_request(read_buffer, fd_client, readBytes, i);
 	}
 	memset(&read_buffer, 0, readBytes);
 	bzero(&_buffer,1000);

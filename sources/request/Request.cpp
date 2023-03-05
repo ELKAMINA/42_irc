@@ -6,13 +6,13 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 00:01:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 08:18:45 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 13:27:08 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
-Request::Request(const char* buffer, std::string cli) : origin(cli)
+Request::Request(const char* buffer, std::vector<Client>::iterator cli) : origin(cli)
 {
 	initLexer();
 	raw_input = buffer;
@@ -92,9 +92,9 @@ int Request::requestLexer(Server* serv)
 	std::string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "NOTICE", "JOIN", "PART",
 	"KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES","CAP", "INVITE", "OPER", "KILL", "PING", "WHOIS", "QUIT"};
 	size_t i = 0;
-	std::vector<Client>::iterator it_sender;
+	// std::vector<Client>::iterator it_sender;
 
-	it_sender = find_obj(origin, serv->all_clients);
+	// it_sender = find_obj(origin, serv->all_clients);
 	for (; i < _request_cmds.size(); i++){
 		if (this->command == cmds[i])
 				return ((this->*(_request_cmds[i]))(serv));
@@ -102,7 +102,7 @@ int Request::requestLexer(Server* serv)
 	if (i == _request_cmds.size())
 	{
 		reply = errUnknownCommand(command);
-		if (send(it_sender->getFdClient(), reply.c_str(), strlen(reply.c_str()), 0) == -1)
+		if (send(origin->getFdClient(), reply.c_str(), strlen(reply.c_str()), 0) == -1)
 				perror("Send ");
 	}
 	return 0;

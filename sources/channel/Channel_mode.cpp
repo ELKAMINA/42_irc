@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 08:35:20 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 13:42:07 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,12 @@ void Channel::changeChanMode(Request& request, pair<string, string> command)
 void Channel::changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv)
 {
 	vector<Client>::iterator it_cli;
-	string user = request.origin;
+	string user = request.origin->getName();
 
 	it_cli = find_obj(request.entries[2], serv->all_clients);
 	if (it_cli == serv->all_clients.end())
 	{
-		request.reply = errNoSuchNick(request.origin, request.entries[2]);
+		request.reply = errNoSuchNick(user, request.entries[2]);
 		return;
 	}
 	if (!isInChanList(it_cli->getName(), users))
