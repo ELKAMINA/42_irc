@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 23:26:24 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:26:01 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 22:49:21 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,7 @@ class Request
 		int		who(Server* serv);
 		int 	quit(Server *serv);
 		int		restart(Server *serv);
+		int		marvin(Server* serv);
 
 		/* Channel commands */
 		int		join(Server *serv);

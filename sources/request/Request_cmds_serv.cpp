@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 18:32:07 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 23:01:35 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,5 +308,11 @@ int Request::restart(Server *serv)
 		status = 1;
 	}
 	serv->chan_requests(*this);
+	return 0;
+}
+
+int Request::marvin(Server* serv)
+{
+	serv->marvin->cmd_lexer(*this, serv);
 	return 0;
 }

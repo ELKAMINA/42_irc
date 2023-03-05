@@ -6,7 +6,7 @@
 #    By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/17 07:46:31 by jcervoni          #+#    #+#              #
-#    Updated: 2023/03/02 13:27:51 by jcervoni         ###   ########.fr        #
+#    Updated: 2023/03/05 22:55:25 by jcervoni         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ SRCS_REQU_PATH	=		./request/
 SRCS_SERV_PATH	=		./server/
 SRCS_UTLS_PATH	=		./utils/
 SRCS_RPLY_PATH	=		./numeric_replies/
+SRCS_MARV_PATH	=		./bot/
 OBJS_PATH		=		./objects/
 
 SRCS 		= 			main.cpp \
@@ -55,6 +56,9 @@ SRCS 		= 			main.cpp \
 						$(addprefix $(SRCS_RPLY_PATH),	\
 						numeric_replies.cpp \
 						numeric_errors.cpp \
+						)\
+						$(addprefix $(SRCS_MARV_PATH),	\
+						Marvin.cpp \
 						)
 
 

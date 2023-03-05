@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:31:16 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 23:00:47 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 # include "Client.hpp"
 # include "Request.hpp"
 # include "Channel.hpp"
+# include "Marvin.hpp"
 # include "numeric_replies.hpp"
 // #include "sig.hpp"
 // # include "Colors.hpp"
@@ -37,6 +38,7 @@ class Client;
 class Request;
 class Channel;
 class Socket;
+class Marvin;
 
 class Server
 {
@@ -81,12 +83,10 @@ public:
 	int 							start_server();
 	void							init_pollfd_struct();
 	int								manage_connections();
-	// void							close_and_remove_user(Client& cli);
 	void							read_client_req(int fd_client, int i);
 	void							chan_requests(Request& req);
 	int								treating_req(Request& req);
 	void							handle_request(char *buf, int fd_client, int readBytes, int i);
-	// bool							contld(char* buf, int nci);
 	/*
 	---- DISCONNECT METHODS 
 	*/
@@ -99,6 +99,7 @@ public:
 	std::vector<Client> 						all_clients;
 	std::vector<Channel>						all_channels;
 	std::map<std::string, std::string>			opers;
+	Marvin*										marvin;
 	char 										read_buffer[1000];
 	size_t 										readBytes;
 

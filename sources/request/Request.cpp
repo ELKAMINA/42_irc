@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 00:01:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:27:08 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 22:48:55 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,12 +87,14 @@ void Request::initLexer()
 	_request_cmds.push_back(&Request::quit);
 	_request_cmds.push_back(&Request::who);
 	_request_cmds.push_back(&Request::restart);
+	_request_cmds.push_back(&Request::marvin);
 }
 
 int Request::requestLexer(Server* serv)
 {
 	std::string cmds[] = {"PASS", "NICK", "USER", "PRIVMSG", "NOTICE", "JOIN", "PART",
-	"KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES","CAP", "INVITE", "OPER", "KILL", "PING", "WHOIS", "QUIT", "WHO", "RESTART"};
+						"KICK", "TOPIC", "MODE", "AWAY", "LIST", "NAMES","CAP", "INVITE",
+						"OPER", "KILL", "PING", "WHOIS", "QUIT", "WHO", "RESTART", "MARVIN"};
 	size_t i = 0;
 
 	for (; i < _request_cmds.size(); i++){

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 20:04:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 10:51:31 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 23:01:17 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ _port(port), _interface(interface), _max_co(max_co), _name(name), _pass(pass)
 	opers.insert(pair);
 	bzero(&read_buffer[0], sizeof(read_buffer));
 	readBytes = 0;
+	marvin =  new Marvin();
 }
 
 Server::Server(const Server &rhs)
@@ -54,6 +55,7 @@ Server &Server::operator=(const Server &rhs)
 Server::~Server()
 {
 	delete[] client_events;
+	delete marvin;
 	all_channels.clear();
 	all_clients.clear();
 	opers.clear();
