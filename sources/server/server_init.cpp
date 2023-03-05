@@ -36,6 +36,11 @@ int Server::init_socket_server()
 		close(sockFd);
 		return (perror("set socket options"), -1);
 	}
+	if (fcntl(sockFd, F_SETFL, O_NONBLOCK) == -1)
+	{
+		close(sockFd);
+		return (perror("fcntl options"), -1);
+	}
 	address = set_socket_datas();
 	if ((sockAddr = bind(sockFd, (const sockaddr*)&address, sizeof(address))) == -1)
 	{

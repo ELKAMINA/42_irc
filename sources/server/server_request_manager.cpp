@@ -23,6 +23,7 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
 	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
+		std::cout << "test " << std::endl;
 		if (client_buffer[pos - 1] == '\r')
 			input = client_buffer.substr(0, pos);
 		else
@@ -31,6 +32,7 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 		Request req = Request(input.c_str(), origin);
 		if (treating_req(req) == 1)
 		{
+			std::cout << "test 2" << std::endl;
 			close(client_events[i].fd);
 			client_events[i] = client_events[_online_clients - 1];
 			_online_clients--;
@@ -39,8 +41,10 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 			break;
 		}
 		client_buffer.erase(0, pos + 1);
+		std::cout << "test 3" << std::endl;
 	}
 	client_buffer.clear();
+	std::cout << "test 5" << std::endl;
 	return;
 }
 

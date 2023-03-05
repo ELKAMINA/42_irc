@@ -26,7 +26,8 @@ void Server::init_pollfd_struct()
 
 int Server::manage_connections()
 {
-	poll(client_events, _online_clients, -1);
+	if (poll(client_events, _online_clients, -1) <= 0)
+		std::cout << "keblooo " << std::endl;
 	for (int i = 0; i < _online_clients; i++)
 	{
 		if (client_events[i].revents != 0 && client_events[i].revents & POLLIN)
@@ -58,10 +59,13 @@ int Server::new_client()
 	socklen_t			client_len = sizeof(clientAddr);
 	int					sock = 0;
 
-	std::cerr<<"new_client"<<std::endl;
+	std::cerr<<"new_client"<< _socket << std::endl;
 	sock = accept(_socket,(struct sockaddr *)&clientAddr, &client_len);
-	if (sock < 0)
+	if (sock <= 0)
+	{
 		return -1;
+
+	}
 	client_events[_online_clients].events = POLLIN;
 	client_events[_online_clients].fd = sock;
 	Client tmp = Client(sock);
@@ -173,6 +177,7 @@ void Server::removeClient(std::vector<Client>::iterator to_remove)
 		}
 	}
 	all_clients.erase(to_remove);
+
 }
 // a terminer apres chan
 //
