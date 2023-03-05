@@ -94,7 +94,7 @@ std::string errChannelIsFull(std::string channel)
 
 std::string errInviteOnlyChan(std::string channel)
 {
-	return (channel + " 473 * :Cannot join channel (+i)\n");
+	return (channel);
 }
 
 std::string errBannedFromChan(std::string channel)

@@ -272,10 +272,14 @@ int Request::oper(Server *serv)
 int Request::mode(Server *serv)
 {
 	count_chan_nbr(entries);
+	std::cout << "Bibiii " << nb_chan << std::endl;
 	if (nb_chan == 1 && (entries[0][0] == '#' || entries[0][0] == '&'))
 	{
+		std::cout << "herrrreeee hdhd " << nb_chan << std::endl;
 		if (entries.size() > 1)
+		{
 			mode_for_chans(serv);
+		}
 	}
 	else if (nb_chan == 0 && entries.size() >= 2)
 		mode_for_clis(serv);

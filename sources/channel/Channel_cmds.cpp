@@ -109,7 +109,7 @@ void Channel::join(Request &request, Server* serv)
 	{
 		if (!isInChanList(user, _invited))
 		{
-			errInCmd(request, errInviteOnlyChan(this->getName()));
+			errInCmd(request, errInviteOnlyChan("473 " + user + " #" + this->getName() + " :Cannot join channel (+i)"));
 			err = true;
 		}
 		else

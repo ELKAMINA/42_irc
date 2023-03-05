@@ -244,7 +244,9 @@ void Request::mode_for_chans(Server* serv)
 
 	it = find_obj(&entries[0][1], serv->all_channels);
 	if (it != serv->all_channels.end())
+	{
 		it->mode(*this, serv);
+	}
 	else
 	{
 		reply = errNoSuchChannel(origin->getName());

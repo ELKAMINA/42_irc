@@ -98,8 +98,8 @@ void Server::read_client_req(int fd_client, int i)
 		strcat(read_buffer, _buffer);
 		handle_request(read_buffer, fd_client, readBytes, i);
 	}
-	memset(&read_buffer, 0, readBytes);
-	bzero(&_buffer,1000);
+	// memset(&read_buffer, 0, readBytes);
+	bzero(&read_buffer,1000);
 	readBytes = 0;
 }
 

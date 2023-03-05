@@ -73,12 +73,14 @@ void Channel::changeChanMode(Request& request, pair<string, string> command)
 	{
 		map<char, bool>::iterator it = _mods.find(command.first[1]);
 		if (it != _mods.end())
-		_mods[command.first[1]] = true;
+			_mods[command.first[1]] = true;
 	}
 	else
 	{
 		_mods[command.first[1]] = false;
 	}
+	request.target.insert(request.target.end(), users.begin(), users.end());
+	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() + " " + command.first + (command.second == "" ? "" : " " + command.second);
 }
 //modif to do
 void Channel::changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv)
@@ -137,6 +139,7 @@ static int checkModes(Request& request, string params)
 	bool chanMode = false;
 	int count = 0;
 	string found = "";
+	std::cout << params << params.size() << std::endl;
 	if ((params[0] != '-' && params[0] != '+') || params.size() < 2)
 		return -1;
 	for (size_t i = 1; i < params.size(); i++){
@@ -146,11 +149,13 @@ static int checkModes(Request& request, string params)
 		{
 			if ((params[i] == 'b' || params[i] == 'o' || params[i] == 'v') && !chanMode)
 			{
+				std::cout << "flaaag utilisateur " << std::endl;
 				userMode = true;
 				found += params[i];
 			}
 			else if (!userMode)
 			{
+				std::cout << "flaaag channel " << std::endl;
 				if (params[0] == '+' && (params[i] == 'k' || params[i] == 'l' || params[i] == 't'))
 					count += 1;
 				chanMode = true;
@@ -197,7 +202,9 @@ int Channel::addMode(Request& request, vector<string>params, Server* serv)
 	map<string, string>modes;
 
 	if (params.size() == 1)
+	{
 		request.reply = rpl_channelmodeis(this->getName(), this->getModes());
+	}
 	else if ((countParams = checkModes(request, params[1])) != -1)
 	{
 		// if (countParams != params.size() - 2)
@@ -205,13 +212,20 @@ int Channel::addMode(Request& request, vector<string>params, Server* serv)
 		modes = splitModes(params, countParams);
 		for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){
 			if (it->first[1] == 'o')
+			{
 				changeUserMode(request, *it, _operators, serv);
+			}
 			else if (it->first[1] == 'v')
+			{
 				changeUserMode(request, *it, _vocal, serv);
+			}
 			// else if (it->getName()[1] == 'b')
 			// 	modeBan(request, *it);
 			else
+			{
 				changeChanMode(request, *it);
+				// serv->chan_requests(request);
+			}
 		}
 	}
 	return 0;
