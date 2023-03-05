@@ -138,7 +138,7 @@ int Request::names(Server *serv)
 	// std::vector<Client>::iterator it_sender;
 
 	// it_sender = find_obj(origin, serv->all_clients);
-	if (check_lists() == 0)
+	if (check_lists() != 0)
 	{
 		if (reply == "UNDEFINED")
 		{

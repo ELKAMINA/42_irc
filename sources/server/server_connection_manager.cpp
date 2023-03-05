@@ -36,7 +36,7 @@ int Server::manage_connections()
 			{
 				std::cerr<<"about to create a new client"<<std::endl;
 				if (new_client() == -1)
-					return (perror("accept"), -1);
+					continue ;
 			}
 			else
 			{
