@@ -234,7 +234,7 @@ int Request::quit(Server *serv)
 	// std::vector<Client>::iterator target;
 
 	// target = find_obj(origin, serv->all_clients);
-	std::cout << "test 100" << std::endl;
+	// std::cout << "test 100" << std::endl;
 	serv->removeClient(origin);
 	return 0;
 }

@@ -43,6 +43,7 @@ int Server::manage_connections()
 				for (std::vector<Client>::iterator it = all_clients.begin();it != all_clients.end(); it++){
 					if (it->getFdClient() == client_events[i].fd)
 					{
+						// std::cout << " heyyy " << (*it).getName() << (*it).getFdClient() << std::endl;
 						read_client_req(it->getFdClient(), i);
 						break ;
 					}
@@ -158,7 +159,6 @@ void Server::removeClient(std::vector<Client>::iterator to_remove)
 {
 	std::vector<std::string>::iterator it;
 	std::vector<Channel>::iterator target;
-
 	for (it = to_remove->chans.begin(); it != to_remove->chans.end(); it++)
 	{
 		target = find_obj(*it, all_channels);
@@ -170,8 +170,7 @@ void Server::removeClient(std::vector<Client>::iterator to_remove)
 		if (client_events[i].fd == to_remove->getFdClient())
 		{
 			close(client_events[i].fd);
-			client_events[i] = client_events[0];
-			// client_events[i] = client_events[_online_clients - 1];
+			client_events[i] = client_events[_online_clients - 1];
 			_online_clients--;
 			break ;
 		}

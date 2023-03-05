@@ -135,7 +135,8 @@ void Channel::join(Request &request, Server* serv)
 		request.reply.clear();
 		request.target.clear();
 		request.reply = rpl_endofnames(request.origin->setPrefix(), this->getName());
-		// request.origin.addChanToList(this);
+		request.origin->addChanToList(this->getName());
+		// std::cout << " iciiii ?????" << std::endl;
 	}
 	serv->chan_requests(request);
 }

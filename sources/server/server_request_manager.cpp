@@ -20,10 +20,10 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 	// std::vector<Client>::iterator it;
 	buf[readBytes] = '\0';
 	client_buffer += buf;
-	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
+	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << "avec le FD " << fd_client << std::endl;
 	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
-		std::cout << "test " << std::endl;
+		// std::cout << "test " << std::endl;
 		if (client_buffer[pos - 1] == '\r')
 			input = client_buffer.substr(0, pos);
 		else
@@ -32,7 +32,7 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 		Request req = Request(input.c_str(), origin);
 		if (treating_req(req) == 1)
 		{
-			std::cout << "test 2" << std::endl;
+			// std::cout << "test 2" << std::endl;
 			close(client_events[i].fd);
 			client_events[i] = client_events[_online_clients - 1];
 			_online_clients--;
@@ -41,10 +41,10 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 			break;
 		}
 		client_buffer.erase(0, pos + 1);
-		std::cout << "test 3" << std::endl;
+		// std::cout << "test 3" << std::endl;
 	}
 	client_buffer.clear();
-	std::cout << "test 5" << std::endl;
+	// std::cout << "test 5" << std::endl;
 	return;
 }
 
@@ -80,9 +80,10 @@ void Server::chan_requests(Request &req)
 	if (req.reply != "UNDEFINED")
 	{
 		req.reply += "\r\n";
-		if (send(req.origin->getFdClient(), req.reply.c_str(), req.reply.length(), 0) == -1)
+		if (send(req.origin->getFdClient(), req.reply.c_str(), req.reply.length(), MSG_DONTWAIT) == -1)
 		{
 			return (perror("Send"));
 		}
 	}
+	// std::cout << " weshhhh " << std::endl;
 }

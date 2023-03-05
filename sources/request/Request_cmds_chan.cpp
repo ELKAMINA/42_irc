@@ -26,6 +26,7 @@ int Request::join(Server *serv)
 			multiChan(serv);
 		else
 		{
+			// std::cout << "heroos " << std::endl;
 			oneChan(serv);
 		}
 	}
