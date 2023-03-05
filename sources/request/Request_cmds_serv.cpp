@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:40:10 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 18:32:07 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,15 +235,24 @@ int Request::quit(Server *serv)
 
 	// target = find_obj(origin, serv->all_clients);
 	// std::cout << "test 100" << std::endl;
-	serv->removeClient(origin);
+	// serv->removeClient(origin);
+	std::vector<std::string>::iterator it;
+	std::vector<Channel>::iterator target;
+	for (it = origin->chans.begin(); it != origin->chans.end(); it++)
+	{
+		target = find_obj(*it, serv->all_channels);
+		target->part(*this, serv);
+		if (target->getOnlineCount() == 0)
+			serv->all_channels.erase(target);
+	}
+	// close(origin->getFdClient());
+	// serv->all_clients.erase(origin);
 	return 0;
 }
 
 int Request::oper(Server *serv)
 {
-	// std::vector<Client>::iterator it_sender;
 
-	// it_sender = find_obj(origin, serv->all_clients);
 	if (entries.size() == 2)
 	{
 		if (serv->opers[entries[0]] == entries[1])

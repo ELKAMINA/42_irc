@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:45:09 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 18:23:00 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,7 @@ void Channel::join(Request &request, Server* serv)
 {
 	string user = request.origin->getName();
 	vector<string>::iterator it;
-	// std::vector<Client>::iterator it_sender;
 
-	// it_sender = find_obj(request.origin, serv->all_clients);
 	int matching_param;
 	bool err = false;
 	if (isInChanList(user, users))
@@ -136,7 +134,6 @@ void Channel::join(Request &request, Server* serv)
 		request.target.clear();
 		request.reply = rpl_endofnames(request.origin->setPrefix(), this->getName());
 		request.origin->addChanToList(this->getName());
-		// std::cout << " iciiii ?????" << std::endl;
 	}
 	serv->chan_requests(request);
 }
@@ -146,10 +143,7 @@ void Channel::invite(Request& request, Server* serv)
 	string user = request.origin->getName();
 	vector<string>::iterator it;
 	vector<Client>::iterator target = find_obj(request.entries[0], serv->all_clients);
-	// std::vector<Client>::iterator it_sender;
 
-	std::cerr<< "on a invite "<< target->getName()<<std::endl;
-	// it_sender = find_obj(request.origin, serv->all_clients);
 	request.response.clear();
 	if (request.entries.size() < 2)
 		return (errInCmd(request, errNeedMoreParams(user, request.command)));
@@ -228,7 +222,8 @@ void Channel::part(Request& request, Server* serv)
 		request.response = ":" + request.origin->setPrefix() + " PART #" + this->getName() + " " + request.message;
 		serv->chan_requests(request);
 		removeUser(user);
-		request.origin->removeChanFromList(this->getName());
+		if (request.command == "PART")
+			request.origin->removeChanFromList(this->getName());
 		
 	}
 }

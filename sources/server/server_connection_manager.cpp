@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:32:08 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 17:51:12 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,13 @@ void Server::init_pollfd_struct()
 
 int Server::manage_connections()
 {
-	if (poll(client_events, _online_clients, -1) <= 0)
-		std::cout << "keblooo " << std::endl;
+	poll(client_events, _online_clients, -1);
 	for (int i = 0; i < _online_clients; i++)
 	{
 		if (client_events[i].revents != 0 && client_events[i].revents & POLLIN)
 		{
 			if (client_events[i].fd == _socket)
 			{
-				std::cerr<<"about to create a new client"<<std::endl;
 				if (new_client() == -1)
 					continue ;
 			}
@@ -43,7 +41,6 @@ int Server::manage_connections()
 				for (std::vector<Client>::iterator it = all_clients.begin();it != all_clients.end(); it++){
 					if (it->getFdClient() == client_events[i].fd)
 					{
-						// std::cout << " heyyy " << (*it).getName() << (*it).getFdClient() << std::endl;
 						read_client_req(it->getFdClient(), i);
 						break ;
 					}
@@ -60,18 +57,13 @@ int Server::new_client()
 	socklen_t			client_len = sizeof(clientAddr);
 	int					sock = 0;
 
-	std::cerr<<"new_client"<< _socket << std::endl;
 	sock = accept(_socket,(struct sockaddr *)&clientAddr, &client_len);
 	if (sock <= 0)
-	{
 		return -1;
-
-	}
 	client_events[_online_clients].events = POLLIN;
 	client_events[_online_clients].fd = sock;
 	Client tmp = Client(sock);
 	all_clients.push_back(Client(tmp));
-	std::cerr<<"new client, name = "<<tmp.getName()<<std::endl;
 	_online_clients++;
 	return 0;
 }
@@ -85,18 +77,14 @@ void Server::read_client_req(int fd_client, int i)
 	if (nci <= 0)
 	{
 		if (readBytes == 0)
-			std::cout << fd_client << " Quitted! Bye " << std::endl;
-		else
 		{
+			close(client_events[i].fd);
+			client_events[i] = client_events[_online_clients - 1];
+			_online_clients--;
+			std::vector<Client>::iterator it = find_obj(fd_client, all_clients);
+			all_clients.erase(it);
 			readBytes = 0;
-			return ;
 		}
-		close(client_events[i].fd);
-		client_events[i] = client_events[_online_clients - 1];
-		_online_clients--;
-		std::vector<Client>::iterator it = find_obj(fd_client, all_clients);
-		all_clients.erase(it);
-		readBytes = 0;
 	}
 	else
 	{
