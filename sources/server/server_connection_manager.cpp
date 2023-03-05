@@ -75,7 +75,7 @@ void Server::read_client_req(std::vector<Client>::iterator client, int i)
 {
 	char _buffer[1000];
 	bzero(_buffer, 1000);
-	int nci = recv((*client).getFdClient(), _buffer, 1000, 0);
+	int nci = recv((*client).getFdClient(), _buffer, 1000, MSG_DONTWAIT);
 	readBytes += nci;
 	if (nci <= 0)
 	{

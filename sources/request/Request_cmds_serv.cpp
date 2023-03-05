@@ -31,7 +31,9 @@ int Request::pass(Server *serv)
 			return 0;
 		}
 		else if (entries[0] == serv->get_pass() && it_sender->loggedIn == true)
+		{
 			reply = errAlreadyRegistered();
+		}
 		else
 			reply = errPasswMismatch(entries[0]);
 		serv->chan_requests(*this);
@@ -68,7 +70,7 @@ int Request::user(Server *serv)
 	std::vector<Client>::iterator it_sender;
 
 	it_sender = find_obj(origin, serv->all_clients);
-	if (it_sender->loggedIn == false && origin!= "UNDEFINED")
+	if (it_sender->loggedIn == false && origin != "UNDEFINED")
 	{
 		it_sender->setUsername(entries[0]);
 		it_sender->setRealname(entries[3]);
@@ -219,12 +221,8 @@ int Request::kill(Server *serv)
 		{
 			if (entries.size() >= 2)
 				set_reason_msg(1);
-<<<<<<< HEAD
-			killing_process(it_cli, serv);
-=======
-			killing_process(*it, serv);
+			killing_process((it_cli), serv);
 			return 0;
->>>>>>> Changts :
 		}
 	}
 	serv->chan_requests(*this);
