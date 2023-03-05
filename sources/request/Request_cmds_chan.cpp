@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:23:52 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 08:32:23 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 09:54:02 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,10 @@ int Request::invite(Server *serv)
 {
 	std::vector<Channel>::iterator it = find_obj(&entries[1][1], serv->all_channels);
 	if (it != serv->all_channels.end())
-		it->cmd_lexer(*this, serv);
+	{
+		std::cerr<<"channel found: "<<it->getName()<<std::endl;
+		it->invite(*this, serv);
+	}
 	else
 		reply = errNoSuchChannel(origin);
 	serv->chan_requests(*this);
@@ -150,7 +153,7 @@ int Request::names(Server *serv)
 					if (it_cha != serv->all_channels.end())
 					{
 						if (it_cha->activeMode('s') == false)
-							it_cha->cmd_lexer(*this, serv);
+							it_cha->names(*this, serv);
 						reply += rpl_endofnames(it_sender->setPrefix(), it_cha->getName());
 					}
 					i++;

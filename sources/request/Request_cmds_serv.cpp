@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 08:29:43 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 11:08:28 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,6 +171,7 @@ int Request::ping(Server *serv)
 		reply = errNeedMoreParams(origin, command);
 	else
 		reply = ":" + it_sender->setPrefix() + "PONG: " + entries[0] + "\r\n";
+	// serv->chan_requests(*this);
 	return 0;
 }
 

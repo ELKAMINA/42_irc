@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 09:00:33 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/05 10:07:43 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,14 @@ void Channel::cmd_lexer(Request& request, Server* serv)
 		(this->*(_cmds[4]))(request, serv);
 		return ;
 	}
+	std::cerr<< "command is "<<request.command<<std::endl;
+	std::cerr<<"size of commands: "<< _cmds.size()<<std::endl;
 	for (size_t i = 0; i< _cmds.size(); i++){
 		if (request.command == cmd_name[i])
+		{
+			std::cerr<<"cmd found: "<<cmd_name[i]<<std::endl;
 			(this->*(_cmds[i]))(request, serv);
+		}
 	}
 }
 
@@ -128,6 +133,7 @@ void Channel::join(Request &request, Server* serv)
 		serv->chan_requests(request);
 		request.response = "UNDEFINED";
 		request.reply.clear();
+		request.target.clear();
 		request.reply = rpl_endofnames(it_sender->setPrefix(), this->getName());
 		// request.origin.addChanToList(this);
 	}
@@ -141,6 +147,7 @@ void Channel::invite(Request& request, Server* serv)
 	vector<Client>::iterator target = find_obj(request.entries[0], serv->all_clients);
 	std::vector<Client>::iterator it_sender;
 
+	std::cerr<< "on a invite "<< target->getName()<<std::endl;
 	it_sender = find_obj(request.origin, serv->all_clients);
 	request.response.clear();
 	if (request.entries.size() < 2)
@@ -157,7 +164,6 @@ void Channel::invite(Request& request, Server* serv)
 	}
 	if (!isInChanList(target->getName(), _invited))
 		_invited.push_back(target->getName());
-	std::cerr<< "on a invite "<< target->getName()<<std::endl;
 	request.target.push_back(target->getName());
 	request.response += it_sender->setPrefix() + " INVITE " + request.entries[0] + " #" + this->getName() + '\n';
 	request.reply = rpl_inviting(request.entries[0], this->getName());
