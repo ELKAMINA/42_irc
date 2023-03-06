@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 10:18:23 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:47:21 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 10:58:42 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,6 @@ void all_chan_names(Request& requ, Server* serv)
 {
 	std::vector<Channel>::iterator it_cha = serv->all_channels.begin();
 	std::vector<Client>::iterator it_cli = serv->all_clients.begin();
-	// std::vector<Client>::iterator it_sender;
-
-	// it_sender = find_obj(requ.origin, serv->all_clients);
 
 	while (it_cha != serv->all_channels.end())
 	{

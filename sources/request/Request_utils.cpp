@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 18:26:05 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:36:04 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 12:31:44 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ bool Request::split_entries(std::string entry, std::vector<std::string>&target)
 	size_t sharp = 0;
 	std::string tmp = entry;
 	bool commas = true;
+	
 	while ((sharp = tmp.find(',')) != std::string::npos)
 	{
 		target.push_back(tmp.substr(0, sharp));
@@ -93,6 +94,7 @@ int Request::transformations(bool oneChan, bool oneParam)
 int	Request::count_chan_nbr(std::vector<std::string> entries)
 {
 	std::vector<std::string>::iterator it = entries.begin();
+	
 	while (it != entries.end())
 	{
 		if ((*it)[0] != '#' && (*it)[0] != '&')
@@ -133,6 +135,7 @@ int Request::check_validity() const
 std::string Request::removing_backslash(std::vector<std::string> entries)
 {
 	std::vector<std::string>::iterator it = entries.end() - 1;
+	
 	it->erase(it->size() - 1,1);
 	return(*it);
 }
@@ -163,13 +166,27 @@ void Request::req_get_comments(std::vector<std::string> &entries, size_t j)
 	}
 }
 
+void Request::set_reason_msg(size_t j)
+{
+	if (message == "")
+	{
+		message.clear();
+		size_t i = j;
+		while (i < entries.size())
+		{
+			message.append(entries[i]);
+			message.append(" ");
+			i++;
+		}
+	}
+}
+
 void Request::oneChan(Server *serv)
 {
 	std::vector<Channel>::iterator it_cha;
-	// std::vector<Client>::iterator creator;
 
 	it_cha = find_obj(entries[0], serv->all_channels);
-	if (it_cha != serv->all_channels.end()) /* Channel existe */
+	if (it_cha != serv->all_channels.end())
 	{
 		if ((it_cha->activeMode('k') == true && entries.size() == 1)
 		|| (it_cha->activeMode('k') == false && entries.size() > 1))
@@ -182,14 +199,16 @@ void Request::oneChan(Server *serv)
 	}
 	else
 	{
-		// creator = find_obj(origin, serv->all_clients);
-		// std::cerr<<"creator's name = "<<creator->getName()<<std::endl;
 		if (entries.size() == 1)
 		{
 			serv->all_channels.push_back(Channel(entries[0], origin->getName()));
 		}
 		else
+		{
+			std::cout << "Nammees = " << origin->getName() << std::endl;
 			serv->all_channels.push_back(Channel(entries[0], entries[1], origin->getName()));
+			
+		}
 		serv->all_channels.rbegin()->join(*this, serv);
 	}	 
 }
@@ -197,7 +216,6 @@ void Request::oneChan(Server *serv)
 void Request::multiChan(Server *serv)
 {
 	std::vector<Channel>::iterator it_cha;
-	// std::vector<Client>::iterator creator;
 	size_t i = 0;
 	size_t k = nb_chan;
 
@@ -206,7 +224,6 @@ void Request::multiChan(Server *serv)
 		it_cha = find_obj(entries[i], serv->all_channels);
 		if (it_cha == serv->all_channels.end())
 		{
-			// creator = find_obj(origin, serv->all_clients);
 			if (nb_keys != 0)
 			{
 				serv->all_channels.push_back(Channel(entries[i], (entries[i + nb_chan]), origin->getName()));
@@ -255,7 +272,7 @@ void Request::mode_for_chans(Server* serv)
 	}
 }
 
-std::string		Request::retrieve_cliModes(Client& tmp)
+std::string		Request::retrieve_cli_modes(Client& tmp)
 {
 	std::string prefix;
 
@@ -289,7 +306,7 @@ void Request::mode_for_clis(Server* serv)
 				return ;
 			it->setMode(entries[1][1], false);
 		}
-		reply = rpl_umodeis(retrieve_cliModes(*it));
+		reply = rpl_umodeis(retrieve_cli_modes(*it));
 	}
 	else
 		reply = errUsersDontMatch();
@@ -308,11 +325,8 @@ int Request::mode_validity()
 
 void Request::killing_process(std::vector<Client>::iterator to_kill, Server* serv)
 {
-	std::vector<Client*>::iterator it;
-	// std::vector<Client>::iterator it_sender;
 	std::vector<Client>::iterator it_cli;
-
-	// it_sender = find_obj(origin, serv->all_clients);
+	
 	reply = ":" + origin->setPrefix() + " KILL " + to_kill->getName() + " :" + message + "\n";
 	if (send(to_kill->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
 		perror("Send");
@@ -336,10 +350,8 @@ void Request::all_chan_names(Server* serv)
 {
 	std::vector<Channel>::iterator it_cha = serv->all_channels.begin();
 	std::vector<Client>::iterator it_cli = serv->all_clients.begin();
-	// std::vector<Client>::iterator it_sender;
 	size_t end_of_names;
-	
-	// it_sender = find_obj(origin, serv->all_clients);
+
 	for( ;it_cha != serv->all_channels.end(); it_cha++)
 	{
 		if (it_cha->activeMode('s') == false)

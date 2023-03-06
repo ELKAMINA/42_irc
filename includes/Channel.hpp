@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:31:13 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 19:58:02 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 11:31:57 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,14 +55,13 @@ class Channel
 		/* MODES MANAGEMENT */
 		void	changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv);
 		void	changeChanMode(Request& request, pair<string, string> command, Server *serv);
-		void	modeLimite(Request& request, pair<string, string> command);
 		int		addMode(Request& request, vector<string>params, Server* serv);
+		void	modeLimite(Request& request, pair<string, string> command);
 		// void modeBan(Request& request, pair<string, string> command);
 
 		/* COMMANDS */
-		void errInCmd(Request& request, string err);
+		void updateUser(std::string current, std::string new_name);
 		void replyJoining(Request& request, Server* serv);
-		void removeUser(string user);
 		void cmd_lexer(Request& request, Server* serv);
 		void privmsg(Request& request, Server* serv);
 		void invite(Request& request, Server* serv);
@@ -72,6 +71,7 @@ class Channel
 		void part(Request& request, Server* serv);
 		void mode(Request& request, Server* serv);
 		void kick(Request& request, Server* serv);
+		void removeUser(string user);
 		
 		/* CHAN INFO CHECKERS */
 		std::vector<Client>::iterator	find_user(string target, vector<Client>& list);

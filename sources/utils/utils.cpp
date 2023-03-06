@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 10:46:03 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/02 10:03:34 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 11:40:32 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ bool ctld(char* buf, int readBytes)
 	int j = 0;
 	while (j < readBytes)
 	{
-		if ((buf[j] == '\n'))
+		if (buf[j] == '\n')
 			return true;
 		j++;
 	}

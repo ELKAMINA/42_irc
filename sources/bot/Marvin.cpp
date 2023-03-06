@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/03 10:58:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 23:29:12 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 09:35:28 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,11 +115,12 @@ void Marvin::cmd_lexer(Request& request, Server* serv)
 			if (request.entries[0] == _cmd_name[i])
 			{
 				(this->*(_cmds[i]))(request, serv);
-				break ;
+				return;
 			}
 		}
 		if (i == _cmd_name.size())
 			request.reply = "667 * :Marvin doesn't know this freaky command\n";
 	}
+	serv->chan_requests(request);
 }
 

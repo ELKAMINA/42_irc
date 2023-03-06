@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 23:26:24 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 22:49:21 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 09:29:13 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ class Request
 		void		mode_for_chans(Server* serv);
 		void		mode_for_clis(Server* serv);
 		int			mode_validity(void);
-		std::string	retrieve_cliModes(Client& tmp);
+		std::string	retrieve_cli_modes(Client& tmp);
 		int			check_lists();
 		int			verifications();
 		int			transformations(bool oneChan, bool oneParam);

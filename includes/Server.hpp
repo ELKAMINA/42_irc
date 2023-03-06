@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 23:00:47 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 11:35:54 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,7 @@ public:
 	/* ***************** */
 	/* **** GETTERS **** */
 	/* ***************** */
-	// struct sockaddr_in				get_address() const;
 	int								get_socket() const;
-	// int								get_domain() const;
-	// int								get_service() const;
-	// int								get_protocol() const;
-	// int								get_port() const;
-	// const u_long&					get_interface() const;
 	std::string						get_name() const;
 	std::string						get_pass() const;
 			
@@ -73,25 +67,26 @@ public:
 	/*
 	---- INIT METHODS
 	*/
-	struct sockaddr_in				set_socket_datas();
 	int								init_socket_server();
+	struct sockaddr_in				set_socket_datas();
 	/*
 	---- RUNNING METHODS
 	*/
-	int								routine();
-	int								new_client();
-	int 							start_server();
-	void							init_pollfd_struct();
-	int								manage_connections();
+	void							update_user_data(Request& request, std::string old_name, std::string new_nick);
+	void							handle_request(char *buf, int fd_client, int readBytes, int i);
 	void							read_client_req(int fd_client, int i);
 	void							chan_requests(Request& req);
 	int								treating_req(Request& req);
-	void							handle_request(char *buf, int fd_client, int readBytes, int i);
+	void							init_pollfd_struct();
+	int								manage_connections();
+	int 							start_server();
+	int								new_client();
+	int								routine();
 	/*
 	---- DISCONNECT METHODS 
 	*/
-	void							disconnectAll();
 	void							removeClient(std::vector<Client>::iterator to_remove);
+	void							disconnectAll();
 	/*
 	---- CHANNELS AND CLIENTS DATA
 	*/

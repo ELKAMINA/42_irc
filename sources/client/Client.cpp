@@ -6,13 +6,13 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:18:08 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/04 08:34:01 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 11:22:35 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
-Client::Client(): _clientFd(0), _nickName("UNDEFINED"), _userName("UNDEFINED"), _pass("UNDEFINED"),
+Client::Client(): _clientFd(0), _nickName(""), _userName(""), _pass(""),
 _host("IRC_with_love")
 {
 	_initModes();
@@ -21,7 +21,7 @@ _host("IRC_with_love")
 	callToMode = 0;
 }
 
-Client::Client(int fd): _clientFd(fd), _nickName("UNDEFINED"), _userName("UNDEFINED"), _pass("UNDEFINED"),
+Client::Client(int fd): _clientFd(fd), _nickName(""), _userName(""), _pass(""),
 _host("IRC_with_love")
 {
 	_initModes();

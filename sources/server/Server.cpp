@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 20:04:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 23:01:17 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 12:49:27 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,4 +90,18 @@ int Server::start_server()
 	if (this->get_socket() == -1)
 		return -1;
 	return 0;
+}
+
+void Server::update_user_data(Request& request, std::string old_name, std::string new_name)
+{
+	std::vector<Channel>::iterator it_cha;
+	std::vector<Client>::iterator it_cli;
+
+	for (it_cha = all_channels.begin(); it_cha != all_channels.end(); it_cha++){
+		it_cha->updateUser(old_name, new_name);
+	}
+	for (it_cli = all_clients.begin(); it_cli != all_clients.end(); it_cli++){
+			request.target.push_back(it_cli->getName());
+	}
+	request.response = ":" + old_name + " NICK " + new_name;
 }

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 23:01:35 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 12:37:42 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,6 @@
 
 int Request::pass(Server *serv)
 {
-	// std::vector<Client>::iterator it_sender;
-
-	// it_sender = find_obj(origin,serv->all_clients);
 	if (entries.size() == 1)
 	{
 		if (entries[0] == serv->get_pass() && origin->loggedIn == false)
@@ -43,11 +40,8 @@ int Request::pass(Server *serv)
 
 int Request::nick(Server *serv)
 {
-	// std::vector<Client>::iterator it_cli;
-
-	// it_cli = find_obj(origin, serv->all_clients);
-	std::cerr<<"dans nick, origin ="<<origin->getName()<<std::endl;
-	std::cerr<<"dans nick, pass = "<<origin->getPwd()<<std::endl;
+	std::string old_nick;
+	
 	if (origin->getPwd() != serv->get_pass())
 	{
 		reply = errNotRegistered();
@@ -57,7 +51,8 @@ int Request::nick(Server *serv)
 	else if (find_obj(entries[0], serv->all_clients) != serv->all_clients.end())
 	{
 		reply = errNicknameInUse(entries[0]);
-		origin->setNickname("Guest");
+		if (origin->getName() == "")
+			origin->setNickname("Guest");
 	}
 	else if (wrong_nickname(entries[0]) == 0)
 	{
@@ -67,7 +62,12 @@ int Request::nick(Server *serv)
 	}
 	else
 	{
+		old_nick = origin->getName();
 		origin->setNickname(entries[0]);
+		if (old_nick != "")
+		{
+			serv->update_user_data(*this, old_nick, entries[0]);
+		}
 	}
 	serv->chan_requests(*this);
 	return 0;
@@ -75,10 +75,7 @@ int Request::nick(Server *serv)
 
 int Request::user(Server *serv)
 {
-	// std::vector<Client>::iterator it_sender;
-
-	// it_sender = find_obj(origin, serv->all_clients);
-	if (origin->loggedIn == false && origin->getName() != "UNDEFINED")
+	if (origin->loggedIn == false && origin->getName() != "")
 	{
 		origin->setUsername(entries[0]);
 		origin->setRealname(entries[3]);
@@ -134,9 +131,6 @@ int Request::privmsg(Server *serv)
 int Request::away(Server *serv)
 {
 	std::string away;
-	// std::vector<Client>::iterator it_sender;
-
-	// it_sender = find_obj(origin, serv->all_clients);
 
 	if (entries.size() == 0)
 	{
@@ -193,7 +187,7 @@ int Request::who(Server *serv) /* A modifier avec les bonnes replies */
 	return 0;
 }
 
-int Request::list(Server *serv) /* A voir si on garde*/
+int Request::list(Server *serv)
 {
 	std::vector<Channel>::iterator it_cha = serv->all_channels.begin();
 	if (check_lists() == 0)
@@ -217,9 +211,7 @@ int Request::list(Server *serv) /* A voir si on garde*/
 int Request::kill(Server *serv)
 {
 	std::vector<Client>::iterator it_cli;
-	// std::vector<Client>::iterator it_sender;
-
-	// it_sender = find_obj(origin, serv->all_clients);
+	
 	if (origin->checkMode('o') == false)
 		reply = errNoPrivileges(origin->setPrefix() + " :Permission Denied - You're not an IRC operator\n");
 	else
@@ -230,7 +222,7 @@ int Request::kill(Server *serv)
 		else
 		{
 			if (entries.size() >= 2)
-				set_reason_msg(1);
+				req_get_comments(entries, 1);
 			killing_process((it_cli), serv);
 			return 0;
 		}
@@ -241,13 +233,9 @@ int Request::kill(Server *serv)
 
 int Request::quit(Server *serv)
 {
-	// std::vector<Client>::iterator target;
-
-	// target = find_obj(origin, serv->all_clients);
-	// std::cout << "test 100" << std::endl;
-	// serv->removeClient(origin);
 	std::vector<std::string>::iterator it;
 	std::vector<Channel>::iterator target;
+	
 	for (it = origin->chans.begin(); it != origin->chans.end(); it++)
 	{
 		target = find_obj(*it, serv->all_channels);
@@ -255,14 +243,11 @@ int Request::quit(Server *serv)
 		if (target->getOnlineCount() == 0)
 			serv->all_channels.erase(target);
 	}
-	// close(origin->getFdClient());
-	// serv->all_clients.erase(origin);
 	return 0;
 }
 
 int Request::oper(Server *serv)
 {
-
 	if (entries.size() == 2)
 	{
 		if (serv->opers[entries[0]] == entries[1])
@@ -296,9 +281,6 @@ int Request::mode(Server *serv)
 
 int Request::restart(Server *serv)
 {
-	// std::vector<Client>::iterator it_sender;
-
-	// it_sender = find_obj(origin, serv->all_clients);
 	if (origin->checkMode('o') == false)
 		reply = errNoOperHost(":No O-lines for your host\n");
 	else

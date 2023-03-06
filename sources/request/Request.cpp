@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 00:01:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 22:48:55 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 11:36:57 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ Request::Request(const char* buffer, std::vector<Client>::iterator cli) : origin
 	}
 	reply = "UNDEFINED";
 	response = "UNDEFINED";
-	user_to_kick = "UNDEFINED";
+	user_to_kick = "";
 	nb_chan = 0;
 	nb_keys = 0;
 	message = "";
@@ -108,19 +108,4 @@ int Request::requestLexer(Server* serv)
 				perror("Send ");
 	}
 	return 0;
-}
-
-void Request::set_reason_msg(size_t j)
-{
-	if (message == "")
-	{
-		message.clear();
-		size_t i = j;
-		while (i < entries.size())
-		{
-			message.append(entries[i]);
-			message.append(" ");
-			i++;
-		}
-	}
 }
