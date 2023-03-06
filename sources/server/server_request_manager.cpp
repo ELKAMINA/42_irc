@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 23:08:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 12:48:06 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 19:06:42 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,8 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 	// std::vector<Client>::iterator it;
 	buf[readBytes] = '\0';
 	client_buffer += buf;
-	std::cout << "Ce qu'envoie IRSSI : " << client_buffer << std::endl;
 	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
-		// std::cout << "test " << std::endl;
 		if (client_buffer[pos - 1] == '\r')
 			input = client_buffer.substr(0, pos);
 		else
@@ -32,19 +30,16 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 		Request req = Request(input.c_str(), origin);
 		if (treating_req(req) == 1)
 		{
-			// std::cout << "test 2" << std::endl;
 			close(client_events[i].fd);
 			client_events[i] = client_events[_online_clients - 1];
 			_online_clients--;
-			// it = find_obj(req.origin, all_clients);
+			
 			all_clients.erase(origin);
 			break;
 		}
 		client_buffer.erase(0, pos + 1);
-		// std::cout << "test 3" << std::endl;
 	}
 	client_buffer.clear();
-	// std::cout << "test 5" << std::endl;
 	return;
 }
 
@@ -62,10 +57,7 @@ void Server::chan_requests(Request &req)
 {
 	size_t i = 0;
 	std::vector<Client>::iterator it;
-	// std::vector<Client>::iterator it_sender;
 
-	// it_sender = find_obj(req.origin, all_clients);
-	// std::cerr<<"sender is "<<it_sender->getName() << "\nhis fd is "<<it_sender->getFdClient()<<std::endl;
 	if (req.response != "UNDEFINED")
 	{
 		req.response += "\n";
@@ -85,5 +77,4 @@ void Server::chan_requests(Request &req)
 			return (perror("Send"));
 		}
 	}
-	// std::cout << " weshhhh " << std::endl;
 }

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 16:01:04 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:53:14 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,12 @@ void Channel::changeChanMode(Request& request, pair<string, string> command, Ser
 		_mods[command.first[1]] = false;
 	}
 	request.target.insert(request.target.end(), users.begin(), users.end());
-	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() + " " + command.first + (command.second == "" ? "" : " " + command.second);
+	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() +
+	" " + command.first + (command.second == "" ? "" : " " + command.second);
 	serv->chan_requests(request);
 	request.target.clear();
 }
-//modif to do
+
 void Channel::changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv)
 {
 	vector<Client>::iterator it_cli;
@@ -89,7 +90,8 @@ void Channel::changeUserMode(Request& request, pair<string, string> command, vec
 		}
 	}
 	request.target.insert(request.target.end(), users.begin(), users.end());
-	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() + " " + command.first + (command.second == "" ? "" : " " + command.second);
+	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() +
+	" " + command.first + (command.second == "" ? "" : " " + command.second);
 	serv->chan_requests(request);
 	request.target.clear();
 }
@@ -168,28 +170,17 @@ int Channel::addMode(Request& request, vector<string>params, Server* serv)
 	map<string, string>modes;
 
 	if (params.size() == 1)
-	{
 		request.reply = rpl_channelmodeis(this->getName(), this->getModes());
-	}
 	else if ((countParams = checkModes(request, params[1])) != -1)
 	{
-		// if (countParams != params.size() - 2)
-		// 	return (request.reply = errNeedMoreParams(request._origin->getNickName(), request._command), 1);
 		modes = splitModes(params, countParams);
 		for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){
 			if (it->first[1] == 'o')
-			{
 				changeUserMode(request, *it, _operators, serv);
-			}
 			else if (it->first[1] == 'v')
-			{
 				changeUserMode(request, *it, _vocal, serv);
-			}
 			else
-			{
 				changeChanMode(request, *it, serv);
-				// serv->chan_requests(request);
-			}
 		}
 	}
 	return 0;

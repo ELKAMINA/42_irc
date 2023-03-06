@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 17:44:50 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 19:50:08 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,12 +101,13 @@ int Request::privmsg(Server *serv)
 		{
 			if (it_cli->checkMode('a') == true && command == "PRIVMSG")
 				reply = it_cli->getAwayMessage();
-			else
+			else if (it_cli->checkMode('a') == false)
 			{
 				req_get_comments(entries, 1);
 				message.append("\n");
 				target.push_back(it_cli->getName());
-				response =  ":" + origin->getName() + " " + command + " " + entries[0] + " " + &message[1];
+				response =  ":" + origin->getName() + " " + command + " " + entries[0]
+				+ " " + ((message[0] = ':')? &message[1] : message);
 			}
 		}
 		else if (command == "PRIVMSG")
@@ -139,7 +140,7 @@ int Request::away(Server *serv)
 			origin->setMode('a', false);
 		}
 	}
-	else if (entries.size() >= 2 && entries[0][0] == ':')
+	else if (entries.size() >= 1 && entries[0][0] == ':')
 	{
 		origin->setMode('a', true);
 		size_t i = 0;
@@ -150,8 +151,7 @@ int Request::away(Server *serv)
 			away += " ";
 			i++;
 		}
-		away += "\n";
-		origin->setAwayMessage(&away[1]);
+		origin->setAwayMessage(away);
 		reply = rpl_away(origin->getName(), "away");
 	}
 	serv->chan_requests(*this);
@@ -174,13 +174,13 @@ int Request::ping(Server *serv)
 	return 0;
 }
 
-int Request::whois(Server *serv) /* A modifier avec les bonnes replies */
+int Request::whois(Server *serv)
 {
 	(void)serv;
 	return 0;
 }
 
-int Request::who(Server *serv) /* A modifier avec les bonnes replies */
+int Request::who(Server *serv)
 {
 	(void)serv;
 	return 0;
@@ -233,18 +233,24 @@ int Request::kill(Server *serv)
 int Request::quit(Server *serv)
 {
 	std::vector<std::string>::iterator it;
-	std::vector<Channel>::iterator target;
+	std::vector<Client>::iterator it_cli;
+	std::vector<Channel>::iterator target_chan;
 	
 	for (it = origin->chans.begin(); it != origin->chans.end(); it++)
 	{
-		target = find_obj(*it, serv->all_channels);
-		if (target != serv->all_channels.end())
+		target_chan = find_obj(*it, serv->all_channels);
+		if (target_chan != serv->all_channels.end())
 		{
-			target->part(*this, serv);
-			if (target->getOnlineCount() == 0)
-				serv->all_channels.erase(target);
+			target_chan->part(*this, serv);
+			if (target_chan->getOnlineCount() == 0)
+				serv->all_channels.erase(target_chan);
 		}
 	}
+	for (it_cli = serv->all_clients.begin(); it_cli != serv->all_clients.end(); it_cli++){
+		target.push_back(it_cli->getName());
+	}
+	response = ":" + origin->setPrefix() + " QUIT :" + message;
+	serv->chan_requests(*this);
 	return 0;
 }
 

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 14:46:57 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 19:56:28 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,14 +179,14 @@ void Channel::invite(Request& request, Server* serv)
 		_invited.push_back(target->getName());
 	request.target.push_back(target->getName());
 	request.response += request.origin->setPrefix() + " INVITE " + request.entries[0] + " #" + this->getName() + '\n';
-	request.reply = "341 " + request.origin->setPrefix() + " " + user + " #" + this->getName();
+	request.reply = "341 " + request.origin->setPrefix() + " " + request.entries[0] + " #" + this->getName();
 }
 
 void Channel::topic(Request& request, Server* serv)
 {
 	string user = request.origin->getName();
 
-	if (request.entries.size() == 1)
+	if (request.entries.size() == 0)
 	{
 		if (this->_topic.size() > 0)
 			request.reply = rpl_topic(request.origin->setPrefix(), this->getName(), this->getTopic());
@@ -231,7 +231,8 @@ void Channel::part(Request& request, Server* serv)
 	else
 	{
 		request.target.insert(request.target.end(), users.begin(), users.end());
-		request.response = ":" + request.origin->setPrefix() + " PART #" + this->getName() + " " + request.message;
+		request.response = ":" + request.origin->setPrefix() + " PART #" + this->getName()
+		+ " " + ((request.message[0] == ':')? &request.message[1]:request.message);
 		serv->chan_requests(request);
 		removeUser(user);
 		if (request.command == "PART")
@@ -260,11 +261,10 @@ void Channel::privmsg(Request& request, Server* serv)
 	}
 	request.target.insert(request.target.begin(), users.begin(), users.end());
 	request.target.erase(it=existing_user(request.target, user));
-	request.response = ":" + user + " " + request.command + " #" + this->getName() + " " + request.message;
-	
+	request.response = ":" + user + " " + request.command + " #" + this->getName() + " "
+	+ ((request.message[0] == ':')? &request.message[1]:request.message);
 }
 
-// work in progress
 void Channel::mode(Request& request, Server* serv)
 {
 	(void)serv;
@@ -303,7 +303,8 @@ void Channel::kick(Request& request, Server* serv)
 		return;
 	}
 	request.target.insert(request.target.end(), users.begin(), users.end());
-	request.response = ":" + request.origin->setPrefix() + " KICK #" + this->getName() + " " + request.user_to_kick + " :" + request.message;
+	request.response = ":" + request.origin->setPrefix() + " KICK #" + this->getName() 
+	+ " " + request.user_to_kick + " :" + ((request.message[0] == ':')? &request.message[1]:request.message);
 	serv->chan_requests(request);
 	removeUser(request.user_to_kick);
 	request.target.clear();

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 18:26:05 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 14:38:40 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:50:12 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,12 +157,11 @@ void Request::req_get_comments(std::vector<std::string> &entries, size_t j)
 	if (message == "")
 	{
 		message.clear();
-		size_t i = j;
-		while (i < entries.size())
+		while (j < entries.size())
 		{
-			message.append(entries[i]);
+			message.append(entries[j]);
 			message.append(" ");
-			i++;
+			j++;
 		}
 	}
 }
@@ -283,13 +282,10 @@ void Request::mode_for_clis(Server* serv)
 
 	it = find_obj(entries[0], serv->all_clients);
 	if (entries[0] != origin->getName())
-	{
-		if (origin->checkMode('o') == false)
 			reply = errUsersDontMatch();
-	}
 	else if (it != serv->all_clients.end())
 	{
-		if (it->callToMode == 0) /* TO deal with MODE + i from the client, at the beginning*/
+		if (it->callToMode == 0)
 		{
 			it->callToMode++;
 			return ;

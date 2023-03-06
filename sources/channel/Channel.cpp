@@ -6,13 +6,12 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:35:05 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 15:43:49 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:51:39 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 #include <algorithm>
-
 
 /* ****************************** */
 /* *** COPLIEN STUFF ************ */
@@ -140,6 +139,9 @@ std::string Channel::getKey() const
 	return this->_key;
 }
 
+/* ***************** */
+/* **** METHODS **** */
+/* ***************** */
 bool Channel::isInChanList(string user, vector<string>& list)
 {
 	for (size_t i = 0; i < list.size(); i++){

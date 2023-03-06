@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 00:01:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 11:36:57 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:47:43 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ int Request::requestLexer(Server* serv)
 	}
 	if (i == _request_cmds.size())
 	{
-		reply = errUnknownCommand(command);
+		reply = errUnknownCommand(command) + '\n';
 		if (send(origin->getFdClient(), reply.c_str(), strlen(reply.c_str()), 0) == -1)
 				perror("Send ");
 	}

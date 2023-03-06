@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 15:24:59 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 19:26:46 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,18 @@ void Server::read_client_req(int fd_client, int i)
 	{
 		if (readBytes == 0)
 		{
-			close(client_events[i].fd);
-			client_events[i] = client_events[_online_clients - 1];
-			_online_clients--;
+			// close(client_events[i].fd);
+			// client_events[i] = client_events[_online_clients - 1];
+			// _online_clients--;
+			std::vector<Client>::iterator it_cli;
 			std::vector<Client>::iterator it = find_obj(fd_client, all_clients);
-			all_clients.erase(it);
+			std::string rep = ":" + it->setPrefix() + " QUIT :" + '\n';
+			removeClient(it);
+			for (it_cli = all_clients.begin(); it_cli != all_clients.end(); it_cli++){
+				if (send(it_cli->getFdClient(), rep.c_str(), rep.length(), 0) == -1)
+					return (perror("Problem in sending from server "));
+			}
+			// all_clients.erase(it);
 			readBytes = 0;
 		}
 	}
@@ -98,7 +105,6 @@ void Server::read_client_req(int fd_client, int i)
 		strcat(read_buffer, _buffer);
 		handle_request(read_buffer, fd_client, readBytes, i);
 	}
-	// memset(&read_buffer, 0, readBytes);
 	bzero(&read_buffer,1000);
 	readBytes = 0;
 }

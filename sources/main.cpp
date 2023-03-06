@@ -6,14 +6,13 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 09:05:03 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 12:53:33 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:56:15 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 #include <iostream>
 #include <cstdlib>
-// #include <signal.h>
 #include "Server.hpp"
 #include "sig.hpp"
 
@@ -27,7 +26,6 @@ int main(int ac, char *av[])
 	std::string pass(av[2]);
 	std::string name = "Our IRC";
 	Server* myServ = new Server(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, 10, name, pass);
-	std::cout << "port is " << port << ", name is " << myServ->get_name() << " and pass is " << myServ->get_pass() << std::endl;
 	if (myServ->start_server() == -1)
 	{
 		delete(myServ);
