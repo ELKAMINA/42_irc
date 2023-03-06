@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 19:56:28 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 21:43:21 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,6 @@ void Channel::join(Request &request, Server* serv)
 
 	int matching_param = 0;
 	bool err = false;
-	if (isInChanList(user, users))
-	{
-		request.reply = errUserOnChannel(user,this->getName());
-		err = true;
-	}
 	if (_mods['k'] == true)
 	{
 		for (size_t i = 0; i < request.entries.size(); i++){
@@ -102,7 +97,7 @@ void Channel::join(Request &request, Server* serv)
 		}
 		if (request.entries[matching_param + request.nb_chan] != this->getKey())
 		{
-			request.reply = errBadChannelKey(user, this->getName());
+			request.reply = "475 " + user  + " #" +  this->getName() + " :Cannot join channel (+k)";
 			err = true;
 		}
 	}
@@ -125,13 +120,15 @@ void Channel::join(Request &request, Server* serv)
 	{
 		_onlineUsers += 1;
 		users.push_back(user);
+		if (isInChanList(user, _invited))
+			_invited.erase(it=existing_user(_invited, user));
 		request.target.insert(request.target.end(), users.begin(), users.end());
 		request.response = ":" + request.origin->setPrefix() + " JOIN #" + this->getName();
 		if (this->_topic.size() > 0)
 		{
 			std::string rep = rpl_topic(request.origin->setPrefix(), this->getName(), this->getTopic());
 			if (send(request.origin->getFdClient(), rep.c_str(), rep.length(), 0) == -1)
-				return (perror("Problem in sending from server ")); // a t on le droit ?
+				return (perror("Problem in sending from server "));
 		}
 		replyJoining(request, serv);
 		serv->chan_requests(request);
@@ -159,6 +156,11 @@ void Channel::invite(Request& request, Server* serv)
 	if (target == serv->all_clients.end())
 	{
 		request.reply = errNoSuchNick(user, request.entries[1]);
+		return;
+	}
+	if (isInChanList(target->getName(), users))
+	{
+		request.reply = ":443 " + request.origin->setPrefix() + " " + target->getName() + " #" + this->getName() + " :is already on channel";
 		return;
 	}
 	if (_mods['l'] && _onlineUsers == _maxUsers)
@@ -211,6 +213,7 @@ void Channel::topic(Request& request, Server* serv)
 				for (size_t i = 2; i < request.entries.size(); i++){
 					this->_topic += " " + request.entries[i];
 				}
+				this->_mods['t'] = true;
 				request.target.insert(request.target.end(), users.begin(), users.end());
 				request.response = ":" + request.origin->setPrefix() + " " + "TOPIC #" + this->getName() + " " + _topic;
 			}

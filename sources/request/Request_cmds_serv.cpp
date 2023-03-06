@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 19:50:08 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 21:47:26 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,7 @@ int Request::away(Server *serv)
 
 	if (entries.size() == 0)
 	{
+		std::cout << "UNAWAY " << std::endl;
 		if (origin->checkMode('a') == true)
 		{
 			reply = rpl_unaway(origin->getName(), ":You are no longer marked as being away!\n");

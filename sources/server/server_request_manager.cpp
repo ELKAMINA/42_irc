@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 23:08:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 19:06:42 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 21:50:02 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 	size_t pos;
 	std::string input;
 	std::string client_buffer = "";
-	// std::vector<Client>::iterator it;
 	buf[readBytes] = '\0';
 	client_buffer += buf;
+	std::cout << "Ce qu'envoie irssii " << client_buffer << std::endl;
 	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
 		if (client_buffer[pos - 1] == '\r')

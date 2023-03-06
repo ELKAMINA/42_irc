@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 18:26:05 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 18:50:12 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 21:05:59 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ int Request::transformations(bool oneChan, bool oneParam)
 {
 	if (oneChan == false && oneParam == true)
 	{
-		std::cout << "premiere condition " << std::endl;
 		entries.erase(entries.begin());
 		entries.insert(entries.begin(), channels.begin(), channels.end());
 	}
@@ -191,7 +190,7 @@ void Request::oneChan(Server *serv)
 		if ((it_cha->activeMode('k') == true && entries.size() == 1)
 		|| (it_cha->activeMode('k') == false && entries.size() > 1))
 		{
-			reply = errBadChannelKey(origin->getName(), it_cha->getName());
+			reply = "475 " + origin->getName() + " #" +  it_cha->getName() + " :Cannot join channel (+k)";
 			serv->chan_requests(*this);
 		}
 		else

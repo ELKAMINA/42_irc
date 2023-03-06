@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 18:53:14 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 22:03:19 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,10 @@ void Channel::modeLimite(Request& request, pair<string, string> command)
 void Channel::changeChanMode(Request& request, pair<string, string> command, Server* serv)
 {
 	(void)request;
-	cout<< "command = " << command.first << ", param = "<<command.second<<endl;
 	if (command.first[1] == 'l')
 		modeLimite(request, command);
 	else if (command.first[1] == 'k')
 		_key = command.second;
-	else if (command.first[1] == 't')
-		_topic = command.second;
 	if (command.first[0] == '+')
 	{
 		map<char, bool>::iterator it = _mods.find(command.first[1]);
@@ -54,7 +51,7 @@ void Channel::changeChanMode(Request& request, pair<string, string> command, Ser
 	}
 	request.target.insert(request.target.end(), users.begin(), users.end());
 	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() +
-	" " + command.first + (command.second == "" ? "" : " " + command.second);
+	" " + command.first + ((command.second == "")? "":" " + command.second);
 	serv->chan_requests(request);
 	request.target.clear();
 }
@@ -91,7 +88,7 @@ void Channel::changeUserMode(Request& request, pair<string, string> command, vec
 	}
 	request.target.insert(request.target.end(), users.begin(), users.end());
 	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() +
-	" " + command.first + (command.second == "" ? "" : " " + command.second);
+	" " + command.first + ((command.second == "")? "" : " " + command.second);
 	serv->chan_requests(request);
 	request.target.clear();
 }
@@ -105,36 +102,37 @@ static int isInSet(char c, string set)
 	return 0;
 }
 
-static int checkModes(Request& request, string params)
+static int checkModes(Request& request, vector<string>params)
 {
 	bool userMode = false;
 	bool chanMode = false;
 	int count = 0;
 	string found = "";
-	std::cout << params << params.size() << std::endl;
-	if ((params[0] != '-' && params[0] != '+') || params.size() < 2)
+	if ((params[1][0] != '-' && params[1][0] != '+') || params.size() < 2)
 		return -1;
-	for (size_t i = 1; i < params.size(); i++){
-		if (!isInSet(params[i], "iklostv"))
+	for (size_t i = 1; i < params[1].size(); i++){
+		if (!isInSet(params[1][i], "iklorsv"))
 			return (request.reply = errUModeUnknownFlag(), -1);
-		else if (!isInSet(params[i], found))
+		else if (!isInSet(params[1][i], found))
 		{
-			if ((params[i] == 'o' || params[i] == 'v') && !chanMode)
+			if ((params[1][i] == 'o' || params[1][i] == 'v') && !chanMode)
 			{
 				userMode = true;
-				found += params[i];
+				found += params[1][i];
 			}
 			else if (!userMode)
 			{
-				if (params[0] == '+' && (params[i] == 'k' || params[i] == 'l' || params[i] == 't'))
+				if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'))
 					count += 1;
 				chanMode = true;
-				found += params[i];
+				found += params[1][i];
 			}
 			else
 				return -1;
 		}
 	}
+	if (params.size() - count != 2)
+		return -1;
 	return count;
 }
 
@@ -151,8 +149,7 @@ static map<string, string> splitModes(vector<string>params, int countParams)
 			modes.insert(make_pair(mode, params[2]));
 		else
 		{
-			if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'
-			|| params[1][i] == 't'))
+			if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'))
 			{
 				modes.insert(make_pair(mode, params[2]));
 				params.erase(params.begin() + 2);
@@ -171,7 +168,7 @@ int Channel::addMode(Request& request, vector<string>params, Server* serv)
 
 	if (params.size() == 1)
 		request.reply = rpl_channelmodeis(this->getName(), this->getModes());
-	else if ((countParams = checkModes(request, params[1])) != -1)
+	else if ((countParams = checkModes(request, params)) != -1)
 	{
 		modes = splitModes(params, countParams);
 		for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){

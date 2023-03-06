@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/03 10:58:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 09:35:28 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 20:23:29 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,14 +103,12 @@ void Marvin::cmd_lexer(Request& request, Server* serv)
 {
 	size_t i = 0;
 
-	std::cerr<< "marvin here"<<std::endl;
 	if (request.entries.size() < 2)
 		request.reply = errNeedMoreParams(request.origin->getName(), request.command);
 	if (request.entries.size() > 2)
 		request.reply = "666 * :Marvin doesn't like multiple commands\n";
 	else
 	{
-		std::cerr<< "command is "<<request.command<<std::endl;
 		for (; i < this->_cmds.size(); i++){
 			if (request.entries[0] == _cmd_name[i])
 			{

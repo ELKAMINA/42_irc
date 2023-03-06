@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 09:05:03 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 18:56:15 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 22:41:06 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ int main(int ac, char *av[])
 		return (std::cout << "wrong port format expected" << std::endl, 1);
 	std::string pass(av[2]);
 	std::string name = "Our IRC";
-	Server* myServ = new Server(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, 10, name, pass);
+	Server* myServ = new Server(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, 6, name, pass);
 	if (myServ->start_server() == -1)
 	{
 		delete(myServ);
-		return 1;	
+		return 1;
 	}
 	signal(SIGINT, handle_sig);
 	myServ->routine();
