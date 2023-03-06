@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 13:52:33 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 17:44:50 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ int Request::nick(Server *serv)
 	else if (find_obj(entries[0], serv->all_clients) != serv->all_clients.end())
 	{
 		reply = errNicknameInUse(entries[0]);
-		if (origin->getName() == "")
-			origin->setNickname("Guest");
 	}
 	else if (wrong_nickname(entries[0]) == 0)
 	{
@@ -64,10 +62,10 @@ int Request::nick(Server *serv)
 	{
 		old_nick = origin->getName();
 		origin->setNickname(entries[0]);
-		if (old_nick != "")
-		{
+		if (origin->loggedIn == true)
 			serv->update_user_data(*this, old_nick, entries[0]);
-		}
+		else if (!origin->loggedIn && origin->getRealName() != "" && origin->getUserName() != "")
+			reply = "001 " + origin->getName() + " :Welcome to the Internet Relay Network " + origin->setPrefix() + "!";
 	}
 	serv->chan_requests(*this);
 	return 0;
@@ -75,13 +73,15 @@ int Request::nick(Server *serv)
 
 int Request::user(Server *serv)
 {
-	if (origin->loggedIn == false && origin->getName() != "")
+	if (origin->loggedIn == false)
 	{
 		origin->setUsername(entries[0]);
 		origin->setRealname(entries[3]);
-		origin->loggedIn = true;
-		reply = "001 " + origin->getName() + " :Welcome to the Internet Relay Network "
-		+ origin->setPrefix() + "\r\n";
+		if (origin->getName() != "")
+		{
+			reply = "001 " + origin->getName() + " :Welcome to the Internet Relay Network " + origin->setPrefix() + "!";
+			origin->loggedIn = true;
+		}
 	}
 	else
 		reply = errAlreadyRegistered();

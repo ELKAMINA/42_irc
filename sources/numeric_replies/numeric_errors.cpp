@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 14:34:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 15:22:32 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 17:30:19 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ std::string errErroneusNickname(std::string nickName)
 
 std::string	errNicknameInUse(std::string nickName)
 {
-	return (":433 " + nickName + " :Nickname already in use");
+	return ("433 NICK :" + nickName);
 } 
 
 std::string errUserNotOnChannel(std::string nickName, std::string channel)
