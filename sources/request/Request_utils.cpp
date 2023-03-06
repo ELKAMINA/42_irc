@@ -282,7 +282,12 @@ void Request::mode_for_clis(Server* serv)
 	std::vector<Client>::iterator it;
 
 	it = find_obj(entries[0], serv->all_clients);
-	if (it != serv->all_clients.end())
+	if (entries[0] != origin->getName())
+	{
+		if (origin->checkMode('o') == false)
+			reply = errUsersDontMatch();
+	}
+	else if (it != serv->all_clients.end())
 	{
 		if (it->callToMode == 0) /* TO deal with MODE + i from the client, at the beginning*/
 		{
