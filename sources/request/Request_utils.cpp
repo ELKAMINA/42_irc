@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 18:26:05 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 12:31:44 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 14:38:40 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ int	Request::count_chan_nbr(std::vector<std::string> entries)
 {
 	std::vector<std::string>::iterator it = entries.begin();
 	
+	nb_chan = 0;
 	while (it != entries.end())
 	{
 		if ((*it)[0] != '#' && (*it)[0] != '&')
@@ -204,11 +205,7 @@ void Request::oneChan(Server *serv)
 			serv->all_channels.push_back(Channel(entries[0], origin->getName()));
 		}
 		else
-		{
-			std::cout << "Nammees = " << origin->getName() << std::endl;
 			serv->all_channels.push_back(Channel(entries[0], entries[1], origin->getName()));
-			
-		}
 		serv->all_channels.rbegin()->join(*this, serv);
 	}	 
 }

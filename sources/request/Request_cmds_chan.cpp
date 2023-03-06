@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:23:52 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:41:22 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 15:30:26 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ int Request::kick(Server *serv)
 	if (check_lists() == 0)
 	{
 		count_chan_nbr(entries);
-		
 		removing_sharp(entries);
 		if (reply == "UNDEFINED")
 		{
@@ -129,9 +128,7 @@ int Request::names(Server *serv)
 {
 	vector<Channel>::iterator it_cha;
 	size_t i = 0;
-	// std::vector<Client>::iterator it_sender;
-
-	// it_sender = find_obj(origin, serv->all_clients);
+	
 	if (check_lists() != 0)
 	{
 		if (reply == "UNDEFINED")

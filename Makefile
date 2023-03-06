@@ -6,7 +6,7 @@
 #    By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/17 07:46:31 by jcervoni          #+#    #+#              #
-#    Updated: 2023/03/05 22:55:25 by jcervoni         ###   ########.fr        #
+#    Updated: 2023/03/06 15:30:10 by jcervoni         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,7 +49,6 @@ SRCS 		= 			main.cpp \
 						server_request_manager.cpp \
 						)\
 						$(addprefix $(SRCS_UTLS_PATH),	\
-						request_utils.cpp \
 						utils.cpp \
 						signal.cpp \
 						)\

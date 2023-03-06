@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 17:51:12 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 15:24:59 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,9 +151,12 @@ void Server::removeClient(std::vector<Client>::iterator to_remove)
 	for (it = to_remove->chans.begin(); it != to_remove->chans.end(); it++)
 	{
 		target = find_obj(*it, all_channels);
-		target->removeUser(to_remove->getName());
-		if (target->getOnlineCount() == 0)
-			all_channels.erase(target);
+		if (target != all_channels.end())
+		{
+			target->removeUser(to_remove->getName());
+			if (target->getOnlineCount() == 0)
+				all_channels.erase(target);
+		}
 	}
 	for (int i = 0; i < _online_clients; i++){
 		if (client_events[i].fd == to_remove->getFdClient())
@@ -167,28 +170,3 @@ void Server::removeClient(std::vector<Client>::iterator to_remove)
 	all_clients.erase(to_remove);
 
 }
-// a terminer apres chan
-//
-//
-// void Server::close_and_remove_user(Client& cli)
-// {
-// 	std::vector<Client>::iterator to_kill;
-// 	std::vector<Channel>::iterator it = all_channels.begin();
-	
-// 	if (close(cli.getFdClient()) < 0)
-// 		std::cout << "Socket couldn't be closed" << std::endl;
-// 	while (it != all_channels.end())
-// 	{
-// 		if(it->isInChanList(&cli, it->_users) == true)
-// 		{
-// 			it->removeUser(&cli);
-// 			if (it->getOnlineCount() == 0)
-// 			{
-// 				all_channels.erase(it);
-// 			}	
-// 			it++;
-// 		}
-// 	}
-// 	to_kill = find(all_clients.begin(), all_clients.end(), &cli);
-// 	all_clients.erase(to_kill);	
-// }

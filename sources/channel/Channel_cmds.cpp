@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 12:48:23 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 14:46:57 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void Channel::join(Request &request, Server* serv)
 	}
 	if (_mods['l'] && _onlineUsers == _maxUsers)
 	{
-		request.reply = errChannelIsFull(this->getName());
+		request.reply = "471 " + user  + " #" +  this->getName() + " :Cannot join channel (+l)";
 		err = true;
 	}
 	if (_mods['i'] == true)
@@ -163,7 +163,7 @@ void Channel::invite(Request& request, Server* serv)
 	}
 	if (_mods['l'] && _onlineUsers == _maxUsers)
 	{
-		request.reply = errChannelIsFull(this->getName());
+		request.reply = "471 " + user  + " #" +  this->getName() + " :Cannot join channel (+l)";
 		return;
 	}
 	if (_mods['i'] == true)
@@ -179,8 +179,7 @@ void Channel::invite(Request& request, Server* serv)
 		_invited.push_back(target->getName());
 	request.target.push_back(target->getName());
 	request.response += request.origin->setPrefix() + " INVITE " + request.entries[0] + " #" + this->getName() + '\n';
-	request.reply = rpl_inviting(request.entries[0], this->getName());
-	
+	request.reply = "341 " + request.origin->setPrefix() + " " + user + " #" + this->getName();
 }
 
 void Channel::topic(Request& request, Server* serv)
@@ -288,16 +287,19 @@ void Channel::kick(Request& request, Server* serv)
 	if (!isInChanList(user, users))
 	{
 		request.reply = errNotOnChannel(this->getName());
+		serv->chan_requests(request);
 		return;
 	}
 	if (!isInChanList(user, _operators))
 	{
-		request.reply = errChanPrivsNeeded(user, this->getName());
+		request.reply = "482 #" + this->getName() + " :You're not channel operator";
+		serv->chan_requests(request);
 		return;
 	}
 	if ((it = existing_user(users, request.user_to_kick)) == users.end())
 	{
 		request.reply = errNoSuchNick(user, request.entries[1]);
+		serv->chan_requests(request);
 		return;
 	}
 	request.target.insert(request.target.end(), users.begin(), users.end());

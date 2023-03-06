@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 17:48:06 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/02/28 09:39:47 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 14:18:00 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ std::string	rpl_endofnames(std::string user_prefix, std::string channel)
 
 std::string	rpl_inviting(std::string nickName, std::string channel) 
 {
-	return ("#" + channel + " " + nickName + '\n');
+	(void)nickName;
+	return (channel);
 }
 
 std::string	rpl_away(std::string nickname, std::string message) 

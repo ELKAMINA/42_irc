@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 12:37:42 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/06 13:52:33 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,6 @@ int Request::privmsg(Server *serv)
 	}
 	else
 	{
-		nb_chan = count_chan_nbr(entries);
 		it_cha = find_obj(&entries[0][1], serv->all_channels);
 		if (it_cha == serv->all_channels.end() && command == "PRIVMSG")
 			reply = errNoSuchChannel(origin->getName());
@@ -239,9 +238,12 @@ int Request::quit(Server *serv)
 	for (it = origin->chans.begin(); it != origin->chans.end(); it++)
 	{
 		target = find_obj(*it, serv->all_channels);
-		target->part(*this, serv);
-		if (target->getOnlineCount() == 0)
-			serv->all_channels.erase(target);
+		if (target != serv->all_channels.end())
+		{
+			target->part(*this, serv);
+			if (target->getOnlineCount() == 0)
+				serv->all_channels.erase(target);
+		}
 	}
 	return 0;
 }
