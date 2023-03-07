@@ -149,7 +149,7 @@ int Request::names(Server *serv)
 					{
 						if (it_cha->activeMode('s') == false)
 							it_cha->names(*this, serv);
-						reply += rpl_endofnames(origin->setPrefix(), it_cha->getName());
+						reply += rpl_endofnames(origin->setPrefix(), it_cha->getName()) + '\n';
 					}
 					i++;
 				}

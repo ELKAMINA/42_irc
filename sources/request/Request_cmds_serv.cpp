@@ -218,7 +218,7 @@ int Request::kill(Server *serv)
 	{
 		it_cli = find_obj(entries[0], serv->all_clients);
 		if (it_cli == serv->all_clients.end())
-			reply = errNoSuchNick(origin->getName(), entries[0]);
+			reply = "401 " + origin->setPrefix() + " " + entries[0] + " :No such nickname";
 		else
 		{
 			if (entries.size() >= 2)

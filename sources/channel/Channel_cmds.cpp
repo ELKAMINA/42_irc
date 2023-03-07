@@ -160,7 +160,7 @@ void Channel::invite(Request& request, Server* serv)
 	}
 	if (target == serv->all_clients.end())
 	{
-		request.reply = errNoSuchNick(user, request.entries[1]);
+		request.reply = "401 " + request.origin->setPrefix() + " " + request.entries[0] + " :No such nickname";
 		return;
 	}
 	if (isInChanList(target->getName(), users))
@@ -302,7 +302,7 @@ void Channel::kick(Request& request, Server* serv)
 	request.response.clear();
 	if (!isInChanList(user, users))
 	{
-		request.reply = errNotOnChannel(this->getName());
+		request.reply = "442 " + request.origin->setPrefix() + " #" + this->getName() + " :You're not on that channel";
 		serv->chan_requests(request);
 		return;
 	}
@@ -314,7 +314,7 @@ void Channel::kick(Request& request, Server* serv)
 	}
 	if ((it = existing_user(users, request.user_to_kick)) == users.end())
 	{
-		request.reply = errNoSuchNick(user, request.entries[1]);
+		request.reply = "401 " + request.origin->setPrefix() + " " + request.user_to_kick + " :No such nickname";
 		serv->chan_requests(request);
 		return;
 	}
