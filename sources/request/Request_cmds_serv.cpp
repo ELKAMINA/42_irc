@@ -117,7 +117,7 @@ int Request::privmsg(Server *serv)
 	{
 		it_cha = find_obj(&entries[0][1], serv->all_channels);
 		if (it_cha == serv->all_channels.end() && command == "PRIVMSG")
-			reply = errNoSuchChannel(origin->getName());
+			reply = errNoSuchChannel(entries[0]);
 		else
 		{
 			req_get_comments(entries, 1);

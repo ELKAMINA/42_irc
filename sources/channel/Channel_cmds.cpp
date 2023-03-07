@@ -193,12 +193,15 @@ void Channel::topic(Request& request, Server* serv)
 {
 	string user = request.origin->getName();
 
-	if (request.entries.size() == 0)
+	if (request.entries.size() <= 1)
 	{
 		if (this->_topic.size() > 0)
 			request.reply = rpl_topic(request.origin->setPrefix(), this->getName(), this->getTopic());
 		else
+		{
 			request.reply = rpl_notopic(request.origin->setPrefix(), this->getName());
+		}
+		serv->chan_requests(request);
 		return ;
 	}
 	else if (!isInChanList(user, _operators))

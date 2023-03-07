@@ -36,7 +36,7 @@ int Request::invite(Server *serv)
 	if (it != serv->all_channels.end())
 		it->invite(*this, serv);
 	else
-		reply = errNoSuchChannel(origin->getName());
+		reply = errNoSuchChannel(entries[1]);
 	serv->chan_requests(*this);
 	return 0;
 }
@@ -94,7 +94,7 @@ int Request::kick(Server *serv)
 			{
 				it_cha = find_obj(&entries[i][1], serv->all_channels);
 				if (it_cha == serv->all_channels.end())
-					reply = errNoSuchChannel(origin->getName());
+					reply = errNoSuchChannel("#" + entries[i]);
 				else
 				{
 					user_to_kick.clear();
@@ -117,9 +117,12 @@ int Request::topic(Server *serv)
 		it_cha->topic(*this, serv);
 	else
 	{
-		reply = errNoSuchChannel(origin->getName());
+		if (entries.size() < 1)
+			reply = "461 " + origin->getName() + " " + command + " :Not enough parameters";
+		else
+			reply = errNoSuchChannel(entries[0]);
 		serv->chan_requests(*this);
-		return 1;
+		// return 1;
 	}
 	return 0;
 }
