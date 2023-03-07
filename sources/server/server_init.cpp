@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:41:31 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 22:10:52 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/07 11:16:56 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int Server::init_socket_server()
 		close(sockFd);
 		return (perror("bind"), -1);
 	}
-	if ((sockAddr = listen(sockFd,4)) == -1)
+	if ((sockAddr = listen(sockFd,42)) == -1)
 	{
 		close(sockFd);
 		return (perror("listen"), -1);

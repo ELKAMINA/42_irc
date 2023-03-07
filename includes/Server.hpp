@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 23:48:48 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/07 11:00:32 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ public:
 	void							init_pollfd_struct();
 	int								manage_connections();
 	int 							start_server();
-	int								new_client();
+	int								new_client(int i);
 	int								routine();
 	/*
 	---- DISCONNECT METHODS 

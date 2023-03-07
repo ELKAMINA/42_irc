@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 20:04:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 23:46:23 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/07 11:03:58 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ std::string name, std::string pass) : _domain(domain), _service(service), _proto
 _port(port), _interface(interface), _max_co(max_co), _name(name), _pass(pass)
 {
 	_online_clients = 1;
-	client_events = new pollfd[_max_co];
+	client_events = new pollfd[_max_co + 1];
 	std::pair<std::string, std::string> pair("oper", "pwdoper");
 	opers.insert(pair);
 	bzero(&read_buffer[0], sizeof(read_buffer));

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 23:51:28 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/07 11:24:34 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int Server::manage_connections()
 		{
 			if (client_events[i].fd == _socket)
 			{
-				if (new_client() == -1)
+				if (new_client(i) == -1)
 					continue ;
 			}
 			else
@@ -51,7 +51,7 @@ int Server::manage_connections()
 	return 0;
 }
 
-int Server::new_client()
+int Server::new_client(int i)
 {
 	struct sockaddr_in	clientAddr;
 	socklen_t			client_len = sizeof(clientAddr);
@@ -65,6 +65,14 @@ int Server::new_client()
 	Client tmp = Client(sock);
 	all_clients.push_back(Client(tmp));
 	_online_clients++;
+	if (_online_clients == _max_co + 1)
+	{
+		send(sock, "\033[1;31mError: server is full\n\033[m", 23, 0);
+		close(sock);
+		client_events[i] = client_events[0];
+		_online_clients--;
+		all_clients.pop_back();
+	}
 	return 0;
 }
 
@@ -78,18 +86,14 @@ void Server::read_client_req(int fd_client, int i)
 	{
 		if (readBytes == 0)
 		{
-			// close(client_events[i].fd);
-			// client_events[i] = client_events[_online_clients - 1];
-			// _online_clients--;
 			std::vector<Client>::iterator it_cli;
 			std::vector<Client>::iterator it = find_obj(fd_client, all_clients);
 			std::string rep = ":" + it->setPrefix() + " QUIT :" + '\n';
 			removeClient(it);
 			for (it_cli = all_clients.begin(); it_cli != all_clients.end(); it_cli++){
 				if (send(it_cli->getFdClient(), rep.c_str(), rep.length(), 0) == -1)
-					return (perror("Problem in sending from server "));
+					return (perror("\033[1;31mSend\033[m"));
 			}
-			// all_clients.erase(it);
 			readBytes = 0;
 		}
 	}
@@ -115,6 +119,7 @@ int Server::routine()
 {
 	status = 0;
 	init_pollfd_struct();
+	std::cout<<"\033[1;32mServer is running\n\033[m";
 	while (status != 2)
 	{
 		if (status == 0)
@@ -122,12 +127,13 @@ int Server::routine()
 		if (status == 1)
 		{
 			disconnectAll();
-			std::cout<<"Server is restarting\n";
+			std::cout<<"\033[1;34mServer is restarting\n\033[m";
 			all_clients.clear();
 			all_channels.clear();
 			opers.clear();
 			init_pollfd_struct();
 			status = 0;
+			std::cout<<"\033[1;32mServer is running\n\033[m";
 		}
 	}
 	disconnectAll();
@@ -135,7 +141,7 @@ int Server::routine()
 	all_channels.clear();
 	opers.clear();
 	close(_socket);
-	std::cout<< "Server is shutting down\n";
+	std::cout<< "\033[1;33mServer is shutting down\n\033[m";
 	return 0;
 }
 
