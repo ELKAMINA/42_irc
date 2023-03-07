@@ -19,7 +19,6 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 	std::string client_buffer = "";
 	buf[readBytes] = '\0';
 	client_buffer += buf;
-	std::cout << "Ce qu'envoie irssii " << client_buffer << std::endl;
 	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
 		if (client_buffer[pos - 1] == '\r')

@@ -20,7 +20,9 @@
 
 int Request::pass(Server *serv)
 {
-	if (entries.size() == 1)
+	if (origin->getPwd() != "")
+		reply = errAlreadyRegistered();
+	else if (entries.size() == 1)
 	{
 		if (entries[0] == serv->get_pass() && origin->loggedIn == false)
 		{
@@ -41,22 +43,33 @@ int Request::pass(Server *serv)
 int Request::nick(Server *serv)
 {
 	std::string old_nick;
-	
+	if (origin->getPwd() == "" || (origin->getRealName() != "" && origin->getUserName() != ""))
+	{
+		reply = "Something is missing to connect";
+		serv->chan_requests(*this);
+		return 0;
+	}
 	if (origin->getPwd() != serv->get_pass())
 	{
 		reply = errNotRegistered();
 		serv->chan_requests(*this);
-		return 1;
+		return 0;
 	}
 	else if (find_obj(entries[0], serv->all_clients) != serv->all_clients.end())
 	{
 		reply = errNicknameInUse(entries[0]);
 	}
-	else if (wrong_nickname(entries[0]) == 0)
+	else if (entries.empty() == true)
+	{
+			reply = errErroneusNickname(entries[0]);
+			serv->chan_requests(*this);
+			return 0;
+	}
+	else if (entries.empty() == false && wrong_nickname(entries[1]) == 1)
 	{
 		reply = errErroneusNickname(entries[0]);
 		serv->chan_requests(*this);
-		return 1;	
+		return 0;
 	}
 	else
 	{
@@ -78,6 +91,12 @@ int Request::nick(Server *serv)
 
 int Request::user(Server *serv)
 {
+	if (origin->getName() == "")
+	{
+		reply = "Something is missing to connect";
+		serv->chan_requests(*this);
+		return 0;
+	}
 	if (origin->loggedIn == false)
 	{
 		origin->setUsername(entries[0]);
@@ -138,10 +157,9 @@ int Request::away(Server *serv)
 
 	if (entries.size() == 0)
 	{
-		std::cout << "UNAWAY " << std::endl;
 		if (origin->checkMode('a') == true)
 		{
-			reply = rpl_unaway(origin->getName(), ":You are no longer marked as being away!\n");
+			reply = rpl_unaway(origin->getName(), " :You are no longer marked as being away");
 			origin->setMode('a', false);
 		}
 	}
@@ -157,7 +175,7 @@ int Request::away(Server *serv)
 			i++;
 		}
 		origin->setAwayMessage(away);
-		reply = rpl_away(origin->getName(), "away");
+		reply = rpl_away(origin->getName(), " :You have been marked as being away");
 	}
 	serv->chan_requests(*this);
 	return 0;

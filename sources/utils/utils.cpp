@@ -16,13 +16,12 @@
 
 int wrong_nickname(std::string nickname)
 {
-	
 	for (size_t i = 0; i < nickname.size(); i++)
 	{
-		if	((isalnum(nickname[i]) == 0) && nickname[i]  != '-')
+		if	(((isalnum(nickname[i]) == 0) && nickname[i]  != '-') || nickname.size() > 9)
 			return 1;
 	}
-	return (nickname.size() <= 9);
+	return (0);
 }
 
 bool ctld(char* buf, int readBytes)

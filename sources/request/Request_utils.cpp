@@ -358,15 +358,15 @@ void Request::all_chan_names(Server* serv)
 		}
 	}
 	end_of_names = reply.size();
-	if (serv->all_clients[0].getChanNbr() == 0)
+	for( ;it_cli != serv->all_clients.end(); it_cli++)
 	{
-		for( ;it_cli != serv->all_clients.end(); it_cli++)
+		if (it_cli->getChanNbr() == 0)
 		{
 			if (it_cli->checkMode('i') == false)
 				reply += it_cli->getName() + ", ";
 		}
-		reply.replace(reply.size() - 2, 2, "\n");
-		reply += rpl_endofnames(origin->setPrefix(), "*");
-		reply.replace(end_of_names, 0, "*: \n");
 	}
+	reply.replace(reply.size() - 2, 2, "\n");
+	reply += rpl_endofnames(origin->setPrefix(), "*");
+	reply.replace(end_of_names, 0, "*: \n");
 }
