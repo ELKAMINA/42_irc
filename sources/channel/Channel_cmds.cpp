@@ -242,6 +242,7 @@ void Channel::part(Request& request, Server* serv)
 			request.origin->removeChanFromList(this->getName());
 		
 	}
+	request.target.clear();
 }
 
 void Channel::privmsg(Request& request, Server* serv)
