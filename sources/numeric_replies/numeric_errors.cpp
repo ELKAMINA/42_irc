@@ -109,8 +109,8 @@ std::string errBadChannelKey(std::string nickName, std::string channel)
 
 std::string errChanPrivsNeeded(std::string nickName, std::string channel)
 {
-	(void)channel;
-	return (":482 " + nickName + " :You're not channel operator");
+	(void)nickName;
+	return ("482 #" + channel + " :You're not channel operator");
 }
 
 std::string errUModeUnknownFlag()
