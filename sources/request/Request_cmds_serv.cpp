@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 21:47:26 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/07 17:20:11 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,10 +109,9 @@ int Request::privmsg(Server *serv)
 			else if (it_cli->checkMode('a') == false)
 			{
 				req_get_comments(entries, 1);
-				message.append("\n");
 				target.push_back(it_cli->getName());
 				response =  ":" + origin->getName() + " " + command + " " + entries[0]
-				+ " " + ((message[0] = ':')? &message[1] : message);
+				+ " " + ((message[0] == ':')? &message[1] : message);
 			}
 		}
 		else if (command == "PRIVMSG")
