@@ -86,6 +86,11 @@ void Channel::join(Request &request, Server* serv)
 
 	int matching_param = 0;
 	bool err = false;
+	if (isInChanList(user, users))
+	{
+		request.reply = ":443 " + request.origin->setPrefix() + " " + user + " #" + this->getName() + " :is already on channel";
+		err = true;
+	}
 	if (_mods['k'] == true)
 	{
 		for (size_t i = 0; i < request.entries.size(); i++){
