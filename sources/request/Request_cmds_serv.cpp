@@ -63,9 +63,14 @@ int Request::nick(Server *serv)
 		old_nick = origin->getName();
 		origin->setNickname(entries[0]);
 		if (origin->loggedIn == true)
+		{
 			serv->update_user_data(*this, old_nick, entries[0]);
+		}
 		else if (!origin->loggedIn && origin->getRealName() != "" && origin->getUserName() != "")
+		{
 			reply = "001 " + origin->getName() + " :Welcome to the Internet Relay Network " + origin->setPrefix() + "!";
+			origin->loggedIn = true;
+		}
 	}
 	serv->chan_requests(*this);
 	return 0;
