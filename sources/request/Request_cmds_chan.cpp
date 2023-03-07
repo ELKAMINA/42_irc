@@ -52,7 +52,7 @@ int Request::part(Server *serv)
 			req_get_comments(entries, nb_chan);
 	}
 	else
-		reply = errNoSuchChannel(origin->getName());
+		reply = errNoSuchChannel("#" + entries[0]);
 	serv->chan_requests(*this);
 	if (reply == "UNDEFINED")
 	{
@@ -62,7 +62,7 @@ int Request::part(Server *serv)
 			it_cha = find_obj(entries[i], serv->all_channels);
 			if (it_cha == serv->all_channels.end())
 			{
-				reply = errNoSuchChannel(origin->getName());
+				reply = errNoSuchChannel("#" + entries[0]);
 				serv->chan_requests(*this);
 			}
 			else

@@ -235,7 +235,11 @@ void Channel::part(Request& request, Server* serv)
 
 	request.response.clear();
 	if (!isInChanList(user, users))
-		request.reply = errNotOnChannel(this->getName());
+	{
+		request.reply = "442 " + request.origin->setPrefix() + " #" + this->getName() +  " :You're not on that channel";
+		serv->chan_requests(request);
+		return ;
+	}
 	else
 	{
 		request.target.insert(request.target.end(), users.begin(), users.end());

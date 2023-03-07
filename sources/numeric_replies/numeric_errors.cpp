@@ -59,7 +59,7 @@ std::string errUserNotOnChannel(std::string nickName, std::string channel)
 
 std::string errNotOnChannel(std::string channel)
 {
-	return (":442 #" + channel + " :You're not on that channel");
+	return ("442 #" + channel + " :You're not on that channel");
 }
 
 std::string errUserOnChannel(std::string nickName, std::string channel)
