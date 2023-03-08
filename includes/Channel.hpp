@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:31:13 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 11:31:57 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 11:16:29 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,14 +55,15 @@ class Channel
 		/* MODES MANAGEMENT */
 		void	changeUserMode(Request& request, pair<string, string> command, vector<string>& target, Server* serv);
 		void	changeChanMode(Request& request, pair<string, string> command, Server *serv);
+		void	modeLimite(Request& request, pair<string, string> command, Server* serv);
+		void	modeKey(Request& request, pair<string, string> command, Server* serv);
+		void	modeBan(Request& request, pair<string, string> command, Server* serv);
 		int		addMode(Request& request, vector<string>params, Server* serv);
-		void	modeLimite(Request& request, pair<string, string> command);
-		// void modeBan(Request& request, pair<string, string> command);
 
 		/* COMMANDS */
 		void updateUser(std::string current, std::string new_name);
 		void replyJoining(Request& request, Server* serv);
-		void cmd_lexer(Request& request, Server* serv);
+		void ban(Request& request, Server* serv);
 		void privmsg(Request& request, Server* serv);
 		void invite(Request& request, Server* serv);
 		void topic(Request& request, Server* serv);

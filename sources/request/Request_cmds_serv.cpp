@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/07 17:20:11 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 11:07:29 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int Request::nick(Server *serv)
 		serv->chan_requests(*this);
 		return 0;
 	}
-	else if (find_obj(entries[0], serv->all_clients) != serv->all_clients.end())
+	else if (used_nickname(entries[0], serv->names_history) != serv->names_history.end())
 	{
 		reply = errNicknameInUse(entries[0]);
 	}
@@ -75,6 +75,7 @@ int Request::nick(Server *serv)
 	{
 		old_nick = origin->getName();
 		origin->setNickname(entries[0]);
+		serv->names_history.push_back(entries[0]);
 		if (origin->loggedIn == true)
 		{
 			serv->update_user_data(*this, old_nick, entries[0]);

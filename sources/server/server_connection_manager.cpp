@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/07 11:24:34 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 11:01:14 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ int Server::routine()
 {
 	status = 0;
 	init_pollfd_struct();
-	std::cout<<"\033[1;32mServer is running\n\033[m";
+	std::cout<<"\033[1;32mServer is running\033[m\n";
 	while (status != 2)
 	{
 		if (status == 0)
@@ -130,6 +130,7 @@ int Server::routine()
 			std::cout<<"\033[1;34mServer is restarting\n\033[m";
 			all_clients.clear();
 			all_channels.clear();
+			names_history.clear();
 			opers.clear();
 			init_pollfd_struct();
 			status = 0;

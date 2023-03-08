@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 21:43:21 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 11:16:15 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,12 @@ void Channel::updateUser(std::string current, std::string new_name)
 {
 	vector<string>::iterator it;
 
-	it = existing_user(users, current);
-	if (it == users.end())
+	if ((it = existing_user(_banned, current)) != _operators.end())
+	{
+		_operators.erase(it);
+		_operators.push_back(new_name);
+	}
+	if ((it = existing_user(users, current)) == users.end())
 		return;
 	users.erase(it);
 	users.push_back(new_name);
@@ -43,20 +47,6 @@ void Channel::removeUser(string user)
 		_vocal.erase(it);
 	_onlineUsers -= 1;
 
-}
-
-void Channel::cmd_lexer(Request& request, Server* serv)
-{
-	string cmd_name[] = {"JOIN", "INVITE", "TOPIC", "PART", "PRIVMSG", "KICK", "NAMES", "MODE"};
-	if (request.command == "NOTICE")
-	{
-		(this->*(_cmds[4]))(request, serv);
-		return ;
-	}
-	for (size_t i = 0; i< _cmds.size(); i++){
-		if (request.command == cmd_name[i])
-			(this->*(_cmds[i]))(request, serv);
-	}
 }
 
 void Channel::replyJoining(Request& request, Server* serv)
@@ -89,6 +79,11 @@ void Channel::join(Request &request, Server* serv)
 	if (isInChanList(user, users))
 	{
 		request.reply = ":443 " + request.origin->setPrefix() + " " + user + " #" + this->getName() + " :is already on channel";
+		err = true;
+	}
+	if (isInChanList(user, _banned))
+	{
+		request.reply = ":474 " + user + " #" + this->getName() + " :Cannot join channel (+b)";
 		err = true;
 	}
 	if (_mods['k'] == true)
@@ -270,7 +265,7 @@ void Channel::privmsg(Request& request, Server* serv)
 		request.reply = errNotOnChannel(this->getName());
 		return;
 	}
-	if (activeMode('m') && (!isInChanList(user, _operators) || !isInChanList(user, _vocal)))
+	if (activeMode('r') && (!isInChanList(user, _operators) || !isInChanList(user, _vocal)))
 	{
 		request.reply = errCannotSendToChan(user, this->getName());
 		return;
@@ -326,6 +321,37 @@ void Channel::kick(Request& request, Server* serv)
 	request.target.clear();
 }
 
+void Channel::ban(Request& request, Server* serv)
+{
+	string user = request.origin->getName();
+	vector<string>::iterator it;
+
+	request.response.clear();
+	if (!isInChanList(user, users))
+	{
+		request.reply = "442 " + request.origin->setPrefix() + " #" + this->getName() + " :You're not on that channel";
+		serv->chan_requests(request);
+		return;
+	}
+	if (!isInChanList(user, _operators))
+	{
+		request.reply = "482 #" + this->getName() + " :You're not channel operator";
+		serv->chan_requests(request);
+		return;
+	}
+	if ((it = existing_user(users, request.user_to_kick)) == users.end())
+	{
+		request.reply = "401 " + request.origin->setPrefix() + " " + request.user_to_kick + " :No such nickname";
+		serv->chan_requests(request);
+		return;
+	}
+	request.target.insert(request.target.end(), users.begin(), users.end());
+	request.response = ":" + request.origin->setPrefix() + " BAN #" + this->getName() 
+	+ " " + request.user_to_kick + " :" + ((request.message[0] == ':')? &request.message[1]:request.message);
+	serv->chan_requests(request);
+	removeUser(request.user_to_kick);
+	request.target.clear();
+}
 void Channel::names(Request& request,Server* serv)
 {
 	vector<string>::iterator it;

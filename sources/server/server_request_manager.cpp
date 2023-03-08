@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 23:08:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 21:50:02 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 09:58:22 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 	std::string client_buffer = "";
 	buf[readBytes] = '\0';
 	client_buffer += buf;
+	std::cerr<<"Client sends: "<<client_buffer<<std::endl;
 	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
 		if (client_buffer[pos - 1] == '\r')

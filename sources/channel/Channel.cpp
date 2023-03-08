@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:35:05 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 20:20:15 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 09:22:52 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,12 +82,13 @@ Channel::~Channel()
 
 void Channel::initModes()
 {
+	_mods.insert(make_pair('b', false));
 	_mods.insert(make_pair('i', false));
 	_mods.insert(make_pair('k', false));
 	_mods.insert(make_pair('l', false));
 	_mods.insert(make_pair('s', false));
 	_mods.insert(make_pair('t', false));
-	_mods.insert(make_pair('r', false));
+	_mods.insert(make_pair('m', false));
 }
 
 void Channel::initLexer()

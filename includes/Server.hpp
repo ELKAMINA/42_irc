@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/07 11:00:32 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 10:59:28 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ public:
 	struct pollfd*								client_events;
 	std::vector<Client> 						all_clients;
 	std::vector<Channel>						all_channels;
+	std::vector<std::string>					names_history;
 	std::map<std::string, std::string>			opers;
 	Marvin*										marvin;
 	char 										read_buffer[1000];

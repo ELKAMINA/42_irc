@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 20:04:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/07 11:03:58 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 10:59:43 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ Server::~Server()
 	delete marvin;
 	all_channels.clear();
 	all_clients.clear();
+	names_history.clear();
 	opers.clear();
 }
 

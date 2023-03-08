@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 22:03:19 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 14:12:39 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,72 @@
 
 typedef void (Channel::*act)(Client&, string);
 
-void Channel::modeLimite(Request& request, pair<string, string> command)
+void Channel::modeBan(Request& request, pair<string, string> command, Server* serv)
 {
-	(void)request;
+	std::cerr<<"command.second = "<< command.second<<std::endl;
+	for (size_t i = 0; i < _banned.size(); i++){
+		std::cerr<< _banned[i] << " is banned"<<std::endl;
+	}
+	if (command.second == "")
+		return;
+	if (!isInChanList(command.second, users))
+	{
+		request.reply = "401 " + request.origin->setPrefix() + " " + command.second + " :No such nickname";
+		serv->chan_requests(request);
+		return;
+	}
+	if (!isInChanList(command.second, _banned))
+	{
+		request.target.insert(request.target.end(), users.begin(), users.end());
+		request.response = ":" + request.origin->setPrefix() + " KICK #" + this->getName() 
+		+ " " + command.second + " :" + ((request.message[0] == ':')? &request.message[1]:request.message);
+		_banned.push_back(command.second);
+		serv->chan_requests(request);
+		removeUser(command.second);
+		request.target.clear();
+	}
+}
+
+void Channel::modeLimite(Request& request, pair<string, string> command, Server* serv)
+{
+	int max = 0;
+
+	if (command.second == "")
+		return;
 	if (command.first[0] == '+')
 	{
-		int max = atoi(command.second.c_str());
+		max = atoi(command.second.c_str());
 		if (max <= 0)
 			return;
-		this->_maxUsers = max;
-		_mods['l'] = true;
 	}
-	else
-	{
-		this->_maxUsers = -1;
-		_mods['l'] = false;
-	}
+	_maxUsers = (command.first[0] == '+') ? max : -1;
+	_mods['l'] = (command.first[0] == '+') ? true : false;
+	request.target.insert(request.target.end(), users.begin(), users.end());
+	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() +
+	" " + command.first + ((command.second == "")? "":" " + command.second);
+	serv->chan_requests(request);
+	request.target.clear();
+}
+
+void Channel::modeKey(Request& request, pair<string, string> command, Server* serv)
+{
+	if (command.second == "")
+		return;
+	this->_key = (command.first[0] == '+') ? command.second : "";
+	_mods['k'] = (command.first[0] == '+') ? true : false;
+	request.target.insert(request.target.end(), users.begin(), users.end());
+	request.response = ":" + request.origin->setPrefix() + " MODE #" + this->getName() +
+	" " + command.first + ((command.second == "")? "":" " + command.second);
+	serv->chan_requests(request);
+	request.target.clear();
 }
 
 void Channel::changeChanMode(Request& request, pair<string, string> command, Server* serv)
 {
-	(void)request;
 	if (command.first[1] == 'l')
-		modeLimite(request, command);
+		return (modeLimite(request, command, serv));
 	else if (command.first[1] == 'k')
-		_key = command.second;
+		return (modeKey(request, command, serv));
 	if (command.first[0] == '+')
 	{
 		map<char, bool>::iterator it = _mods.find(command.first[1]);
@@ -61,13 +102,11 @@ void Channel::changeUserMode(Request& request, pair<string, string> command, vec
 	vector<Client>::iterator it_cli;
 	string user = request.origin->getName();
 
-	it_cli = find_obj(request.entries[2], serv->all_clients);
+	it_cli = find_obj(command.second, serv->all_clients);
 	if (it_cli == serv->all_clients.end())
-		request.reply = errNoSuchNick(user, request.entries[2]);
+		request.reply = errNoSuchNick(user, command.second);
 	else if (!isInChanList(it_cli->getName(), users))
-		request.reply = errUserNotOnChannel(request.entries[2], this->getName());
-	else if(command.first.size() != 2)
-		request.reply = errUModeUnknownFlag();
+		request.reply = errUserNotOnChannel(command.second, this->getName());
 	else
 	{
 		if (command.first[0] == '+')
@@ -102,80 +141,77 @@ static int isInSet(char c, string set)
 	return 0;
 }
 
-static int checkModes(Request& request, vector<string>params)
-{
-	bool userMode = false;
-	bool chanMode = false;
-	int count = 0;
-	string found = "";
-	if ((params[1][0] != '-' && params[1][0] != '+') || params.size() < 2)
-		return -1;
-	for (size_t i = 1; i < params[1].size(); i++){
-		if (!isInSet(params[1][i], "iklorsv"))
-			return (request.reply = errUModeUnknownFlag(), -1);
-		else if (!isInSet(params[1][i], found))
-		{
-			if ((params[1][i] == 'o' || params[1][i] == 'v') && !chanMode)
-			{
-				userMode = true;
-				found += params[1][i];
-			}
-			else if (!userMode)
-			{
-				if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'))
-					count += 1;
-				chanMode = true;
-				found += params[1][i];
-			}
-			else
-				return -1;
-		}
-	}
-	if (params.size() - count != 2)
-		return -1;
-	return count;
-}
+// static int checkModes(Request& request, vector<string>params)
+// {
+// 	bool userMode = false;
+// 	bool chanMode = false;
+// 	int count = 0;
+// 	string found = "";
+// 	if (params.size() < 2 || (params[1][0] != '-' && params[1][0] != '+'))
+// 		return -1;
+// 	for (size_t i = 1; i < params[1].size(); i++){
+// 		if (!isInSet(params[1][i], "biklomsv"))
+// 			return (request.reply = errUModeUnknownFlag(), -1);
+// 		else if (!isInSet(params[1][i], found))
+// 		{
+// 			if ((params[1][i] == 'o' || params[1][i] == 'v') && !chanMode)
+// 			{
+// 				userMode = true;
+// 				found += params[1][i];
+// 			}
+// 			else if (!userMode)
+// 			{
+// 				if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'))
+// 					count += 1;
+// 				chanMode = true;
+// 				found += params[1][i];
+// 			}
+// 			else
+// 				return -1;
+// 		}
+// 	}
+// 	if (params.size() - count != 2)
+// 		return -1;
+// 	return count;
+// }
 
-static map<string, string> splitModes(vector<string>params, int countParams)
+static map<string, string> splitModes(vector<string>params)
 {
-	(void)countParams;
-	
 	map<string, string>modes;
+
 	for (uint i = 1; i < params[1].size(); i++){
 		string mode = "";
 		mode += params[1][0];
 		mode += params[1][i];
-		if (params[1][i] == 'b' || params[1][i] == 'o' || params[1][i] == 'v')
-			modes.insert(make_pair(mode, params[2]));
-		else
-		{
-			if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'))
-			{
-				modes.insert(make_pair(mode, params[2]));
-				params.erase(params.begin() + 2);
-			}
-			else
-				modes.insert(make_pair(mode, ""));
-		}
+		modes.insert(make_pair(mode, (params.size() > 2)? params[2]:""));
+		if (params.size() > 2)
+			params.erase(params.begin() + 2);
 	}
 	return modes;
 }
 
 int Channel::addMode(Request& request, vector<string>params, Server* serv)
 {
-	int countParams;
 	map<string, string>modes;
 
 	if (params.size() == 1)
 		request.reply = rpl_channelmodeis(this->getName(), this->getModes());
-	else if ((countParams = checkModes(request, params)) != -1)
+	else
 	{
-		modes = splitModes(params, countParams);
+		modes = splitModes(params);
 		for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){
-			if (it->first[1] == 'o')
+			if (!isInSet(it->first[1], "biklomstv"))
+			{
+				request.reply = "501 " + request.origin->getName() + ":Unknown MODE flag";
+				serv->chan_requests(request);
+				request.reply.clear();
+			}
+			else if (it->first[1] == 'o')
 				changeUserMode(request, *it, _operators, serv);
 			else if (it->first[1] == 'v')
 				changeUserMode(request, *it, _vocal, serv);
+			else if (it->first[1] == 'b')
+				modeBan(request, *it, serv);
 			else
 				changeChanMode(request, *it, serv);
 		}

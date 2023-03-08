@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 10:17:56 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/05 13:07:35 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 11:07:00 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,8 @@
 # include "Channel.hpp"
 # include "Client.hpp"
 
-template<class T>
-int existing_obj(std::string name, std::vector<T>&list)
-{
-	int pos = -1;
-	for (size_t i = 0; i < list.size(); i++){
-		if (name == list[i].getName())
-			return (pos = i);
-	}
-	return pos;
-}
+
+std::vector<std::string>::iterator used_nickname(std::string name, std::vector<std::string>&list);
 
 template<typename T>
 typename std::vector<T>::iterator find_obj(int fd, std::vector<T>& list)

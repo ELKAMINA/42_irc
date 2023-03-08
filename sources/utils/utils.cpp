@@ -6,13 +6,23 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 10:46:03 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 11:40:32 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 11:07:04 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.hpp"
 #include <string>
 #include <vector>
+
+std::vector<std::string>::iterator used_nickname(std::string name, std::vector<std::string>&list)
+{
+	typename std::vector<std::string>::iterator it = list.begin();
+	for (size_t i = 0; i < list.size(); i++){
+		if (name == list[i])
+			return it;
+	}
+	return list.end();
+}
 
 int wrong_nickname(std::string nickname)
 {

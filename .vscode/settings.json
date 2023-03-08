@@ -51,7 +51,8 @@
 		"numbers": "cpp",
 		"ranges": "cpp",
 		"span": "cpp",
-		"set": "cpp"
+		"set": "cpp",
+		"ctime": "cpp"
 	},
 	"C_Cpp.dimInactiveRegions": false
 }
