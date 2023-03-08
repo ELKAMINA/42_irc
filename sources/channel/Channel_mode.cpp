@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 14:33:50 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 19:49:25 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,17 @@ typedef void (Channel::*act)(Client&, string);
 
 void Channel::modeBan(Request& request, pair<string, string> command, Server* serv)
 {
+	std::vector<std::string>::iterator it;
+
 	if (command.second == "")
 		return;
-	if (!isInChanList(command.second, users))
+	if (command.first[0] == '+' && !isInChanList(command.second, users))
 	{
-		request.reply = "401 " + request.origin->setPrefix() + " " + command.second + " :No such nickname";
+		request.reply = "441 " + request.origin->setPrefix() + " " +  command.second + " #" + this->getName() + " :They aren't on that channel";
 		serv->chan_requests(request);
 		return;
 	}
-	if (!isInChanList(command.second, _banned))
+	if (command.first[0] == '+' && !isInChanList(command.second, _banned))
 	{
 		request.target.insert(request.target.end(), users.begin(), users.end());
 		request.response = ":" + request.origin->setPrefix() + " KICK #" + this->getName() 
@@ -33,6 +35,17 @@ void Channel::modeBan(Request& request, pair<string, string> command, Server* se
 		serv->chan_requests(request);
 		removeUser(command.second);
 		request.target.clear();
+	}
+	else if (command.first[0] == '-')
+	{
+		it = existing_user(_banned, command.second);
+		if (it != _banned.end())
+			_banned.erase(it);
+		else
+		{
+			request.reply = "441 " + request.origin->setPrefix() +" " +  command.second + " " + this->getName() + " :They aren't on that channel";
+			serv->chan_requests(request);
+		}
 	}
 }
 

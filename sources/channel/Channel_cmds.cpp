@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 15:03:48 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 19:19:47 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void Channel::updateUser(std::string current, std::string new_name)
 		_operators.erase(it);
 		_operators.push_back(new_name);
 	}
-	if ((it = existing_user(users, current)) == users.end())
+	if ((it = existing_user(users, current)) != users.end())
 	{
 		users.erase(it);
 		users.push_back(new_name);
@@ -84,8 +84,7 @@ void Channel::join(Request &request, Server* serv)
 	bool err = false;
 	if (isInChanList(user, users))
 	{
-		// request.reply = "443 " + request.origin->setPrefix() + " " + user + " #" + this->getName() + " :is already on channel";
-		err = true;
+		return;
 	}
 	if (isInChanList(user, _banned))
 	{
