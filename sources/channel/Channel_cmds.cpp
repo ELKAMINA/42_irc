@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 11:16:15 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 15:03:48 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,25 @@ void Channel::updateUser(std::string current, std::string new_name)
 {
 	vector<string>::iterator it;
 
-	if ((it = existing_user(_banned, current)) != _operators.end())
+	if ((it = existing_user(_banned, current)) != _banned.end())
 	{
 		_operators.erase(it);
 		_operators.push_back(new_name);
 	}
 	if ((it = existing_user(users, current)) == users.end())
-		return;
-	users.erase(it);
-	users.push_back(new_name);
+	{
+		users.erase(it);
+		users.push_back(new_name);
+	}
 	if ((it = existing_user(_operators, current)) != _operators.end())
 	{
 		_operators.erase(it);
 		_operators.push_back(new_name);
+	}
+	if ((it = existing_user(_invited, current)) != _invited.end())
+	{
+		_invited.erase(it);
+		_invited.push_back(new_name);
 	}
 	if ((it = existing_user(_vocal, current)) != _vocal.end())
 		it->assign(new_name);
@@ -78,12 +84,12 @@ void Channel::join(Request &request, Server* serv)
 	bool err = false;
 	if (isInChanList(user, users))
 	{
-		request.reply = ":443 " + request.origin->setPrefix() + " " + user + " #" + this->getName() + " :is already on channel";
+		// request.reply = "443 " + request.origin->setPrefix() + " " + user + " #" + this->getName() + " :is already on channel";
 		err = true;
 	}
 	if (isInChanList(user, _banned))
 	{
-		request.reply = ":474 " + user + " #" + this->getName() + " :Cannot join channel (+b)";
+		request.reply = "474 " + user + " #" + this->getName() + " :Cannot join channel (+b)";
 		err = true;
 	}
 	if (_mods['k'] == true)
@@ -110,7 +116,7 @@ void Channel::join(Request &request, Server* serv)
 	{
 		if (!isInChanList(user, _invited))
 		{
-			request.reply = errInviteOnlyChan("473 " + user + " #" + this->getName() + " :Cannot join channel (+i)");
+			request.reply = "473 " + user + " #" + this->getName() + " :Cannot join channel (+i)";
 			err = true;
 		}
 		else
@@ -160,7 +166,7 @@ void Channel::invite(Request& request, Server* serv)
 	}
 	if (isInChanList(target->getName(), users))
 	{
-		request.reply = ":443 " + request.origin->setPrefix() + " " + target->getName() + " #" + this->getName() + " :is already on channel";
+		request.reply = "443 " + request.origin->setPrefix() + " " + target->getName() + " #" + this->getName() + " :is already on channel";
 		return;
 	}
 	if (_mods['l'] && _onlineUsers == _maxUsers)

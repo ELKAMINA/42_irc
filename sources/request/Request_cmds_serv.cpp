@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 11:07:29 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 14:47:57 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,12 @@ int Request::pass(Server *serv)
 int Request::nick(Server *serv)
 {
 	std::string old_nick;
-	if (origin->getPwd() == "" || (origin->getRealName() != "" && origin->getUserName() != ""))
-	{
-		reply = "Something is missing to connect";
-		serv->chan_requests(*this);
-		return 0;
-	}
+	// if (origin->getPwd() == "" || (origin->getRealName() != "" && origin->getUserName() != ""))
+	// {
+	// 	reply = "Something is missing to connect";
+	// 	serv->chan_requests(*this);
+	// 	return 0;
+	// }
 	if (origin->getPwd() != serv->get_pass())
 	{
 		reply = errNotRegistered();

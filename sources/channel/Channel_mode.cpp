@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 14:12:39 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/08 14:33:50 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,6 @@ typedef void (Channel::*act)(Client&, string);
 
 void Channel::modeBan(Request& request, pair<string, string> command, Server* serv)
 {
-	std::cerr<<"command.second = "<< command.second<<std::endl;
-	for (size_t i = 0; i < _banned.size(); i++){
-		std::cerr<< _banned[i] << " is banned"<<std::endl;
-	}
 	if (command.second == "")
 		return;
 	if (!isInChanList(command.second, users))
@@ -140,40 +136,6 @@ static int isInSet(char c, string set)
 	}
 	return 0;
 }
-
-// static int checkModes(Request& request, vector<string>params)
-// {
-// 	bool userMode = false;
-// 	bool chanMode = false;
-// 	int count = 0;
-// 	string found = "";
-// 	if (params.size() < 2 || (params[1][0] != '-' && params[1][0] != '+'))
-// 		return -1;
-// 	for (size_t i = 1; i < params[1].size(); i++){
-// 		if (!isInSet(params[1][i], "biklomsv"))
-// 			return (request.reply = errUModeUnknownFlag(), -1);
-// 		else if (!isInSet(params[1][i], found))
-// 		{
-// 			if ((params[1][i] == 'o' || params[1][i] == 'v') && !chanMode)
-// 			{
-// 				userMode = true;
-// 				found += params[1][i];
-// 			}
-// 			else if (!userMode)
-// 			{
-// 				if (params[1][0] == '+' && (params[1][i] == 'k' || params[1][i] == 'l'))
-// 					count += 1;
-// 				chanMode = true;
-// 				found += params[1][i];
-// 			}
-// 			else
-// 				return -1;
-// 		}
-// 	}
-// 	if (params.size() - count != 2)
-// 		return -1;
-// 	return count;
-// }
 
 static map<string, string> splitModes(vector<string>params)
 {
