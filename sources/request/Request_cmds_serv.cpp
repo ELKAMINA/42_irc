@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 14:47:57 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 11:02:21 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,7 +255,8 @@ int Request::quit(Server *serv)
 	std::vector<std::string>::iterator it;
 	std::vector<Client>::iterator it_cli;
 	std::vector<Channel>::iterator target_chan;
-	
+	int online = serv->getOnlineClient();
+
 	for (it = origin->chans.begin(); it != origin->chans.end(); it++)
 	{
 		target_chan = find_obj(*it, serv->all_channels);
@@ -267,10 +268,21 @@ int Request::quit(Server *serv)
 		}
 	}
 	for (it_cli = serv->all_clients.begin(); it_cli != serv->all_clients.end(); it_cli++){
-		target.push_back(it_cli->getName());
+		if (it_cli->getFdClient() != origin->getFdClient())
+			target.push_back(it_cli->getName());
 	}
 	response = ":" + origin->setPrefix() + " QUIT :" + message;
 	serv->chan_requests(*this);
+	for (int i = 0; i < online; i++){
+		if (serv->client_events[i].fd == origin->getFdClient())
+		{
+			close(serv->client_events[i].fd);
+			serv->client_events[i] = serv->client_events[online - 1];
+			serv->decremOnline();
+			break ;
+		}
+	}
+	serv->all_clients.erase(origin);
 	return 0;
 }
 

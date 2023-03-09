@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 10:59:28 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 11:03:20 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ public:
 	int								get_socket() const;
 	std::string						get_name() const;
 	std::string						get_pass() const;
+	int								getOnlineClient() const;
+	void							decremOnline();
 			
 	/* ***************** */
 	/* **** METHODS **** */

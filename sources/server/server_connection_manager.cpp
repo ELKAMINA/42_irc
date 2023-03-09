@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 11:01:14 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 11:22:45 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,7 @@ void Server::removeClient(std::vector<Client>::iterator to_remove)
 {
 	std::vector<std::string>::iterator it;
 	std::vector<Channel>::iterator target;
+	
 	for (it = to_remove->chans.begin(); it != to_remove->chans.end(); it++)
 	{
 		target = find_obj(*it, all_channels);

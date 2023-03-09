@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 20:04:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 10:59:43 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 11:03:43 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,15 @@ std::string Server::get_pass() const
 	return _pass;
 }
 
+int Server::getOnlineClient() const
+{
+	return this->_online_clients;
+}
+
+void Server::decremOnline()
+{
+	this->_online_clients -= 1;
+}
 /* ***************************** */
 /* **** INIT METHODS *********** */
 /* ***************************** */
