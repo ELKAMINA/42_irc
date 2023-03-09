@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 19:49:25 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 12:21:43 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,23 +17,28 @@ typedef void (Channel::*act)(Client&, string);
 void Channel::modeBan(Request& request, pair<string, string> command, Server* serv)
 {
 	std::vector<std::string>::iterator it;
+	std::vector<Client>::iterator it_cli;
 
 	if (command.second == "")
 		return;
 	if (command.first[0] == '+' && !isInChanList(command.second, users))
 	{
-		request.reply = "441 " + request.origin->setPrefix() + " " +  command.second + " #" + this->getName() + " :They aren't on that channel";
+		request.reply = "441 " + request.origin->setPrefix() +" MODE #" + this->getName() + " " +  command.first + " " + command.second +  " :They aren't on that channel";
 		serv->chan_requests(request);
 		return;
 	}
 	if (command.first[0] == '+' && !isInChanList(command.second, _banned))
 	{
 		request.target.insert(request.target.end(), users.begin(), users.end());
-		request.response = ":" + request.origin->setPrefix() + " KICK #" + this->getName() 
-		+ " " + command.second + " :" + ((request.message[0] == ':')? &request.message[1]:request.message);
+		request.response = ":" + request.origin->setPrefix() +" MODE #" + this->getName() + " " +  command.first + " " + command.second;
 		_banned.push_back(command.second);
 		serv->chan_requests(request);
+		request.response = ":" + request.origin->setPrefix() + " KICK #" + this->getName() 
+		+ " " + command.second + " :" + ((request.message[0] == ':')? &request.message[1]:request.message);
+		serv->chan_requests(request);
 		removeUser(command.second);
+		it_cli = find_obj(command.second, serv->all_clients);
+		it_cli->removeChanFromList(this->getName());
 		request.target.clear();
 	}
 	else if (command.first[0] == '-')
@@ -43,7 +48,7 @@ void Channel::modeBan(Request& request, pair<string, string> command, Server* se
 			_banned.erase(it);
 		else
 		{
-			request.reply = "441 " + request.origin->setPrefix() +" " +  command.second + " " + this->getName() + " :They aren't on that channel";
+			request.reply = "441 " + request.origin->setPrefix() +" MODE #" + this->getName() + " " + command.first + " " + command.second +  " :They aren't on that channel";
 			serv->chan_requests(request);
 		}
 	}
