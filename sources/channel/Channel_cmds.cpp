@@ -6,13 +6,13 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 12:32:03 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 12:56:08 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
-typedef std::string	(*err)(string, string);
+// typedef std::string	(*err)(string, string);
 
 void Channel::updateUser(std::string current, std::string new_name)
 {
@@ -274,10 +274,10 @@ void Channel::privmsg(Request& request, Server* serv)
 	request.response.clear();
 	if (!isInChanList(user, users) && request.command == "PRIVMSG")
 	{
-		request.reply = errNotOnChannel(this->getName());
+		request.reply = "442 " + request.origin->setPrefix() + " #" + this->getName() + " :You're not on that channel";
 		return;
 	}
-	if (activeMode('r') && (!isInChanList(user, _operators) || !isInChanList(user, _vocal)))
+	if (activeMode('m') && (!isInChanList(user, _operators) && !isInChanList(user, _vocal)))
 	{
 		request.reply = errCannotSendToChan(user, this->getName());
 		return;

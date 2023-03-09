@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 14:34:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 18:46:17 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 12:53:23 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ std::string	errNoSuchChannel(std::string wrongChan)
 
 std::string	errCannotSendToChan(std::string nickName, std::string channel)
 {
-	return (":404 " + nickName + " #" + channel + " :Cannot send to channel");
+	return ("404 " + nickName + " #" + channel + " :Cannot send to channel");
 }
 
 std::string errTooManyTarget()

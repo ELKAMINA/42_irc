@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 13:02:20 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 12:21:43 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 12:46:41 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,9 +118,9 @@ void Channel::changeUserMode(Request& request, pair<string, string> command, vec
 
 	it_cli = find_obj(command.second, serv->all_clients);
 	if (it_cli == serv->all_clients.end())
-		request.reply = errNoSuchNick(user, command.second);
+		request.reply = request.reply = "401 " + request.origin->setPrefix() + " " + request.user_to_kick + " :No such nickname";
 	else if (!isInChanList(it_cli->getName(), users))
-		request.reply = errUserNotOnChannel(command.second, this->getName());
+		request.reply = request.reply = "441 " + request.origin->setPrefix() +" MODE #" + this->getName() + " " + command.first + " " + command.second +  " :They aren't on that channel";
 	else
 	{
 		if (command.first[0] == '+')
@@ -182,7 +182,7 @@ int Channel::addMode(Request& request, vector<string>params, Server* serv)
 		for (map<string, string>::iterator it = modes.begin(); it != modes.end(); it++){
 			if (!isInSet(it->first[1], "biklomstv"))
 			{
-				request.reply = "501 " + request.origin->getName() + ":Unknown MODE flag";
+				request.reply = "501 " + request.origin->setPrefix() + " :Unknown MODE flag";
 				serv->chan_requests(request);
 				request.reply.clear();
 			}
