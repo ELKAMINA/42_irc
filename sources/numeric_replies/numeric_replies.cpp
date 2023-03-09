@@ -35,7 +35,7 @@ std::string	rpl_topic(std::string user_prefix, std::string channel, std::string 
 
 std::string	rpl_channelmodeis(std::string channel, std::string mode)
 { 
-	return ("324 " + channel + " " + mode + '\n');
+	return ("324 #" + channel + " " + mode);
 }
 
 std::string	rpl_namereply(std::string message)

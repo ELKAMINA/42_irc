@@ -262,7 +262,7 @@ void Request::mode_for_chans(Server* serv)
 	}
 	else
 	{
-		reply = errNoSuchChannel(entries[0]);
+		reply = errNoSuchChannel("#" + entries[0]);
 		serv->chan_requests(*this);
 	}
 }

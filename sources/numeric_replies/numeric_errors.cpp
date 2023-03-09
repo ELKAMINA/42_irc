@@ -14,7 +14,7 @@
 
 std::string	errNoSuchNick(std::string senderNick, std::string wrongNick)
 {
-	return (":401 " + senderNick + " " + wrongNick + " :No such nickname");
+	return ("401 " + senderNick + " " + wrongNick + " :No such nickname");
 }
 
 std::string	errNoSuchChannel(std::string wrongChan)

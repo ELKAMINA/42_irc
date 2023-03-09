@@ -175,7 +175,10 @@ int Channel::addMode(Request& request, vector<string>params, Server* serv)
 	map<string, string>modes;
 
 	if (params.size() == 1)
+	{
 		request.reply = rpl_channelmodeis(this->getName(), this->getModes());
+		serv->chan_requests(request);
+	}
 	else
 	{
 		modes = splitModes(params);

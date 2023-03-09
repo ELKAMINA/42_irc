@@ -131,13 +131,13 @@ int Request::privmsg(Server *serv)
 			}
 		}
 		else if (command == "PRIVMSG")
-			reply = errNoSuchNick(origin->getName(), entries[0]);
+			reply = "401 " + origin->setPrefix() + " " + entries[0] + " :No such nickname";
 	}
 	else
 	{
 		it_cha = find_obj(&entries[0][1], serv->all_channels);
 		if (it_cha == serv->all_channels.end() && command == "PRIVMSG")
-			reply = errNoSuchChannel(entries[0]);
+			reply = errNoSuchChannel("#" + entries[0]);
 		else
 		{
 			req_get_comments(entries, 1);
@@ -296,7 +296,10 @@ int Request::oper(Server *serv)
 			origin->setMode('o', true);
 		}
 		else
+		{
 			reply = errPasswMismatch(origin->setPrefix());
+
+		}
 	}
 	else
 		reply = errNoOperHost(":No O-lines for your host\n");

@@ -36,7 +36,7 @@ int Request::invite(Server *serv)
 	if (it != serv->all_channels.end())
 		it->invite(*this, serv);
 	else
-		reply = errNoSuchChannel(entries[1]);
+		reply = errNoSuchChannel("#" + entries[1]);
 	serv->chan_requests(*this);
 	return 0;
 }
@@ -120,7 +120,7 @@ int Request::topic(Server *serv)
 		if (entries.size() < 1)
 			reply = "461 " + origin->getName() + " " + command + " :Not enough parameters";
 		else
-			reply = errNoSuchChannel(entries[0]);
+			reply = errNoSuchChannel("#" + entries[0]);
 		serv->chan_requests(*this);
 		// return 1;
 	}
