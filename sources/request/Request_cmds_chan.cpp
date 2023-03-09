@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:23:52 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 15:30:26 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 18:27:13 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int Request::invite(Server *serv)
 	if (it != serv->all_channels.end())
 		it->invite(*this, serv);
 	else
-		reply = errNoSuchChannel("#" + entries[1]);
+		reply = errNoSuchChannel(entries[1]);
 	serv->chan_requests(*this);
 	return 0;
 }
@@ -52,7 +52,7 @@ int Request::part(Server *serv)
 			req_get_comments(entries, nb_chan);
 	}
 	else
-		reply = errNoSuchChannel("#" + entries[0]);
+		reply = errNoSuchChannel(entries[0]);
 	serv->chan_requests(*this);
 	if (reply == "UNDEFINED")
 	{
@@ -80,31 +80,52 @@ int Request::part(Server *serv)
 int Request::kick(Server *serv)
 {
 	vector<Channel>::iterator it_cha;
+	size_t params_end = 0;
 
-	if (check_lists() == 0)
+	if (check_lists() == -1)
+	{
+		reply = "Wrong formay\r\n";
+		serv->chan_requests(*this);
+		return 0;
+	}
+	else
 	{
 		count_chan_nbr(entries);
-		removing_sharp(entries);
+		params_end = count_params();
+		if (entries.size() == nb_chan)
+		{
+			reply = errNeedMoreParams(origin->getName(), "kick");
+			serv->chan_requests(*this);
+			return 0;
+		}
 		if (reply == "UNDEFINED")
 		{
-			if (entries.size() >= nb_chan + 2)
-				req_get_comments(entries, nb_chan + 1);
+			if (params_end != 0)
+				req_get_comments(entries, params_end);
 			size_t i = 0;
+			
 			while (i < nb_chan)
 			{
 				it_cha = find_obj(&entries[i][1], serv->all_channels);
 				if (it_cha == serv->all_channels.end())
-					reply = errNoSuchChannel("#" + entries[i]);
+				{
+					reply = errNoSuchChannel(entries[i]);
+					serv->chan_requests(*this);
+					return 0;
+				}
 				else
 				{
-					user_to_kick.clear();
-					user_to_kick = entries[nb_chan];
-					it_cha->kick(*this, serv);
+					for (size_t u = nb_chan; u + params_end < entries.size(); u++){
+						user_to_kick = entries[u];
+						std::cout << "use to kick " << user_to_kick << std::endl;
+						it_cha->kick(*this, serv);
+						user_to_kick.clear();
+					}
 				}
 				i++;
 			}
 		}
-	}
+	} 
 	return 0;
 }
 
@@ -120,7 +141,7 @@ int Request::topic(Server *serv)
 		if (entries.size() < 1)
 			reply = "461 " + origin->getName() + " " + command + " :Not enough parameters";
 		else
-			reply = errNoSuchChannel("#" + entries[0]);
+			reply = errNoSuchChannel(entries[0]);
 		serv->chan_requests(*this);
 		// return 1;
 	}

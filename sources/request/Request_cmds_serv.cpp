@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 11:02:21 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 18:52:54 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,9 @@ int Request::nick(Server *serv)
 
 int Request::user(Server *serv)
 {
-	if (origin->loggedIn == false)
+	if (entries.size() < 4)
+		reply = errNeedMoreParams(origin->getName(), command);
+	else if (origin->loggedIn == false)
 	{
 		origin->setUsername(entries[0]);
 		origin->setRealname(entries[3]);
@@ -137,7 +139,7 @@ int Request::privmsg(Server *serv)
 	{
 		it_cha = find_obj(&entries[0][1], serv->all_channels);
 		if (it_cha == serv->all_channels.end() && command == "PRIVMSG")
-			reply = errNoSuchChannel("#" + entries[0]);
+			reply = errNoSuchChannel(entries[0]);
 		else
 		{
 			req_get_comments(entries, 1);

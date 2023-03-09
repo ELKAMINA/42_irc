@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 10:46:03 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 11:07:04 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 15:28:55 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 std::vector<std::string>::iterator used_nickname(std::string name, std::vector<std::string>&list)
 {
-	typename std::vector<std::string>::iterator it = list.begin();
+	std::vector<std::string>::iterator it = list.begin();
 	for (size_t i = 0; i < list.size(); i++){
 		if (name == list[i])
 			return it;

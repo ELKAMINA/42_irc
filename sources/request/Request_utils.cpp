@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 18:26:05 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 21:05:59 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 18:24:19 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,20 @@ int Request::check_lists()
 {
 	bool oneChan = true;
 	bool oneParam = true;
+	int	 verif = 0;
 
 	oneChan = split_entries(entries[0], channels);
 	if (entries.size() > 1)
 		oneParam = split_entries(entries[1], params);
-	if (verifications() != 0)
+	verif = verifications();
+	if (verif == 1)
 	{
 		transformations(oneChan, oneParam);
 		return (0);
 
 	}
+	else if (verif == -1)
+		return -1;
 	return 1;
 }
 
@@ -39,6 +43,7 @@ bool Request::split_entries(std::string entry, std::vector<std::string>&target)
 	{
 		target.push_back(tmp.substr(0, sharp));
 		tmp.erase(0, sharp + 1);
+		std::cout << "TMP " << tmp << std::endl;
 		commas = false;
 	}
 	target.push_back(tmp);
@@ -51,9 +56,10 @@ int Request::verifications()
 	{
 		if (channels.size() >= 1)
 		{
-			count_chan_nbr(channels);
-			if (nb_chan != channels.size())
-				return 0;
+			if (count_chan_nbr(channels) == -1)
+				return -1;
+			// if (nb_chan != channels.size())
+			// 	return 0;
 		}
 		if (params.size() >= 1)
 		{
@@ -98,7 +104,7 @@ int	Request::count_chan_nbr(std::vector<std::string> entries)
 	while (it != entries.end())
 	{
 		if ((*it)[0] != '#' && (*it)[0] != '&')
-			return 0;
+			return -1;
 		it++;
 		nb_chan++;
 	}
@@ -151,6 +157,20 @@ void Request::removing_sharp(std::vector<std::string>& en)
 	}
 }
 
+size_t Request::count_params()
+{
+	size_t end_of_params = 0;
+	
+	for(size_t i = 0; i < entries.size(); i++){
+		if (entries[i][0] == ':')
+		{
+			end_of_params = i;
+			break;
+		}
+	}
+	return end_of_params;
+}
+
 void Request::req_get_comments(std::vector<std::string> &entries, size_t j)
 {
 	if (message == "")
@@ -165,20 +185,6 @@ void Request::req_get_comments(std::vector<std::string> &entries, size_t j)
 	}
 }
 
-void Request::set_reason_msg(size_t j)
-{
-	if (message == "")
-	{
-		message.clear();
-		size_t i = j;
-		while (i < entries.size())
-		{
-			message.append(entries[i]);
-			message.append(" ");
-			i++;
-		}
-	}
-}
 
 void Request::oneChan(Server *serv)
 {
@@ -262,7 +268,7 @@ void Request::mode_for_chans(Server* serv)
 	}
 	else
 	{
-		reply = errNoSuchChannel("#" + entries[0]);
+		reply = errNoSuchChannel(entries[0]);
 		serv->chan_requests(*this);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 23:26:24 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 09:29:13 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 18:24:43 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 # include <string>
 # include <cstring>
 # include "Server.hpp"
-// # include "Colors.hpp"
 # include "Channel.hpp"
 # include "Client.hpp"
 # include "numeric_replies.hpp"
@@ -74,7 +73,6 @@ class Request
 		int			count_chan_nbr(std::vector<std::string> entries);
 
 		/* Utils for commands*/
-		void		set_reason_msg(size_t j);
 		void 		resizing_chan(std::vector<std::string> entries);
 		void		counting_keys(std::vector<std::string> entries);
 		std::string	removing_backslash(std::vector<std::string> entries);
@@ -88,6 +86,7 @@ class Request
 		int			check_lists();
 		int			verifications();
 		int			transformations(bool oneChan, bool oneParam);
+		size_t		count_params();
 		void		req_get_comments(std::vector<std::string>& entries, size_t i);
 		void		killing_process(std::vector<Client>::iterator to_kill, Server* serv);
 		bool		split_entries(std::string entry, std::vector<std::string>&target);

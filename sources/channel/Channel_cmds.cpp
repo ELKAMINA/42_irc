@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 12:56:08 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/09 18:32:16 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,13 +250,6 @@ void Channel::part(Request& request, Server* serv)
 		+ " " + ((request.message[0] == ':')? &request.message[1]:request.message);
 		serv->chan_requests(request);
 		removeUser(user);
-		// for (std::vector<std::string>::iterator it_cha = request.origin->chans.begin(); it_cha != request.origin->chans.end(); it++){
-		// 	if (*it_cha == this->getName())
-		// 	{
-		// 		request.origin->chans.erase(it_cha);
-		// 		break;
-		// 	}
-		// }
 		if (request.command == "PART")
 			request.origin->removeChanFromList(this->getName());
 		
@@ -328,7 +321,7 @@ void Channel::kick(Request& request, Server* serv)
 	}
 	request.target.insert(request.target.end(), users.begin(), users.end());
 	request.response = ":" + request.origin->setPrefix() + " KICK #" + this->getName() 
-	+ " " + request.user_to_kick + " :" + ((request.message[0] == ':')? &request.message[1]:request.message);
+	+ " " + request.user_to_kick + " :" + ((request.message != "")? &request.message[1]:"");
 	serv->chan_requests(request);
 	removeUser(request.user_to_kick);
 	it_cli = find_obj(request.user_to_kick, serv->all_clients);
