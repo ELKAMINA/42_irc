@@ -28,7 +28,7 @@ int wrong_nickname(std::string nickname)
 {
 	for (size_t i = 0; i < nickname.size(); i++)
 	{
-		if	(((isalnum(nickname[i]) == 0) && nickname[i]  != '-') || nickname.size() > 9)
+		if	(((isalnum(nickname[i]) == 0) && nickname[i]  != '-' && nickname[i]  != '_') || nickname.size() > 9)
 			return 1;
 	}
 	return (0);

@@ -23,6 +23,7 @@ _port(port), _interface(interface), _max_co(max_co), _name(name), _pass(pass)
 	bzero(&read_buffer[0], sizeof(read_buffer));
 	readBytes = 0;
 	marvin =  new Marvin();
+	dup_nickName = false;
 }
 
 Server::Server(const Server &rhs)

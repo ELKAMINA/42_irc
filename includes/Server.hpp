@@ -98,6 +98,7 @@ public:
 	Marvin*										marvin;
 	char 										read_buffer[1000];
 	size_t 										readBytes;
+	bool										dup_nickName;
 
 
 	

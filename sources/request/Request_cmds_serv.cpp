@@ -34,7 +34,13 @@ int Request::pass(Server *serv)
 			reply = errAlreadyRegistered();
 		}
 		else
-			reply = errPasswMismatch(entries[0]);
+		{
+			reply = "464 PASS :Password incorrect";
+			serv->chan_requests(*this);
+			reply = "ERROR :Password incorrect";
+			serv->chan_requests(*this);
+			return 1;
+		}
 		serv->chan_requests(*this);
 	}
 	return 0;
@@ -43,17 +49,13 @@ int Request::pass(Server *serv)
 int Request::nick(Server *serv)
 {
 	std::string old_nick;
-	// if (origin->getPwd() == "" || (origin->getRealName() != "" && origin->getUserName() != ""))
-	// {
-	// 	reply = "Something is missing to connect";
-	// 	serv->chan_requests(*this);
-	// 	return 0;
-	// }
 	if (origin->getPwd() != serv->get_pass())
 	{
-		reply = errNotRegistered();
+		reply = "464 PASS :Password incorrect";
 		serv->chan_requests(*this);
-		return 0;
+		reply = "ERROR :Password incorrect";
+		serv->chan_requests(*this);
+		return 1;
 	}
 	else if (used_nickname(entries[0], serv->names_history) != serv->names_history.end())
 	{
@@ -61,11 +63,11 @@ int Request::nick(Server *serv)
 	}
 	else if (entries.empty() == true)
 	{
-			reply = errErroneusNickname(entries[0]);
+			reply = errErroneusNickname("");
 			serv->chan_requests(*this);
 			return 0;
 	}
-	else if (entries.empty() == false && wrong_nickname(entries[1]) == 1)
+	else if (entries.empty() == false && wrong_nickname(entries[0]) == 1)
 	{
 		reply = errErroneusNickname(entries[0]);
 		serv->chan_requests(*this);
@@ -92,12 +94,6 @@ int Request::nick(Server *serv)
 
 int Request::user(Server *serv)
 {
-	if (origin->getName() == "")
-	{
-		reply = "Something is missing to connect";
-		serv->chan_requests(*this);
-		return 0;
-	}
 	if (origin->loggedIn == false)
 	{
 		origin->setUsername(entries[0]);
