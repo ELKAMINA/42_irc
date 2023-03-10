@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:12:48 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 23:45:57 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/10 15:32:01 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,9 @@ class Client
 		void						leaveAllChans(Server *serv);
 		bool						checkMode(char mode) const;
 
+		std::string					buffer;
+		std::string					read_buffer;
+		int							readBytes;
 		bool						loggedIn;
 		int							callToMode;
 		std::vector<std::string>	chans;

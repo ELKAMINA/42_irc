@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 18:52:54 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/10 17:53:42 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,6 +265,11 @@ int Request::quit(Server *serv)
 	std::vector<Channel>::iterator target_chan;
 	int online = serv->getOnlineClient();
 
+	if (origin->loggedIn == false)
+	{
+		std::cerr<<"va chier poulet"<<std::endl;
+		return 0;
+	}
 	for (it = origin->chans.begin(); it != origin->chans.end(); it++)
 	{
 		target_chan = find_obj(*it, serv->all_channels);

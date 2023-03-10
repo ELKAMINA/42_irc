@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 11:03:20 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/10 15:23:02 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ public:
 	---- RUNNING METHODS
 	*/
 	void							update_user_data(Request& request, std::string old_name, std::string new_nick);
-	void							handle_request(char *buf, int fd_client, int readBytes, int i);
+	void							handle_request(std::string& buf, int fd_client, int readBytes, int i);
 	void							read_client_req(int fd_client, int i);
 	void							chan_requests(Request& req);
 	int								treating_req(Request& req);
@@ -98,7 +98,7 @@ public:
 	std::vector<std::string>					names_history;
 	std::map<std::string, std::string>			opers;
 	Marvin*										marvin;
-	char 										read_buffer[1000];
+	// char 										read_buffer[1000];
 	size_t 										readBytes;
 	bool										dup_nickName;
 

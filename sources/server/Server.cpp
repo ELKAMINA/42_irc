@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 20:04:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 11:03:43 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/10 15:23:43 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ _port(port), _interface(interface), _max_co(max_co), _name(name), _pass(pass)
 	client_events = new pollfd[_max_co + 1];
 	std::pair<std::string, std::string> pair("oper", "pwdoper");
 	opers.insert(pair);
-	bzero(&read_buffer[0], sizeof(read_buffer));
+	// bzero(&read_buffer[0], sizeof(read_buffer));
 	readBytes = 0;
 	marvin =  new Marvin();
 	dup_nickName = false;

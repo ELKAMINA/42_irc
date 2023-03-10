@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 11:22:45 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/10 18:04:28 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 void Server::init_pollfd_struct()
 {
-	client_events[0].events = POLLIN | POLLOUT;
+	client_events[0].events = POLLIN | POLLRDHUP;
 	client_events[0].fd = _socket; 
 	for (int i = 0; i < _max_co; i++)
 	{
-		client_events[i].events = POLLIN | POLLOUT;
+		client_events[i].events = POLLIN | POLLRDHUP;
 		client_events[i].fd = _socket;
-		client_events[i].revents = POLLIN;
+		client_events[i].revents = 0;
 	}
 }
 
@@ -29,7 +29,15 @@ int Server::manage_connections()
 	poll(client_events, _online_clients, -1);
 	for (int i = 0; i < _online_clients; i++)
 	{
-		if (client_events[i].revents != 0 && client_events[i].revents & POLLIN)
+		if (client_events[i].revents != 0 && client_events[i].revents & POLLRDHUP)
+		{
+			std::vector<Client>::iterator obj = find_obj(client_events[i].fd, all_clients);
+			close(client_events[i].fd);
+			client_events[i] = client_events[0];
+			_online_clients--;
+			all_clients.erase(obj);
+		}
+		else if (client_events[i].revents != 0 && client_events[i].revents & POLLIN)
 		{
 			if (client_events[i].fd == _socket)
 			{
@@ -60,7 +68,7 @@ int Server::new_client(int i)
 	sock = accept(_socket,(struct sockaddr *)&clientAddr, &client_len);
 	if (sock <= 0)
 		return -1;
-	client_events[_online_clients].events = POLLIN;
+	client_events[_online_clients].events = POLLIN | POLLRDHUP;
 	client_events[_online_clients].fd = sock;
 	Client tmp = Client(sock);
 	all_clients.push_back(Client(tmp));
@@ -78,39 +86,39 @@ int Server::new_client(int i)
 
 void Server::read_client_req(int fd_client, int i)
 {
-	char _buffer[1000];
-	bzero(_buffer, 1000);
-	int nci = recv(fd_client, _buffer, 1000, MSG_DONTWAIT);
-	readBytes += nci;
+	std::vector<Client>::iterator it = find_obj(fd_client, all_clients);
+	it->readBytes = 0;
+	it->buffer.clear();
+	char buffer[1000];
+	bzero(buffer, 1000);
+	int nci = recv(fd_client, buffer, 1000, MSG_DONTWAIT);
+	it->buffer = buffer;
+	it->readBytes += nci;
 	if (nci <= 0)
 	{
-		if (readBytes == 0)
+		if (it->readBytes == 0)
 		{
 			std::vector<Client>::iterator it_cli;
-			std::vector<Client>::iterator it = find_obj(fd_client, all_clients);
 			std::string rep = ":" + it->setPrefix() + " QUIT :" + '\n';
 			removeClient(it);
 			for (it_cli = all_clients.begin(); it_cli != all_clients.end(); it_cli++){
 				if (send(it_cli->getFdClient(), rep.c_str(), rep.length(), 0) == -1)
 					return (perror("\033[1;31mSend\033[m"));
 			}
-			readBytes = 0;
+			it->readBytes = 0;
 		}
 	}
 	else
 	{
-		if (ctld(_buffer, readBytes) == false)
+		if (ctld(it->buffer, it->readBytes) == false)
 		{
-			strcat(read_buffer, _buffer);
-			bzero(&_buffer,1000);
+			it->read_buffer += it->buffer;
+			it->buffer.clear();
 			return ;
 		}
-		_buffer[nci] = '\0';
-		strcat(read_buffer, _buffer);
-		handle_request(read_buffer, fd_client, readBytes, i);
+		it->read_buffer += it->buffer;
+		handle_request(it->read_buffer, fd_client, it->readBytes, i);
 	}
-	bzero(&read_buffer,1000);
-	readBytes = 0;
 }
 
 int status = 0;

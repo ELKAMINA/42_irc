@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/28 10:17:56 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/08 11:07:00 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/10 15:34:51 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ typename std::vector<T>::iterator find_obj(std::string name, std::vector<T>& lis
 }
 
 int		wrong_nickname(std::string nickname);
-bool	ctld(char* buf, int readBytes);
+bool	ctld(std::string& buf, int readBytes);
 // void	all_chan_names(Request& requ, Server* serv);
 // int		count_chan_nbr(std::vector<std::string> entries);
 

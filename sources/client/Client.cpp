@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:18:08 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/06 23:46:04 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/10 16:37:06 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@ Client::Client(): _clientFd(0), _nickName(""), _userName(""), _pass(""),
 _host("IRC_with_love")
 {
 	_initModes();
+	buffer = "";
+	read_buffer = "";
+	readBytes = 0;
 	_away_msg = "";
 	loggedIn = false;
 	callToMode = 0;
@@ -25,6 +28,9 @@ Client::Client(int fd): _clientFd(fd), _nickName(""), _userName(""), _pass(""),
 _host("IRC_with_love")
 {
 	_initModes();
+	buffer = "";
+	read_buffer = "";
+	readBytes = 0;
 	_away_msg = "";
 	loggedIn = false;
 	callToMode = 0;
@@ -47,6 +53,9 @@ Client & Client::operator=( const Client& rhs )
 		this->_pass 	= rhs._pass;
 		this->_host 	= rhs._host;
 		this->_mode 	= rhs._mode;
+		this->buffer	= rhs.buffer;
+		this->read_buffer = rhs.read_buffer;
+		this->readBytes = rhs.readBytes;
 	}
 	return *this;
 }

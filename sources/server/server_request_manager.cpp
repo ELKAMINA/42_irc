@@ -6,19 +6,18 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 23:08:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 11:24:10 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/10 17:13:41 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
+void Server::handle_request(std::string& buf, int fd_client, int readBytes, int i)
 {
+	(void)readBytes;
 	size_t pos;
 	std::string input;
-	std::string client_buffer = "";
-	buf[readBytes] = '\0';
-	client_buffer += buf;
+	std::string client_buffer = buf;
 	std::cout << "client buffer " << client_buffer << std::endl;
 	while ((pos = client_buffer.find("\n")) != std::string::npos)
 	{
@@ -35,11 +34,12 @@ void Server::handle_request(char *buf, int fd_client, int readBytes, int i)
 			_online_clients--;
 			
 			all_clients.erase(origin);
-			break;
+			return;
 		}
+		else if (req.command !="QUIT")
+			buf.clear();
 		client_buffer.erase(0, pos + 1);
 	}
-	client_buffer.clear();
 	return;
 }
 
