@@ -43,6 +43,12 @@ int Request::pass(Server *serv)
 		}
 		serv->chan_requests(*this);
 	}
+	else
+	{
+			reply = errNeedMoreParams(origin->getName(), command);
+			serv->chan_requests(*this);
+			return 0;
+	}
 	return 0;
 }
 

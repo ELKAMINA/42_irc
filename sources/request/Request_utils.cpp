@@ -11,6 +11,12 @@
 /* ************************************************************************** */
 
 #include "Request.hpp"
+#include <algorithm>
+
+static int sort_client(Client& a, Client &b)
+{
+	return a.getChanNbr() < b.getChanNbr();
+}
 
 int Request::check_lists()
 {
@@ -352,8 +358,8 @@ void Request::killing_process(std::vector<Client>::iterator to_kill, Server* ser
 void Request::all_chan_names(Server* serv)
 {
 	std::vector<Channel>::iterator it_cha = serv->all_channels.begin();
-	std::vector<Client>::iterator it_cli = serv->all_clients.begin();
-	size_t end_of_names;
+	std::string tmp_name = origin->getName();
+	// size_t end_of_names;
 
 	for( ;it_cha != serv->all_channels.end(); it_cha++)
 	{
@@ -363,16 +369,18 @@ void Request::all_chan_names(Server* serv)
 			reply += rpl_endofnames(origin->setPrefix(), it_cha->getName()) + '\n';
 		}
 	}
-	end_of_names = reply.size();
-	for( ;it_cli != serv->all_clients.end(); it_cli++)
+	sort (serv->all_clients.begin(), serv->all_clients.end(), sort_client);
+	origin = find_obj(tmp_name, serv->all_clients);
+	if (serv->all_clients[0].getChanNbr() == 0)
 	{
-		if (it_cli->getChanNbr() == 0)
-		{
-			if (it_cli->checkMode('i') == false)
-				reply += it_cli->getName() + ", ";
+		reply += "*:\n";
+		for (std::vector<Client>::iterator it = serv->all_clients.begin(); it != serv->all_clients.end(); it++){
+			if (it->getChanNbr() == 0)
+				reply += it->getName() + ", ";
+			else
+				break;
 		}
+		reply.replace(reply.size() - 2, 2, "\n");
 	}
-	reply.replace(reply.size() - 2, 2, "\n");
 	reply += rpl_endofnames(origin->setPrefix(), "*");
-	reply.replace(end_of_names, 0, "*: \n");
 }
