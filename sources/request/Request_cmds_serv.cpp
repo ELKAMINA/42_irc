@@ -265,11 +265,6 @@ int Request::quit(Server *serv)
 	std::vector<Channel>::iterator target_chan;
 	int online = serv->getOnlineClient();
 
-	if (origin->loggedIn == false)
-	{
-		std::cerr<<"va chier poulet"<<std::endl;
-		return 0;
-	}
 	for (it = origin->chans.begin(); it != origin->chans.end(); it++)
 	{
 		target_chan = find_obj(*it, serv->all_channels);
