@@ -49,7 +49,6 @@ bool Request::split_entries(std::string entry, std::vector<std::string>&target)
 	{
 		target.push_back(tmp.substr(0, sharp));
 		tmp.erase(0, sharp + 1);
-		std::cout << "TMP " << tmp << std::endl;
 		commas = false;
 	}
 	target.push_back(tmp);
@@ -95,7 +94,7 @@ int Request::transformations(bool oneChan, bool oneParam)
 	else if (oneChan == false && oneParam == false)
 	{
 		entries.erase(entries.begin());
-		entries.erase(entries.begin() + 1);
+		entries.erase(entries.begin());
 		entries.insert(entries.begin(), channels.begin(), channels.end());
 		entries.insert(entries.begin() + channels.size(), params.begin(), params.end());
 	}
@@ -165,16 +164,14 @@ void Request::removing_sharp(std::vector<std::string>& en)
 
 size_t Request::count_params()
 {
-	size_t end_of_params = 0;
 	
 	for(size_t i = 0; i < entries.size(); i++){
 		if (entries[i][0] == ':')
 		{
-			end_of_params = i;
-			break;
+			return i;
 		}
 	}
-	return end_of_params;
+	return entries.size();
 }
 
 void Request::req_get_comments(std::vector<std::string> &entries, size_t j)
@@ -375,7 +372,7 @@ void Request::all_chan_names(Server* serv)
 	{
 		reply += "*:\n";
 		for (std::vector<Client>::iterator it = serv->all_clients.begin(); it != serv->all_clients.end(); it++){
-			if (it->getChanNbr() == 0)
+			if (it->getChanNbr() == 0 && it->checkMode('i') == false)
 				reply += it->getName() + ", ";
 			else
 				break;

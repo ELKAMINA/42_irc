@@ -84,7 +84,7 @@ int Request::kick(Server *serv)
 
 	if (check_lists() == -1)
 	{
-		reply = "Wrong formay\r\n";
+		reply = "Wrong format\r\n";
 		serv->chan_requests(*this);
 		return 0;
 	}
@@ -115,9 +115,8 @@ int Request::kick(Server *serv)
 				}
 				else
 				{
-					for (size_t u = nb_chan; u + params_end < entries.size(); u++){
+					for (size_t u = nb_chan; u < params_end; u++){
 						user_to_kick = entries[u];
-						std::cout << "use to kick " << user_to_kick << std::endl;
 						it_cha->kick(*this, serv);
 						user_to_kick.clear();
 					}
