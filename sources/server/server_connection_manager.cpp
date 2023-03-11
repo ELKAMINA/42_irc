@@ -118,6 +118,11 @@ void Server::read_client_req(int fd_client, int i)
 		}
 		it->read_buffer += it->buffer;
 		handle_request(it->read_buffer, fd_client, it->readBytes, i);
+		if ((it = find_obj(fd_client, all_clients)) != all_clients.end())
+		{
+			it->buffer.clear();
+			it->read_buffer.clear();
+		}
 	}
 }
 

@@ -31,12 +31,11 @@ void Server::handle_request(std::string& buf, int fd_client, int readBytes, int 
 			close(client_events[i].fd);
 			client_events[i] = client_events[_online_clients - 1];
 			_online_clients--;
-			
 			all_clients.erase(origin);
 			return;
 		}
-		else if (req.command !="QUIT")
-			buf.clear();
+		// else if (req.command !="QUIT")
+		// 	buf.clear();
 		client_buffer.erase(0, pos + 1);
 	}
 	return;

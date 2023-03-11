@@ -197,7 +197,9 @@ int Request::ping(Server *serv)
 	if (entries.size() < 1)
 		reply = errNeedMoreParams(origin->getName(), command);
 	else
+	{
 		reply = "PONG :" + entries[0];
+	}
 	serv->chan_requests(*this);
 	return 0;
 }
@@ -306,7 +308,6 @@ int Request::oper(Server *serv)
 		else
 		{
 			reply = errPasswMismatch(origin->setPrefix());
-
 		}
 	}
 	else
