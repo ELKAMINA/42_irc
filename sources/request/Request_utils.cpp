@@ -337,7 +337,7 @@ void Request::killing_process(std::vector<Client>::iterator to_kill, Server* ser
 	if (send(to_kill->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
 		perror("Send");
 	reply.clear();
-	reply = "ERROR :Killed by " + origin->getName() + " (" +  &message[1] + ")\n";
+	reply = "ERROR :Killed by " + origin->getName() + " (" +  message + ")\n";
 	if (send(to_kill->getFdClient(), reply.c_str(), reply.length(), 0) == -1)
 		perror("Send");
 	reply = "UNDEFINED";
@@ -348,7 +348,7 @@ void Request::killing_process(std::vector<Client>::iterator to_kill, Server* ser
 			target.push_back(it_cli->getName());
 	}
 	serv->removeClient(to_kill);
-	response = ":" + prefix + " QUIT :Killed by " + origin->getName() + " (" +  &message[1] + ")\n";
+	response = ":" + prefix + " QUIT :Killed by " + origin->getName() + " (" +  message + ")\n";
 	serv->chan_requests(*this);
 }
 
