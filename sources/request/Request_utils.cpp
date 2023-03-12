@@ -26,7 +26,10 @@ int Request::check_lists()
 
 	oneChan = split_entries(entries[0], channels);
 	if (entries.size() > 1)
+	{
 		oneParam = split_entries(entries[1], params);
+
+	}
 	verif = verifications();
 	if (verif == 1)
 	{
@@ -76,7 +79,7 @@ int Request::verifications()
 			}
 			else
 			{
-				if (nb_keys > nb_chan)
+				if (nb_keys > nb_chan && command != "KICK")
 					return 0;
 			}
 		}
@@ -96,6 +99,11 @@ int Request::transformations(bool oneChan, bool oneParam)
 		entries.erase(entries.begin());
 		entries.erase(entries.begin());
 		entries.insert(entries.begin(), channels.begin(), channels.end());
+		entries.insert(entries.begin() + channels.size(), params.begin(), params.end());
+	}
+	else if (oneChan == true && oneParam == false)
+	{
+		entries.erase(entries.begin() + 1);
 		entries.insert(entries.begin() + channels.size(), params.begin(), params.end());
 	}
 	return 1;

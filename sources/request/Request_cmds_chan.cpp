@@ -18,7 +18,12 @@
 
 int Request::join(Server *serv)
 {
-
+	if (entries.size() == 0)
+	{
+		reply = errNeedMoreParams(origin->getName(), command);
+		serv->chan_requests(*this);
+		return 0;
+	}
 	if (check_lists() == 0)
 	{
 		removing_sharp(entries);

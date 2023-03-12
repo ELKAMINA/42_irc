@@ -199,6 +199,8 @@ int Request::ping(Server *serv)
 	else
 	{
 		reply = "PONG :" + entries[0];
+		std::cout << "Into the PING/PONG, fd_client = " << origin->getName() << " " << origin->getFdClient() << std::endl;
+
 	}
 	serv->chan_requests(*this);
 	return 0;
