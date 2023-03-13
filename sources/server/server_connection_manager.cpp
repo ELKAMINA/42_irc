@@ -32,10 +32,13 @@ int Server::manage_connections()
 		if (client_events[i].revents != 0 && client_events[i].revents & POLLRDHUP)
 		{
 			std::vector<Client>::iterator obj = find_obj(client_events[i].fd, all_clients);
-			close(client_events[i].fd);
-			client_events[i] = client_events[_online_clients - 1];
-			_online_clients--;
-			all_clients.erase(obj);
+			std::vector<Client>::iterator it_cli = all_clients.begin();
+            std::string rep = ":" + obj->setPrefix() + " QUIT :\n";
+            for (it_cli = all_clients.begin(); it_cli != all_clients.end(); it_cli++){
+                if (it_cli->getFdClient() != client_events[i].fd)
+                    send(it_cli->getFdClient(), rep.c_str(), rep.length(), MSG_DONTWAIT);
+            }
+            removeClient(obj);
 		}
 		else if (client_events[i].revents != 0 && client_events[i].revents & POLLIN)
 		{
@@ -79,6 +82,8 @@ int Server::new_client(int i)
 			return (perror("Problem in sending from server "), 1);
 		close(sock);
 		client_events[i] = client_events[_online_clients - 1];
+		client_events[i].events = POLLIN | POLLRDHUP;
+		client_events[i].revents = 0;
 		_online_clients--;
 		all_clients.pop_back();
 	}
@@ -108,6 +113,7 @@ void Server::read_client_req(int fd_client, int i)
 			}
 			it->readBytes = 0;
 		}
+
 	}
 	else
 	{
@@ -191,6 +197,8 @@ void Server::removeClient(std::vector<Client>::iterator to_remove)
 		{
 			close(client_events[i].fd);
 			client_events[i] = client_events[_online_clients - 1];
+			client_events[i].events = POLLIN | POLLRDHUP;
+			client_events[i].revents = 0;
 			_online_clients--;
 			break ;
 		}

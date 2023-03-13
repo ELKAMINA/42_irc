@@ -28,10 +28,13 @@ void Server::handle_request(std::string& buf, int fd_client, int readBytes, int 
 		Request req = Request(input.c_str(), origin);
 		if (treating_req(req) == 1)
 		{
-			close(client_events[i].fd);
-			client_events[i] = client_events[_online_clients - 1];
-			_online_clients--;
-			all_clients.erase(origin);
+			std::vector<Client>::iterator it_cli;
+            std::string rep = ":" + origin->setPrefix() + " QUIT :\n";
+            for (it_cli = all_clients.begin(); it_cli != all_clients.end(); it_cli++){
+                if (it_cli->getFdClient() != client_events[i].fd)
+                    send(it_cli->getFdClient(), rep.c_str(), rep.length(), MSG_DONTWAIT);
+            }
+            removeClient(origin);
 			return;
 		}
 		// else if (req.command !="QUIT")

@@ -157,11 +157,12 @@ int Request::names(Server *serv)
 	vector<Channel>::iterator it_cha;
 	size_t i = 0;
 	
-	if (check_lists() != 0)
+	int check = check_lists();
+	if (check == 0)
 	{
 		if (reply == "UNDEFINED")
 		{
-			removing_sharp(entries);
+			// removing_sharp(entries);
 			reply.clear();
 			if (entries.size() == 0 && nb_chan == 0)
 				all_chan_names(serv);
@@ -169,7 +170,7 @@ int Request::names(Server *serv)
 			{
 				while (i < entries.size() && nb_chan != 0)
 				{
-					it_cha = find_obj(entries[i], serv->all_channels);
+					it_cha = find_obj(&entries[i][1], serv->all_channels);
 					if (it_cha != serv->all_channels.end())
 					{
 						if (it_cha->activeMode('s') == false)

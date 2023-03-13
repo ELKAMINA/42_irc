@@ -24,22 +24,24 @@ int Request::check_lists()
 	bool oneParam = true;
 	int	 verif = 0;
 
-	oneChan = split_entries(entries[0], channels);
-	if (entries.size() > 1)
+	if (entries.empty() == false )
 	{
-		oneParam = split_entries(entries[1], params);
+		oneChan = split_entries(entries[0], channels);
+		if (entries.size() > 1)
+		{
+			oneParam = split_entries(entries[1], params);
+		}
+		verif = verifications();
+		if (verif == 1)
+		{
+			transformations(oneChan, oneParam);
+			return (0);
 
+		}
+		else if (verif == -1)
+			return -1;
 	}
-	verif = verifications();
-	if (verif == 1)
-	{
-		transformations(oneChan, oneParam);
-		return (0);
-
-	}
-	else if (verif == -1)
-		return -1;
-	return 1;
+	return 0;
 }
 
 bool Request::split_entries(std::string entry, std::vector<std::string>&target)
@@ -60,10 +62,11 @@ bool Request::split_entries(std::string entry, std::vector<std::string>&target)
 
 int Request::verifications()
 {
-	if (command == "JOIN" || command == "PART" || command == "NAMES" || command == "LIST" || command == "KICK")
+	if (command == "JOIN" || command == "PART" || command == "KICK" || command == "NAMES")
 	{
 		if (channels.size() >= 1)
 		{
+
 			if (count_chan_nbr(channels) == -1)
 				return -1;
 			// if (nb_chan != channels.size())

@@ -293,12 +293,6 @@ int Request::quit(Server *serv)
 		}
 	}
 	serv->all_clients.erase(origin);
-	int i = 0;
-	while (serv->client_events[i].fd && i < serv->getOnlineClient())
-	{
-		std::cout << "QUIT - Existing clients i = " << i << " fds = " << serv->client_events[i].fd << std::endl;
-		i++;
-	}
 	return 0;
 }
 
