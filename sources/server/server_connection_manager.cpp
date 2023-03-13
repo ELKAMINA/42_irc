@@ -33,7 +33,7 @@ int Server::manage_connections()
 		{
 			std::vector<Client>::iterator obj = find_obj(client_events[i].fd, all_clients);
 			close(client_events[i].fd);
-			client_events[i] = client_events[0];
+			client_events[i] = client_events[_online_clients - 1];
 			_online_clients--;
 			all_clients.erase(obj);
 		}
@@ -75,9 +75,10 @@ int Server::new_client(int i)
 	_online_clients++;
 	if (_online_clients == _max_co + 1)
 	{
-		send(sock, "\033[1;31mError: server is full\n\033[m", 23, 0);
+		if (send(sock, "ERROR :server is full", 22, 0) == -1)
+			return (perror("Problem in sending from server "), 1);
 		close(sock);
-		client_events[i] = client_events[0];
+		client_events[i] = client_events[_online_clients - 1];
 		_online_clients--;
 		all_clients.pop_back();
 	}
