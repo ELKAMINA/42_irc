@@ -35,8 +35,8 @@ int Server::manage_connections()
 			std::vector<Client>::iterator it_cli = all_clients.begin();
             std::string rep = ":" + obj->setPrefix() + " QUIT :\n";
             for (it_cli = all_clients.begin(); it_cli != all_clients.end(); it_cli++){
-                if (it_cli->getFdClient() != client_events[i].fd)
-                    send(it_cli->getFdClient(), rep.c_str(), rep.length(), MSG_DONTWAIT);
+                if (it_cli->getFdClient() &&  client_events[i].fd && it_cli->getFdClient() != client_events[i].fd)
+                    	send(it_cli->getFdClient(), rep.c_str(), rep.length(), 0);
             }
             removeClient(obj);
 		}
