@@ -51,7 +51,9 @@ int Request::part(Server *serv)
 	vector<Channel>::iterator it_cha;
 	size_t i = 0;
 
-	if (check_lists() == 0)
+	if (entries.size() == 0)
+		reply = errNeedMoreParams(origin->getName(), command);
+	else if (check_lists() == 0)
 	{
 		if (entries.size() > nb_chan)
 			req_get_comments(entries, nb_chan);

@@ -118,7 +118,7 @@ void Channel::join(Request &request, Server* serv)
 			request.reply = "473 " + user + " #" + this->getName() + " :Cannot join channel (+i)";
 			err = true;
 		}
-		else
+		else if (err == false)
 			_invited.erase(it=existing_user(_invited, user));
 	}
 	if ( err == false)
@@ -273,7 +273,8 @@ void Channel::privmsg(Request& request, Server* serv)
 	}
 	if (activeMode('m') && (!isInChanList(user, _operators) && !isInChanList(user, _vocal)))
 	{
-		request.reply = errCannotSendToChan(user, this->getName());
+		if (request.command == "PRIVMSG")
+			request.reply = errCannotSendToChan(user, this->getName());
 		return;
 	}
 	request.target.insert(request.target.begin(), users.begin(), users.end());
