@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:48:12 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/10 18:04:28 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/14 16:24:00 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,10 @@ void Server::init_pollfd_struct()
 int Server::manage_connections()
 {
 	poll(client_events, _online_clients, -1);
+	_online_clients -= treat_leaving_clients();
 	for (int i = 0; i < _online_clients; i++)
 	{
-		if (client_events[i].revents != 0 && client_events[i].revents & POLLRDHUP)
-		{
-			std::vector<Client>::iterator obj = find_obj(client_events[i].fd, all_clients);
-			std::vector<Client>::iterator it_cli = all_clients.begin();
-            std::string rep = ":" + obj->setPrefix() + " QUIT :\n";
-            for (it_cli = all_clients.begin(); it_cli != all_clients.end(); it_cli++){
-                if (it_cli->getFdClient() &&  client_events[i].fd && it_cli->getFdClient() != client_events[i].fd)
-                    	send(it_cli->getFdClient(), rep.c_str(), rep.length(), 0);
-            }
-            removeClient(obj);
-		}
-		else if (client_events[i].revents != 0 && client_events[i].revents & POLLIN)
+		if (client_events[i].revents != 0 && client_events[i].revents & POLLIN)
 		{
 			if (client_events[i].fd == _socket)
 			{

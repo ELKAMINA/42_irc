@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 11:27:26 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/10 17:53:42 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/14 16:07:39 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,7 +283,7 @@ int Request::quit(Server *serv)
 	}
 	response = ":" + origin->setPrefix() + " QUIT :" + message;
 	serv->chan_requests(*this);
-	for (int i = 0; i < online; i++){
+	for (int i = 1; i < online; i++){
 		if (serv->client_events[i].fd == origin->getFdClient())
 		{
 			close(serv->client_events[i].fd);

@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 12:51:29 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 18:32:16 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/14 16:48:25 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,9 +265,10 @@ void Channel::privmsg(Request& request, Server* serv)
 
 	request.target.clear();
 	request.response.clear();
-	if (!isInChanList(user, users) && request.command == "PRIVMSG")
+	if (!isInChanList(user, users))
 	{
-		request.reply = "442 " + request.origin->setPrefix() + " #" + this->getName() + " :You're not on that channel";
+		if (request.command == "PRIVMSG")
+			request.reply = "442 " + request.origin->setPrefix() + " #" + this->getName() + " :You're not on that channel";
 		return;
 	}
 	if (activeMode('m') && (!isInChanList(user, _operators) && !isInChanList(user, _vocal)))

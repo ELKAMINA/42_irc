@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 19:38:39 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/10 15:23:02 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/14 16:24:17 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ public:
 	---- DISCONNECT METHODS 
 	*/
 	void							removeClient(std::vector<Client>::iterator to_remove);
+	int								treat_leaving_clients();
 	void							disconnectAll();
 	/*
 	---- CHANNELS AND CLIENTS DATA
@@ -98,7 +99,6 @@ public:
 	std::vector<std::string>					names_history;
 	std::map<std::string, std::string>			opers;
 	Marvin*										marvin;
-	// char 										read_buffer[1000];
 	size_t 										readBytes;
 	bool										dup_nickName;
 
