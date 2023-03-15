@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 18:26:05 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/09 18:24:19 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/15 10:16:59 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,9 +358,9 @@ void Request::killing_process(std::vector<Client>::iterator to_kill, Server* ser
 		if (!(it_cli == to_kill))
 			target.push_back(it_cli->getName());
 	}
-	serv->removeClient(to_kill);
 	response = ":" + prefix + " QUIT :Killed by " + origin->getName() + " (" +  message + ")\n";
 	serv->chan_requests(*this);
+	serv->removeClient(to_kill);
 }
 
 void Request::all_chan_names(Server* serv)

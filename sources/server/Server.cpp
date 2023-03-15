@@ -6,7 +6,7 @@
 /*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 20:04:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/14 16:25:51 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/15 09:46:15 by jcervoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,7 @@ int Server::treat_leaving_clients()
 	std::vector<Client>::iterator obj;
 	std::vector<Client> tmp;
 	int	erased = 0;
+	int tmp_index = _online_clients;
 	for (int i = 0; i < _online_clients; i++){
 		if (client_events[i].revents != 0 && client_events[i].revents & POLLRDHUP)
 		{
@@ -131,9 +132,10 @@ int Server::treat_leaving_clients()
 				tmp.push_back(*obj);
 				all_clients.erase(obj);
 				close(client_events[i].fd);
-				client_events[i] = client_events[_online_clients - 1];
+				client_events[i] = client_events[tmp_index - 1];
 				client_events[i].events = POLLIN | POLLRDHUP;
 				client_events[i].revents = 0;
+				tmp_index--;
 				erased++;
 			}
 			
