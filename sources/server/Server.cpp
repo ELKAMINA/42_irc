@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jcervoni <jcervoni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aminaelk <aminaelk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 20:04:50 by jcervoni          #+#    #+#             */
-/*   Updated: 2023/03/15 09:46:15 by jcervoni         ###   ########.fr       */
+/*   Updated: 2023/03/24 10:52:02 by aminaelk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,14 +119,26 @@ void Server::update_user_data(Request& request, std::string old_name, std::strin
 
 int Server::treat_leaving_clients()
 {
-	std::vector<Client>::iterator obj;
-	std::vector<Client> tmp;
+	std::vector<Client>::iterator 	obj;
+	std::vector<string>::iterator 	it;
+	std::vector<Channel>::iterator	target;
+	std::vector<Client> 			tmp;
 	int	erased = 0;
 	int tmp_index = _online_clients;
 	for (int i = 0; i < _online_clients; i++){
 		if (client_events[i].revents != 0 && client_events[i].revents & POLLRDHUP)
 		{
 			obj = find_obj(client_events[i].fd, all_clients);
+			for (it = obj->chans.begin(); it != obj->chans.end(); it++)
+			{
+				target = find_obj(*it, all_channels);
+				if (target != all_channels.end())
+				{
+					target->removeUser(obj->getName());
+					if (target->getOnlineCount() == 0)
+						all_channels.erase(target);
+				}
+			}
 			if (obj != all_clients.end())
 			{
 				tmp.push_back(*obj);
