@@ -1,6 +1,6 @@
 # ft_irc project 
 The goal of this project is to create our own IRC server. This server is capable of accepting multiple connections without blocking and answers multiple client at the same time.
-This project is about creating our own IRC server. For testing purposes, we chose IRSSI as the client part.
+This project isFor testing purposes, we chose IRSSI as the client part.
 
 
 ## Requirements :
